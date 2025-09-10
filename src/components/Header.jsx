@@ -37,9 +37,6 @@ export default function Header() {
             <li>
               <Link to="/info">PC 부품 정보</Link>
             </li>
-            <li>
-              <Link to="/customer-support">고객센터</Link>
-            </li>
           </ul>
         </nav>
 
