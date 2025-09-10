@@ -76,7 +76,8 @@ export default function Register() {
             className="small-button"
             onClick={handleSendCode}
           >
-            인증번호 전송
+            인증번호 <br />
+            전송
           </button>
         </div>
 
@@ -94,6 +95,7 @@ export default function Register() {
             className="small-button"
             onClick={handleVerifyCode}
           >
+            인증번호 <br />
             확인
           </button>
         </div>

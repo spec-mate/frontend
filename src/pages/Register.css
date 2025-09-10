@@ -22,6 +22,7 @@
   object-fit: contain;
 }
 
+/* 일반 인풋 */
 .input-group {
   width: 100%;
   display: flex;
@@ -36,11 +37,13 @@
 }
 
 .input-group input {
-  padding: 12px 14px;
+  height: 64px; /* 높이 통일 */
+  padding: 0 14px; /* 좌우 패딩만 유지 */
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 16px;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .input-group input:focus {
@@ -49,9 +52,46 @@
   outline: none;
 }
 
+/* 이메일/인증번호 입력 + 버튼 한 줄 */
+.input-group-row {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.input-group-row input {
+  flex: 1;
+  height: 64px; /* 높이 통일 */
+  padding: 0 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* 작은 버튼 (인증번호 전송/확인) */
+.small-button {
+  height: 64px; /* 높이 통일 */
+  padding: 0 16px;
+  background: #303030;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  white-space: nowrap;
+}
+
+.small-button:hover {
+  animation: gradientMove 1s ease infinite;
+}
+
+/* 회원가입 버튼 */
 .register-button {
   width: 100%;
-  padding: 14px;
+  height: 64px; /* 높이 통일 */
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -84,6 +124,7 @@
   }
 }
 
+/* 로그인 안내 문구 */
 .login-text {
   margin-bottom: 20px;
   font-size: 14px;
@@ -105,35 +146,5 @@
 
 .login-link:hover {
   text-decoration: underline;
-  animation: gradientMove 1s ease infinite;
-}
-.input-group-row {
-  width: 100%;
-  display: flex;
-  gap: 10px;
-}
-
-.input-group-row input {
-  flex: 1; /* 입력창이 가능한 공간 차지 */
-  padding: 12px 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
-}
-
-.small-button {
-  padding: 12px 16px;
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  white-space: nowrap; /* 버튼 글자 줄바꿈 방지 */
-}
-
-.small-button:hover {
   animation: gradientMove 1s ease infinite;
 }
