@@ -1,11 +1,11 @@
-.login-container {
+.register-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
 }
 
-.login-form {
+.register-form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,7 +16,7 @@
   background-color: #fff;
 }
 
-.login-logo {
+.register-logo {
   width: 500px;
   height: 100px;
   object-fit: contain;
@@ -49,7 +49,7 @@
   outline: none;
 }
 
-.login-button {
+.register-button {
   width: 100%;
   padding: 14px;
   color: #fff;
@@ -67,11 +67,11 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
 }
 
-.login-button:hover {
-  animation: gradientMove 1s ease infinite; /* hover 시 흐르는 효과 */
+.register-button:hover {
+  animation: gradientMove 1s ease infinite;
 }
 
-/* 재사용 가능한 keyframes */
+/* 공통 애니메이션 */
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
@@ -84,13 +84,13 @@
   }
 }
 
-.signup-text {
+.login-text {
   margin-bottom: 20px;
   font-size: 14px;
   color: #333;
 }
 
-.signup-link {
+.login-link {
   font-weight: bold;
   text-decoration: none;
 
@@ -98,39 +98,42 @@
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   background-clip: text;
-  -webkit-background-clip: text; /* 크로스 브라우저 */
-  color: transparent; /* 글자색 투명 → 배경 보이게 */
+  -webkit-background-clip: text;
+  color: transparent;
   transition: background 0.3s ease;
 }
 
-.signup-link:hover {
+.login-link:hover {
   text-decoration: underline;
   animation: gradientMove 1s ease infinite;
 }
-
-/* 재사용 가능한 keyframes */
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+.input-group-row {
+  width: 100%;
+  display: flex;
+  gap: 10px;
 }
 
-.forgot-password {
-  margin-top: 10px;
+.input-group-row input {
+  flex: 1; /* 입력창이 가능한 공간 차지 */
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
 }
 
-.forgot-link {
+.small-button {
+  padding: 12px 16px;
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
   font-size: 14px;
-  color: #666;
-  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  white-space: nowrap; /* 버튼 글자 줄바꿈 방지 */
 }
 
-.forgot-link:hover {
-  text-decoration: underline;
+.small-button:hover {
+  animation: gradientMove 1s ease infinite;
 }
