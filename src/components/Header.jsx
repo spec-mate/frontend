@@ -1,11 +1,13 @@
-// src/components/Header.jsx
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import logo from "/logo.svg";
+import { NavLink, Link } from "react-router-dom";
+import logoWhite from "/logo.svg";
+import logoBlue from "/blue-logo.svg";
 import "./Header.css";
+import { useHeaderStore } from "../store/headerStore";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const headerVersion = useHeaderStore((state) => state.headerVersion);
 
   useEffect(() => {
     const handleResize = () => {
@@ -15,37 +17,49 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const currentLogo = headerVersion === "black" ? logoBlue : logoWhite;
+
   return (
-    <header className="header">
+    <header
+      className={`header ${
+        headerVersion === "black" ? "header-black" : "header-white"
+      }`}
+    >
       <div className="header-container">
         {/* 로고 */}
         <div className="logo">
           <Link to="/" aria-label="홈으로 이동">
-            <img src={logo} alt="Logo" className="logo-img" />
+            <img src={currentLogo} alt="Logo" className="logo-img" />
           </Link>
         </div>
 
-        {/* 네비게이션 (데스크탑) */}
+        {/* 네비게이션 */}
         <nav className="nav">
           <ul>
             <li>
-              <Link to="/">서비스 소개</Link>
+              <NavLink to="/introduce" className="nav-link">
+                서비스 소개
+              </NavLink>
             </li>
             <li>
-              <Link to="/specmate">스펙메이트 사용</Link>
+              <NavLink to="/specmate" className="nav-link">
+                스펙메이트 사용
+              </NavLink>
             </li>
             <li>
-              <Link to="/info">PC 부품 정보</Link>
+              <NavLink to="/info" className="nav-link">
+                PC 부품 정보
+              </NavLink>
             </li>
           </ul>
         </nav>
 
-        {/* 로그인 버튼 (데스크탑) */}
+        {/* 로그인 버튼 */}
         <div className="login-btn">
           <Link to="/login">로그인</Link>
         </div>
 
-        {/* 햄버거 버튼 (모바일) */}
+        {/* 햄버거 */}
         <button
           type="button"
           className="hamburger"
@@ -68,24 +82,40 @@ export default function Header() {
         <div className="mobile-menu-container">
           <ul>
             <li>
-              <Link to="/" onClick={() => setOpen(false)}>
+              <NavLink
+                to="/introduce"
+                className="nav-link"
+                onClick={() => setOpen(false)}
+              >
                 서비스 소개
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="/specmate" onClick={() => setOpen(false)}>
+              <NavLink
+                to="/specmate"
+                className="nav-link"
+                onClick={() => setOpen(false)}
+              >
                 스펙메이트 사용
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="/info" onClick={() => setOpen(false)}>
+              <NavLink
+                to="/info"
+                className="nav-link"
+                onClick={() => setOpen(false)}
+              >
                 PC 부품 정보
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="/customer-support" onClick={() => setOpen(false)}>
+              <NavLink
+                to="/customer-support"
+                className="nav-link"
+                onClick={() => setOpen(false)}
+              >
                 고객센터
-              </Link>
+              </NavLink>
             </li>
           </ul>
           <div className="mobile-login">

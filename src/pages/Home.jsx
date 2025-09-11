@@ -1,7 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./Home.css";
+import { useHeaderStore } from "../store/headerStore";
 
 export default function Home() {
+  const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
+
+  useEffect(() => {
+    setHeaderVersion("white");
+  }, [setHeaderVersion]);
+
   return (
     <div className="home">
       <div className="overlay"></div>

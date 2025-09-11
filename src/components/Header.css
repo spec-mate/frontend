@@ -1,18 +1,37 @@
-/* src/components/Header.css */
-
-/* 공통 헤더 */
 .header {
   width: 100%;
   height: 65px;
   background: transparent;
-  color: white;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 50;
+  transition: color 0.3s ease;
 }
 
-/* 헤더 내부 컨테이너 */
+/* 흰색 글자 버전 */
+.header-white {
+  color: white;
+}
+
+.header-white .nav a,
+.header-white .login-btn a,
+.header-white .hamburger {
+  color: white;
+}
+
+/* 검정 글자 버전 */
+.header-black {
+  color: black;
+}
+
+.header-black .nav a,
+.header-black .login-btn a,
+.header-black .hamburger {
+  color: black;
+}
+
+/* 컨테이너 */
 .header-container {
   width: 100%;
   max-width: 1920px;
@@ -24,14 +43,13 @@
   padding: 0 20px;
 }
 
-/* 로고 */
 .logo-img {
   margin-left: 20px;
   height: 65px;
   width: 100px;
 }
 
-/* 데스크탑 네비게이션 */
+/* 네비게이션 */
 .nav {
   display: none;
 }
@@ -44,16 +62,39 @@
   margin: 0;
 }
 
-.nav a {
-  color: white;
+/* 기본 링크 스타일 */
+.nav a,
+.mobile-menu-container a {
+  position: relative;
+  font-weight: 600;
   text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-.nav a:hover {
-  color: #d1d5db; /* hover:text-gray-300 */
+/* 🔥 hover 시 그라데이션 애니메이션 */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-/* 로그인 버튼 (데스크탑) */
+.nav a:hover,
+.mobile-menu-container a:hover {
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradientMove 1s ease infinite;
+}
+
+/* 로그인 버튼 */
 .login-btn {
   margin-right: 50px;
   display: none;
@@ -73,7 +114,7 @@
   background: #404040;
 }
 
-/* 햄버거 버튼 (모바일 전용) */
+/* 햄버거 버튼 */
 .hamburger {
   margin-right: 20px;
   background: none;
@@ -84,7 +125,6 @@
   padding: 0.5rem;
   border-radius: 6px;
   cursor: pointer;
-  color: white;
 }
 
 .hamburger:hover {
@@ -122,17 +162,7 @@
   gap: 0.75rem;
 }
 
-.mobile-menu-container a {
-  display: block;
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem 0;
-}
-
-.mobile-menu-container a:hover {
-  color: #d1d5db;
-}
-
+/* 모바일 로그인 */
 .mobile-login {
   margin-top: 1rem;
 }
@@ -154,7 +184,7 @@
   background: #404040;
 }
 
-/* 반응형 (768px 이상 → 데스크탑 모드) */
+/* 반응형 */
 @media (min-width: 768px) {
   .nav {
     display: flex;
@@ -172,5 +202,57 @@
 
   .mobile-menu {
     display: none !important;
+  }
+}
+
+.nav-link {
+  position: relative;
+  font-weight: 600;
+  text-decoration: none;
+  padding-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  display: inline-block;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 3s ease infinite;
+}
+
+.nav-link.active {
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  display: inline-block;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 3s ease infinite;
+}
+
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  animation: gradientMove 3s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

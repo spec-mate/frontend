@@ -4,9 +4,11 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Introduce from "./pages/Introduce";
+
 function App() {
   const location = useLocation();
-  const hideHeaderRoutes = ["/login", "/register"]; // 로그인 페이지에서 헤더 숨김
+  const hideHeaderRoutes = ["/login", "/register"];
 
   return (
     <>
@@ -15,6 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/introduce" element={<Introduce />} />
       </Routes>
     </>
   );

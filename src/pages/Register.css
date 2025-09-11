@@ -22,7 +22,6 @@
   object-fit: contain;
 }
 
-/* 일반 인풋 */
 .input-group {
   width: 100%;
   display: flex;
@@ -37,8 +36,8 @@
 }
 
 .input-group input {
-  height: 64px; /* 높이 통일 */
-  padding: 0 14px; /* 좌우 패딩만 유지 */
+  height: 64px;
+  padding: 0 14px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 16px;
@@ -52,7 +51,6 @@
   outline: none;
 }
 
-/* 이메일/인증번호 입력 + 버튼 한 줄 */
 .input-group-row {
   width: 100%;
   display: flex;
@@ -61,7 +59,7 @@
 
 .input-group-row input {
   flex: 1;
-  height: 64px; /* 높이 통일 */
+  height: 64px;
   padding: 0 14px;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -69,9 +67,8 @@
   box-sizing: border-box;
 }
 
-/* 작은 버튼 (인증번호 전송/확인) */
 .small-button {
-  height: 64px; /* 높이 통일 */
+  height: 64px;
   padding: 0 16px;
   background: #303030;
   color: #fff;
@@ -88,10 +85,9 @@
   animation: gradientMove 1s ease infinite;
 }
 
-/* 회원가입 버튼 */
 .register-button {
   width: 100%;
-  height: 64px; /* 높이 통일 */
+  height: 64px;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -101,7 +97,6 @@
   position: relative;
   overflow: hidden;
 
-  /* 그라데이션 배경 */
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
@@ -111,7 +106,6 @@
   animation: gradientMove 1s ease infinite;
 }
 
-/* 공통 애니메이션 */
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
@@ -124,7 +118,6 @@
   }
 }
 
-/* 로그인 안내 문구 */
 .login-text {
   margin-bottom: 20px;
   font-size: 14px;
@@ -135,7 +128,6 @@
   font-weight: bold;
   text-decoration: none;
 
-  /* 글자에 그라데이션 적용 */
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   background-clip: text;
@@ -147,4 +139,25 @@
 .login-link:hover {
   text-decoration: underline;
   animation: gradientMove 1s ease infinite;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #696f79;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-group-row label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #696f79;
+  margin-bottom: 6px;
+  display: block;
+}
+.error-text {
+  font-size: 13px;
+  color: #ff0000;
+  margin-top: 4px;
 }
