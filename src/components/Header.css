@@ -15,7 +15,6 @@
 }
 
 .header-white .nav a,
-.header-white .login-btn a,
 .header-white .hamburger {
   color: white;
 }
@@ -26,7 +25,6 @@
 }
 
 .header-black .nav a,
-.header-black .login-btn a,
 .header-black .hamburger {
   color: black;
 }
@@ -62,7 +60,6 @@
   margin: 0;
 }
 
-/* 기본 링크 스타일 */
 .nav a,
 .mobile-menu-container a {
   position: relative;
@@ -94,24 +91,26 @@
   animation: gradientMove 1s ease infinite;
 }
 
-/* 로그인 버튼 */
+/* 로그인 버튼 (항상 고정) */
 .login-btn {
   margin-right: 50px;
   display: none;
 }
 
 .login-btn a {
-  background: #303030;
+  background: #303030 !important;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
-  text-decoration: none;
-  color: white;
+  text-decoration: none; /* ✅ 기본 밑줄 제거 */
+  color: white !important;
+  transition: background 0.3s ease;
 }
 
 .login-btn a:hover {
-  background: #404040;
+  background: #404040 !important;
+  text-decoration: none; /* ✅ hover 시에도 밑줄 제거 */
 }
 
 /* 햄버거 버튼 */
@@ -162,7 +161,7 @@
   gap: 0.75rem;
 }
 
-/* 모바일 로그인 */
+/* 모바일 로그인 (항상 고정) */
 .mobile-login {
   margin-top: 1rem;
 }
@@ -171,17 +170,19 @@
   display: inline-block;
   width: 100%;
   text-align: center;
-  background: #303030;
+  background: #303030 !important;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
-  text-decoration: none;
-  color: white;
+  text-decoration: none; /* ✅ 기본 밑줄 제거 */
+  color: white !important;
+  transition: background 0.3s ease;
 }
 
 .mobile-login a:hover {
-  background: #404040;
+  background: #404040 !important;
+  text-decoration: none; /* ✅ hover 시에도 밑줄 제거 */
 }
 
 /* 반응형 */
@@ -205,6 +206,7 @@
   }
 }
 
+/* 네비게이션 링크 */
 .nav-link {
   position: relative;
   font-weight: 600;
@@ -243,16 +245,4 @@
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   animation: gradientMove 3s ease infinite;
-}
-
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }

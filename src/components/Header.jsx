@@ -56,7 +56,9 @@ export default function Header() {
 
         {/* 로그인 버튼 */}
         <div className="login-btn">
-          <Link to="/login">로그인</Link>
+          <Link to="/login" className="login-link">
+            로그인
+          </Link>
         </div>
 
         {/* 햄버거 */}
@@ -119,7 +121,11 @@ export default function Header() {
             </li>
           </ul>
           <div className="mobile-login">
-            <Link to="/login" onClick={() => setOpen(false)}>
+            <Link
+              to="/login"
+              className="login-link"
+              onClick={() => setOpen(false)}
+            >
               로그인
             </Link>
           </div>
