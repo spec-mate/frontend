@@ -4,67 +4,22 @@ import { useHeaderStore } from "../store/headerStore";
 import "./styles/ProductInfo.css";
 
 const products = [
-  {
-    title: "메인보드",
-    subtitle: "Mainboard",
-    img: "/mainboard.svg",
-    path: "/product/mainboard",
-  },
-  {
-    title: "CPU",
-    subtitle: "CPU",
-    img: "/cpu.svg",
-    path: "/product/cpu",
-  },
-  {
-    title: "그래픽카드",
-    subtitle: "VGA",
-    img: "/gpu.svg",
-    path: "/product/gpu",
-  },
-  {
-    title: "메모리",
-    subtitle: "RAM",
-    img: "/ram.svg",
-    path: "/product/ram",
-  },
-  {
-    title: "SSD",
-    subtitle: "SSD",
-    img: "/ssd.svg",
-    path: "/product/ssd",
-  },
-  {
-    title: "HDD",
-    subtitle: "HDD",
-    img: "/hdd.svg",
-    path: "/product/hdd",
-  },
-  {
-    title: "쿨러",
-    subtitle: "Cooler",
-    img: "/cooler.svg",
-    path: "/product/cooler",
-  },
-  {
-    title: "파워",
-    subtitle: "Power",
-    img: "/power.svg",
-    path: "/product/power",
-  },
-  {
-    title: "케이스",
-    subtitle: "Case",
-    img: "/case.svg",
-    path: "/product/case",
-  },
+  { title: "메인보드", img: "/mainboard.svg", path: "/product/mainboard" },
+  { title: "CPU", img: "/cpu.svg", path: "/product/cpu" },
+  { title: "그래픽카드", img: "/gpu.svg", path: "/product/gpu" },
+  { title: "메모리", img: "/ram.svg", path: "/product/ram" },
+  { title: "SSD", img: "/ssd.svg", path: "/product/ssd" },
+  { title: "HDD", img: "/hdd.svg", path: "/product/hdd" },
+  { title: "쿨러", img: "/cooler.svg", path: "/product/cooler" },
+  { title: "파워", img: "/power.svg", path: "/product/power" },
+  { title: "케이스", img: "/case.svg", path: "/product/case" },
 ];
 
 export default function ProductInfo() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
 
   useEffect(() => {
-    setHeaderVersion("black"); // ✅ 페이지 들어올 때 헤더 검정색으로
+    setHeaderVersion("black");
   }, [setHeaderVersion]);
 
   return (
@@ -80,7 +35,6 @@ export default function ProductInfo() {
             <img src={p.img} alt={p.title} />
             <div className="overlay">
               <h3>{p.title}</h3>
-              <span>{p.subtitle}</span>
             </div>
           </Link>
         ))}

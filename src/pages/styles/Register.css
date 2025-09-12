@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 20px;
 }
 
 .register-form {
@@ -32,7 +33,9 @@
 .input-group label {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #696f79;
+  margin-bottom: 6px;
+  display: block;
 }
 
 .input-group input {
@@ -55,6 +58,14 @@
   width: 100%;
   display: flex;
   gap: 10px;
+}
+
+.input-group-row label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #696f79;
+  margin-bottom: 6px;
+  display: block;
 }
 
 .input-group-row input {
@@ -141,23 +152,85 @@
   animation: gradientMove 1s ease infinite;
 }
 
-.input-group label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #696f79;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.input-group-row label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #696f79;
-  margin-bottom: 6px;
-  display: block;
-}
 .error-text {
   font-size: 13px;
   color: #ff0000;
   margin-top: 4px;
+}
+
+/* ============================= */
+/* ✅ 반응형 스타일 */
+/* ============================= */
+
+/* 태블릿 (≤768px) */
+@media (max-width: 768px) {
+  .register-form {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  .register-logo {
+    width: 300px;
+    height: auto;
+  }
+
+  .register-button {
+    font-size: 20px;
+    height: 56px;
+  }
+
+  .input-group input,
+  .input-group-row input {
+    height: 56px;
+    font-size: 15px;
+  }
+
+  .small-button {
+    height: 56px;
+    font-size: 13px;
+  }
+}
+
+/* 모바일 (≤480px) */
+@media (max-width: 480px) {
+  .register-form {
+    width: 100%;
+    padding: 20px 15px;
+    gap: 15px;
+  }
+
+  .register-logo {
+    width: 200px;
+    height: auto;
+  }
+
+  .input-group input,
+  .input-group-row input {
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .small-button {
+    height: 48px;
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .register-button {
+    font-size: 18px;
+    height: 50px;
+    border-radius: 10px;
+  }
+
+  .login-text {
+    font-size: 12px;
+  }
+
+  .login-link {
+    font-size: 13px;
+  }
+
+  .error-text {
+    font-size: 12px;
+  }
 }

@@ -1,16 +1,15 @@
-/* 기본 여백/스크롤 제거 + 높이 지정 */
 html,
 body {
   margin: 0;
   padding: 0;
-  height: 100%; /* ✅ 높이 지정 */
-  overflow-x: hidden; /* ✅ 가로 스크롤 제거 */
+  height: 100%;
+  overflow-x: hidden;
 }
 
 .home {
   position: relative;
-  min-height: 100vh; /* ✅ 100% → 100vh */
-  width: 105%; /* ✅ 100vw → 100% */
+  min-height: 100vh;
+  width: 105%;
   margin: 0;
   padding: 0;
   background: url("/main-image.svg") center center / cover no-repeat;

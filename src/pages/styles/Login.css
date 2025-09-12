@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 20px;
 }
 
 .login-form {
@@ -105,18 +106,6 @@
   animation: gradientMove 1s ease infinite;
 }
 
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 .forgot-password {
   margin-top: 10px;
 }
@@ -129,4 +118,59 @@
 
 .forgot-link:hover {
   text-decoration: underline;
+}
+
+/* ============================= */
+/* ✅ 반응형 스타일 */
+/* ============================= */
+
+/* 태블릿 (max-width: 768px) */
+@media (max-width: 768px) {
+  .login-form {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  .login-logo {
+    width: 300px;
+    height: auto;
+  }
+
+  .login-button {
+    font-size: 20px;
+    padding: 12px;
+  }
+}
+
+/* 모바일 (max-width: 480px) */
+@media (max-width: 480px) {
+  .login-form {
+    width: 100%;
+    padding: 20px 15px;
+    gap: 15px;
+  }
+
+  .login-logo {
+    width: 200px;
+    height: auto;
+  }
+
+  .input-group input {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .login-button {
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .signup-text {
+    font-size: 12px;
+  }
+
+  .forgot-link {
+    font-size: 12px;
+  }
 }

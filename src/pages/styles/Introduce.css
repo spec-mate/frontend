@@ -36,3 +36,50 @@
   margin-top: 10px;
   color: #444;
 }
+
+/* ============================= */
+/* ✅ 반응형 스타일 */
+/* ============================= */
+
+/* 태블릿 (≤768px) */
+@media (max-width: 768px) {
+  .introduce-page {
+    padding: 60px 15px;
+  }
+
+  .introduce-hero h1 {
+    font-size: 2rem;
+  }
+
+  .introduce-hero p {
+    font-size: 1rem;
+  }
+
+  .introduce-content h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* 모바일 (≤480px) */
+@media (max-width: 480px) {
+  .introduce-page {
+    padding: 40px 12px;
+  }
+
+  .introduce-hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .introduce-hero p {
+    font-size: 0.9rem;
+  }
+
+  .introduce-content h2 {
+    font-size: 1.1rem;
+  }
+
+  .introduce-content p,
+  .introduce-content ul {
+    font-size: 0.9rem;
+  }
+}
