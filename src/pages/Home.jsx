@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./Home.css";
+import "./styles/Home.css";
 import { useHeaderStore } from "../store/headerStore";
 
 export default function Home() {

@@ -1,11 +1,11 @@
-.register-container {
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
 }
 
-.register-form {
+.login-form {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,7 +16,7 @@
   background-color: #fff;
 }
 
-.register-logo {
+.login-logo {
   width: 500px;
   height: 100px;
   object-fit: contain;
@@ -36,13 +36,11 @@
 }
 
 .input-group input {
-  height: 64px;
-  padding: 0 14px;
+  padding: 12px 14px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 16px;
   transition: all 0.3s ease;
-  box-sizing: border-box;
 }
 
 .input-group input:focus {
@@ -51,47 +49,13 @@
   outline: none;
 }
 
-.input-group-row {
+.login-button {
   width: 100%;
-  display: flex;
-  gap: 10px;
-}
-
-.input-group-row input {
-  flex: 1;
-  height: 64px;
-  padding: 0 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-.small-button {
-  height: 64px;
-  padding: 0 16px;
-  background: #303030;
+  padding: 14px;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  white-space: nowrap;
-}
-
-.small-button:hover {
-  animation: gradientMove 1s ease infinite;
-}
-
-.register-button {
-  width: 100%;
-  height: 64px;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 18px;
+  border-radius: 15px;
+  font-size: 25px;
   font-weight: bold;
   cursor: pointer;
   position: relative;
@@ -102,7 +66,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
 }
 
-.register-button:hover {
+.login-button:hover {
   animation: gradientMove 1s ease infinite;
 }
 
@@ -118,13 +82,13 @@
   }
 }
 
-.login-text {
+.signup-text {
   margin-bottom: 20px;
   font-size: 14px;
   color: #333;
 }
 
-.login-link {
+.signup-link {
   font-weight: bold;
   text-decoration: none;
 
@@ -136,28 +100,33 @@
   transition: background 0.3s ease;
 }
 
-.login-link:hover {
+.signup-link:hover {
   text-decoration: underline;
   animation: gradientMove 1s ease infinite;
 }
 
-.input-group label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #696f79;
-  margin-bottom: 6px;
-  display: block;
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-.input-group-row label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #696f79;
-  margin-bottom: 6px;
-  display: block;
+.forgot-password {
+  margin-top: 10px;
 }
-.error-text {
-  font-size: 13px;
-  color: #ff0000;
-  margin-top: 4px;
+
+.forgot-link {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
 }

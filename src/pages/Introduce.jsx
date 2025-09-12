@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useHeaderStore } from "../store/headerStore";
-import "./Introduce.css";
+import "./styles/Introduce.css";
 
 export default function Introduce() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);

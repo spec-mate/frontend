@@ -42,7 +42,7 @@ export default function Header() {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/specmate" className="nav-link">
+              <NavLink to="/usage" className="nav-link">
                 스펙메이트 사용
               </NavLink>
             </li>
@@ -94,7 +94,7 @@ export default function Header() {
             </li>
             <li>
               <NavLink
-                to="/specmate"
+                to="/usage"
                 className="nav-link"
                 onClick={() => setOpen(false)}
               >
@@ -108,15 +108,6 @@ export default function Header() {
                 onClick={() => setOpen(false)}
               >
                 PC 부품 정보
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/customer-support"
-                className="nav-link"
-                onClick={() => setOpen(false)}
-              >
-                고객센터
               </NavLink>
             </li>
           </ul>

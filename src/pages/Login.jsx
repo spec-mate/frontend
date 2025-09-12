@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "./Login.css";
+import "./styles/Login.css";
 import binglogo from "/big-logo.svg";
 
 export default function Login() {
