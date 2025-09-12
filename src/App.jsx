@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Introduce from "./pages/Introduce";
 import Usage from "./pages/Usage";
+import ProductInfo from "./pages/ProductInfo";
 
 function App() {
   const location = useLocation();
@@ -20,6 +21,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/introduce" element={<Introduce />} />
         <Route path="/usage" element={<Usage />} />
+        <Route path="/info" element={<ProductInfo />} />
       </Routes>
     </>
   );

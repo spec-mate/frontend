@@ -37,7 +37,7 @@ export default function Usage() {
       {!showResult ? (
         <Header />
       ) : (
-        <div className="custom-header">
+        <div className="result-header">
           <IconButton onClick={handleBack} className="back-btn">
             <ArrowBackIcon />
           </IconButton>
@@ -48,13 +48,16 @@ export default function Usage() {
       <main className="usage-main">
         {!showResult ? (
           <>
-            <h2 className="usage-title">
-              당신만을 위한 맞춤형 PC 견적 AI,{" "}
-              <span className="highlight">스펙메이트</span>
-            </h2>
+            {/* 초기 화면 */}
+            <div className="hero-section">
+              <h2 className="usage-title">
+                당신만을 위한 맞춤형 PC 견적 AI,{" "}
+                <span className="highlight">스펙메이트</span>
+              </h2>
 
-            <div className="usage-character">
-              <img src="/character.svg" alt="스펙메이트 캐릭터" />
+              <div className="usage-character">
+                <img src="/character.svg" alt="스펙메이트 캐릭터" />
+              </div>
             </div>
 
             <div className="question-list">
