@@ -19,9 +19,10 @@
   color: white;
 }
 
-/* 검정 글자 버전 */
 .header-black {
   color: black;
+  background: white;
+  border-bottom: 1px solid black;
 }
 
 .header-black .nav a,

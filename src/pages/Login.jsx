@@ -14,11 +14,12 @@ export default function Login() {
 
   return (
     <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <Link to="/">
-          <img src={binglogo} alt="로고" className="login-logo" />
-        </Link>
+      {/* ✅ 로고를 폼 밖 위로 이동 */}
+      <Link to="/">
+        <img src={binglogo} alt="로고" className="login-logo" />
+      </Link>
 
+      <form className="login-form" onSubmit={handleSubmit}>
         <p className="signup-text">
           회원이 아니신가요?{" "}
           <Link to="/register" className="signup-link">

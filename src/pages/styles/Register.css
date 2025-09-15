@@ -1,26 +1,28 @@
 .register-container {
   display: flex;
+  flex-direction: column; /* 로고 + 폼 세로 정렬 */
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 20px;
 }
 
-.register-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 460px;
-  padding: 40px 30px;
-  border-radius: 12px;
-  background-color: #fff;
-}
-
 .register-logo {
   width: 500px;
   height: 100px;
   object-fit: contain;
+  display: block;
+  margin: 0 auto 30px; /* 가운데 정렬 + 아래 여백 */
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 460px;
+  padding: 40px 30px;
+  border-radius: 12px;
+  background-color: #fff;
 }
 
 .input-group {
@@ -58,14 +60,6 @@
   width: 100%;
   display: flex;
   gap: 10px;
-}
-
-.input-group-row label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #696f79;
-  margin-bottom: 6px;
-  display: block;
 }
 
 .input-group-row input {
@@ -108,6 +102,8 @@
   position: relative;
   overflow: hidden;
 
+  margin-top: 60px; /* ✅ 인풋들과 버튼 사이 여백 */
+
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
@@ -130,7 +126,6 @@
 }
 
 .login-text {
-  margin-bottom: 20px;
   font-size: 14px;
   color: #333;
 }
@@ -138,7 +133,6 @@
 .login-link {
   font-weight: bold;
   text-decoration: none;
-
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   background-clip: text;
@@ -172,6 +166,7 @@
   .register-logo {
     width: 300px;
     height: auto;
+    margin-bottom: 20px;
   }
 
   .register-button {
@@ -202,6 +197,7 @@
   .register-logo {
     width: 200px;
     height: auto;
+    margin-bottom: 15px;
   }
 
   .input-group input,

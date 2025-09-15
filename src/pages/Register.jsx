@@ -24,7 +24,6 @@ export default function Register() {
       return;
     }
 
-    // 비밀번호 정규식 검사
     const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,16}$/;
     if (!regex.test(password)) {
       alert("비밀번호 형식이 올바르지 않습니다.");
@@ -73,100 +72,106 @@ export default function Register() {
 
   return (
     <div className="register-container">
-      <form className="register-form" onSubmit={handleSubmit}>
+      <div className="register-box">
+        {/* ✅ 로고를 폼 위에 배치 */}
         <Link to="/">
           <img src={binglogo} alt="로고" className="register-logo" />
         </Link>
-        <p className="login-text">
-          이미 회원이신가요?{" "}
-          <Link to="/login" className="login-link">
-            로그인하기
-          </Link>
-        </p>
 
-        <div className="input-group">
-          <label htmlFor="nickname">닉네임</label>
-          <input
-            id="nickname"
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            placeholder="닉네임"
-            required
-          />
-        </div>
+        <form className="register-form" onSubmit={handleSubmit}>
+          <p className="login-text">
+            이미 회원이신가요?{" "}
+            <Link to="/login" className="login-link">
+              로그인하기
+            </Link>
+          </p>
 
-        <div className="input-group">
-          <label htmlFor="email">이메일</label>
-          <div className="input-group-row">
+          <div className="input-group">
+            <label htmlFor="nickname">닉네임</label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="이메일 주소"
-              required
-            />
-            <button
-              type="button"
-              className="small-button"
-              onClick={handleSendCode}
-            >
-              인증번호 <br />
-              전송
-            </button>
-          </div>
-          {emailError && <p className="error-text">{emailError}</p>}
-        </div>
-
-        <div className="input-group">
-          <label htmlFor="verification">인증번호</label>
-          <div className="input-group-row">
-            <input
-              id="verification"
+              id="nickname"
               type="text"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder="인증번호 입력"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="스펙메이트"
               required
             />
-            <button
-              type="button"
-              className="small-button"
-              onClick={handleVerifyCode}
-            >
-              인증번호 <br />
-              확인
-            </button>
           </div>
-          {codeError && <p className="error-text">{codeError}</p>}
-        </div>
 
-        <div className="input-group">
-          <input
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            placeholder="비밀번호"
-            required
-          />
-          {passwordError && <p className="error-text">{passwordError}</p>}
-        </div>
+          <div className="input-group">
+            <label htmlFor="email">이메일 주소*</label>
+            <div className="input-group-row">
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="sample@gamil.com"
+                required
+              />
+              <button
+                type="button"
+                className="small-button"
+                onClick={handleSendCode}
+              >
+                인증번호 <br />
+                전송
+              </button>
+            </div>
+            {emailError && <p className="error-text">{emailError}</p>}
+          </div>
 
-        <div className="input-group">
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="비밀번호 확인"
-            required
-          />
-        </div>
+          <div className="input-group">
+            <label htmlFor="verification">인증번호 확인*</label>
+            <div className="input-group-row">
+              <input
+                id="verification"
+                type="text"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                placeholder="인증번호 입력"
+                required
+              />
+              <button
+                type="button"
+                className="small-button"
+                onClick={handleVerifyCode}
+              >
+                인증번호 <br />
+                확인
+              </button>
+            </div>
+            {codeError && <p className="error-text">{codeError}</p>}
+          </div>
 
-        <button type="submit" className="register-button">
-          회원가입
-        </button>
-      </form>
+          <div className="input-group">
+            <label htmlFor="password">비밀번호*</label>
+            <input
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+              placeholder="비밀번호"
+              required
+            />
+            {passwordError && <p className="error-text">{passwordError}</p>}
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="confirmPassword">비밀번호 확인*</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="비밀번호 입력(영,숫,특 조합)"
+              required
+            />
+          </div>
+
+          <button type="submit" className="register-button">
+            회원가입
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
