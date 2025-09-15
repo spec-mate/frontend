@@ -8,6 +8,7 @@ import Introduce from "./pages/Introduce";
 import Usage from "./pages/Usage";
 import ProductInfo from "./pages/ProductInfo";
 import ProductDetail from "./pages/ProductDetail";
+import ProductDetailView from "./pages/ProductDetailView";
 
 function App() {
   const location = useLocation();
@@ -23,7 +24,11 @@ function App() {
         <Route path="/introduce" element={<Introduce />} />
         <Route path="/usage" element={<Usage />} />
         <Route path="/info" element={<ProductInfo />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/product/:productName" element={<ProductDetail />} />
+        <Route
+          path="/product/:productName/:id"
+          element={<ProductDetailView />}
+        />
       </Routes>
     </>
   );

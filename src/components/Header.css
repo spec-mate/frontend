@@ -101,7 +101,7 @@
 .login-btn a {
   background: #303030 !important;
   padding: 0.5rem 1rem;
-  border-radius: 15px;
+  border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none; /* ✅ 기본 밑줄 제거 */
