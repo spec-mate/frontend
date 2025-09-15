@@ -1,120 +1,132 @@
 .product-page {
-  padding: 40px 280px;
-  text-align: left;
+  text-align: center;
+  padding: 100px 20px 40px;
+  /* ↑ top 100px, 좌우 20px, bottom 40px */
+  /* margin이 아니라 padding으로 헤더 아래 내려줌 */
+}
+
+.product-title,
+.product-subtitle {
+  max-width: 1000px; /* ✅ grid와 동일한 최대 너비 */
+  width: 100%; /* ✅ 항상 꽉 차게 */
+  margin: 0 auto; /* ✅ 가운데 정렬 */
+  text-align: left; /* ✅ 가운데 글자 */
 }
 
 .product-title {
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 56px;
+  font-weight: bold;
   margin-bottom: 10px;
 }
 
 .product-subtitle {
-  font-size: 16px;
+  font-size: 20px;
   color: #555;
   margin-bottom: 30px;
+
+  /* 밑줄 */
+  border-bottom: 0.5px solid #404040;
+  padding-bottom: 8px;
 }
 
+/* 3 x 3 그리드 */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 44px;
-  justify-items: center;
+  grid-template-columns: repeat(3, 1fr); /* 가로 3개 */
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
+/* 각 카드 */
 .product-card {
   position: relative;
-  width: 100%;
-  max-width: 300px;
-  height: 150px;
-  border-radius: 20px;
+  display: block;
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+  width: 300px; /* 카드 크기 고정 */
+  height: 150px; /* 카드 크기 고정 */
+  margin: 0 auto; /* 가운데 정렬 */
 }
-
-.product-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-.product-card .overlay {
+/* 반투명 배경 (항상 표시) */
+/* 반투명 배경 */
+.product-card::after {
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  transition: background 0.3s ease; /* 부드럽게 변경 */
+}
+
+/* hover 시 불명도 강화 */
+.product-card:hover::after {
+  background: rgba(0, 0, 0, 0.8); /* ✅ 불명도 0.8 */
+}
+
+/* 이미지 */
+.product-card img {
+  width: 300px; /* 가로 고정 */
+  height: 150px; /* 세로 고정 */
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+/* 오버레이 컨테이너 */
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  color: white;
+  text-align: center;
   display: flex;
   flex-direction: column;
+  justify-content: center; /* 기본 상태: 중앙 */
   align-items: center;
-  justify-content: center;
-  color: #fff;
+  transition: all 0.3s ease;
+  padding: 15px;
 }
 
-.product-card .overlay h3 {
-  font-size: 20px;
+/* 제목 */
+.overlay h3 {
+  font-size: 32px;
   font-weight: bold;
   margin: 0;
+  transition: all 0.3s ease;
 }
 
-.product-card .overlay span {
+/* 설명 (기본 숨김) */
+.overlay p {
   font-size: 14px;
-  display: block;
-  margin-top: 4px;
+  line-height: 1.4;
+  opacity: 0; /* 안 보임 */
+  max-height: 0; /* 공간 차지 안함 */
+  overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+  margin-top: 10px;
 }
 
-@media (max-width: 1024px) {
-  .product-page {
-    padding: 40px 80px;
-  }
-
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
-  }
-
-  .product-card {
-    height: 140px;
-  }
+/* hover 시 동작 */
+.product-card:hover .overlay {
+  justify-content: flex-start; /* 위로 이동 */
+  padding-top: 20px;
 }
 
-/* 모바일 (≤600px) */
-@media (max-width: 600px) {
-  .product-page {
-    padding: 20px;
-    text-align: center;
-  }
+.product-card:hover .overlay h3 {
+  margin-bottom: 10px; /* 설명과 간격 */
+}
 
-  .product-title {
-    font-size: 24px;
-  }
-
-  .product-subtitle {
-    font-size: 14px;
-  }
-
-  .product-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .product-card {
-    max-width: 100%;
-    height: 130px;
-  }
-
-  .product-card .overlay h3 {
-    font-size: 18px;
-  }
-
-  .product-card .overlay span {
-    font-size: 12px;
-  }
+.product-card:hover .overlay p {
+  opacity: 1;
+  max-height: 200px; /* 충분히 크게 열림 */
 }

@@ -28,7 +28,6 @@ export default function Introduce() {
   return (
     <div className="introduce-page">
       <div className="image-container">
-        {/* ✅ 이미지 중앙 오버레이 */}
         <div className="overlay">
           <div className="quote-mark">"</div>
           <p className="introduce-message">{messages[currentIndex]}</p>
@@ -42,7 +41,6 @@ export default function Introduce() {
           </div>
         </div>
 
-        {/* ✅ 이미지 하단 텍스트 */}
         <div className="bottom-section">
           <p className="subtitle">
             본인만의 맞춤형 PC를 맞추고 싶었던 여러분을 위한 서비스,

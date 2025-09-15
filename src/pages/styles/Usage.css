@@ -60,7 +60,7 @@
   justify-content: center;
   gap: 12px;
   max-width: 90%;
-  margin: 30px auto;
+  width: 70%;
 }
 
 .chat-input {
@@ -189,4 +189,12 @@
 .usage-character img {
   width: 120px;
   height: auto;
+}
+.usage-main {
+  display: flex;
+  flex-direction: column; /* 세로 배치 */
+  align-items: center; /* 가로 중앙 */
+  justify-content: center; /* 세로 중앙 */
+  text-align: center;
+  min-height: 100vh; /* 화면 전체 높이 차지 */
 }
