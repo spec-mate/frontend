@@ -1,15 +1,38 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles/Login.css";
 import binglogo from "/big-logo.svg";
+import api from "../api"; // ✅ axios 유틸 가져오기
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // ✅ 로그인 성공 후 이동용
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("로그인 시도:", { email, password });
+
+    try {
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
+
+      // ✅ 토큰 저장 (localStorage 사용)
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.refreshToken);
+
+      alert("로그인 성공!");
+      console.log("로그인 성공:", res.data);
+
+      // ✅ 로그인 성공 후 메인페이지(or 마이페이지)로 이동
+      navigate("/");
+    } catch (err) {
+      console.error("로그인 실패:", err);
+      alert(
+        "로그인 실패: " + (err.response?.data?.message || "알 수 없는 오류")
+      );
+    }
   };
 
   return (

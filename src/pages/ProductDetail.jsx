@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Link, useParams } from "react-router-dom";
+import api from "../api"; // axios instance
 import "./styles/ProductDetail.css";
 
 export default function DetailPage() {
   const { productName } = useParams();
+  const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // 제목 매핑
   const titleMap = {
@@ -19,24 +23,28 @@ export default function DetailPage() {
   };
   const pageTitle = titleMap[productName] || "상품 목록";
 
-  // 샘플 데이터
-  const productTemplate = {
-    id: 1,
-    name: "AMD 라이젠7-6세대 9800X3D (그래니트 릿지)",
-    img: "/cpu.svg",
-    price: "₩630,830",
-    specs: [
-      "AMD(소켓AM5) / 8코어 / 16스레드 / DDR5 / 내장그래픽 O",
-      "기본 클럭: 4.7GHz / 최대 클럭: 5.2GHz",
-      "L2 캐시: 8MB / L3 캐시: 96MB",
-      "TDP: 120W / PCIe 5.0 / 5600MHz",
-    ],
-  };
+  // 상품 불러오기
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get(
+          `/product/type/${productName.toUpperCase()}`,
+          {
+            params: { page, size: 10 }, // 한 페이지 10개
+          }
+        );
+        console.log("✅ 상품 데이터:", res.data);
 
-  const products = Array.from({ length: 10 }, (_, i) => ({
-    ...productTemplate,
-    id: i + 1,
-  }));
+        setProducts(res.data.content || []);
+        setTotalPages(res.data.totalPages || 1);
+      } catch (err) {
+        console.error("❌ 상품 불러오기 실패:", err.response || err);
+        setProducts([]);
+      }
+    };
+
+    fetchProducts();
+  }, [productName, page]);
 
   return (
     <div className="detail-page">
@@ -103,32 +111,70 @@ export default function DetailPage() {
         {/* 상품 리스트 */}
         <section className="detail-content">
           <div className="product-list">
-            {products.map((p) => (
-              <Link
-                to={`/product/${productName}/${p.id}`}
-                className="product-item"
-                key={p.id}
-              >
-                <img src={p.img} alt={p.name} />
-                <div className="info">
-                  <h4>{p.name}</h4>
-                  {p.specs.map((line, idx) => (
-                    <p key={idx}>{line}</p>
-                  ))}
-                </div>
-                <div className="price">
-                  <span>최저가</span>
-                  <strong>{p.price}</strong>
-                </div>
-              </Link>
-            ))}
+            {products.length > 0 ? (
+              products.map((p) => (
+                <Link
+                  to={`/product/${productName}/${p.id}`}
+                  className="product-item"
+                  key={p.id}
+                >
+                  <img src={p.image || "/no-image.svg"} alt={p.name} />
+                  <div className="info">
+                    <h4>{p.name}</h4>
+                    <p>{p.manufacturer}</p>
+                  </div>
+                  <div className="price">
+                    <span>최저가</span>
+                    <strong>
+                      {p.lowestPrice?.price
+                        ? `₩${p.lowestPrice.price.toLocaleString()}`
+                        : "정보 없음"}
+                    </strong>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p>상품이 없습니다.</p>
+            )}
           </div>
 
           {/* 페이지네이션 */}
           <div className="pagination">
-            <button className="active">1</button>
-            <button>2</button>
-            <button>3</button>
+            {/* 이전 버튼 */}
+            <button
+              disabled={page === 0}
+              onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+            >
+              &lt;
+            </button>
+
+            {/* 페이지 번호 (최대 10개만 보이기) */}
+            {Array.from({ length: Math.min(10, totalPages) }, (_, i) => {
+              const startPage = Math.floor(page / 10) * 10; // 0~9, 10~19 단위 그룹
+              const pageNumber = startPage + i;
+
+              return (
+                pageNumber < totalPages && (
+                  <button
+                    key={pageNumber}
+                    className={pageNumber === page ? "active" : ""}
+                    onClick={() => setPage(pageNumber)}
+                  >
+                    {pageNumber + 1}
+                  </button>
+                )
+              );
+            })}
+
+            {/* 다음 버튼 */}
+            <button
+              disabled={page === totalPages - 1}
+              onClick={() =>
+                setPage((prev) => Math.min(prev + 1, totalPages - 1))
+              }
+            >
+              &gt;
+            </button>
           </div>
         </section>
       </div>

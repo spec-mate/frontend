@@ -92,26 +92,52 @@
   animation: gradientMove 1s ease infinite;
 }
 
-/* 로그인 버튼 (항상 고정) */
+/* 버튼 영역 */
 .login-btn {
   margin-right: 50px;
   display: none;
+  gap: 10px; /* 버튼 간격 */
 }
 
-.login-btn a {
+/* 로그인 / 로그아웃 버튼 (검은 배경 + 흰 글자) */
+.login-btn .login-link,
+.login-btn .logout-link {
   background: #303030 !important;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: 13px;
   font-size: 0.875rem;
   font-weight: 600;
-  text-decoration: none; /* ✅ 기본 밑줄 제거 */
+  text-decoration: none;
   color: white !important;
+  border: none;
+  cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.login-btn a:hover {
+.login-btn .login-link:hover,
+.login-btn .logout-link:hover {
   background: #404040 !important;
-  text-decoration: none; /* ✅ hover 시에도 밑줄 제거 */
+  text-decoration: none;
+}
+
+/* 마이페이지 버튼 (흰 배경 + 검은 글자, 같은 버튼 구조) */
+.login-btn .mypage-link {
+  background: white !important;
+  color: black !important;
+  padding: 0.5rem 1rem;
+  border-radius: 13px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid black;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.login-btn .mypage-link:hover {
+  background: #f2f2f2 !important;
+  color: black !important;
+  text-decoration: none;
 }
 
 /* 햄버거 버튼 */
@@ -176,14 +202,14 @@
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
-  text-decoration: none; /* ✅ 기본 밑줄 제거 */
+  text-decoration: none;
   color: white !important;
   transition: background 0.3s ease;
 }
 
 .mobile-login a:hover {
   background: #404040 !important;
-  text-decoration: none; /* ✅ hover 시에도 밑줄 제거 */
+  text-decoration: none;
 }
 
 /* 반응형 */
