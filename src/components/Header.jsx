@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import logoWhite from "/logo.svg";
 import logoBlue from "/blue-logo.svg";
+import Toast from "../components/Toast";
+
 import "./Header.css";
 import { useHeaderStore } from "../store/headerStore";
 
@@ -9,6 +11,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // ✅ 로그인 상태
   const headerVersion = useHeaderStore((state) => state.headerVersion);
+  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,8 +32,11 @@ export default function Header() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setIsLoggedIn(false);
-    alert("로그아웃 되었습니다.");
-    navigate("/");
+
+    setShowToast(true); // ✅ 토스트 띄우기
+    setTimeout(() => {
+      navigate("/"); // 2초 뒤 홈으로 이동
+    }, 2000);
   };
 
   const currentLogo = headerVersion === "black" ? logoBlue : logoWhite;
@@ -168,6 +174,12 @@ export default function Header() {
               </Link>
             )}
           </div>
+          {showToast && (
+            <Toast
+              message="로그아웃 성공!"
+              onClose={() => setShowToast(false)}
+            />
+          )}
         </div>
       </div>
     </header>

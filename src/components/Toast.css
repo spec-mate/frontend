@@ -1,0 +1,52 @@
+.toast-wrapper {
+  position: fixed;
+  top: 40px; /* 화면 상단에서 40px */
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  flex-direction: column; /* 세로 정렬 */
+  justify-content: center; /* ✅ 세로 가운데 정렬 */
+  align-items: center; /* ✅ 가로 가운데 정렬 */
+  gap: 6px; /* 아이콘과 텍스트 간격 */
+  background: white;
+  color: black;
+  padding: 16px 28px;
+  border-radius: 40px;
+  font-size: 25px;
+  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease, fadeOut 0.5s ease 1.5s forwards;
+  pointer-events: auto;
+  text-align: center;
+  height: 100px; /* 고정 높이 */
+}
+
+.toast-icon {
+  width: 28px;
+  height: 28px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px); /* 위에서 내려오기 */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(-20px); /* 다시 위로 사라짐 */
+  }
+}

@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import "./styles/Login.css";
 import binglogo from "/big-logo.svg";
 import api from "../api"; // ✅ axios 유틸 가져오기
+import Toast from "../components/Toast"; // ✅ 추가
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // ✅ 로그인 성공 후 이동용
+  const [showToast, setShowToast] = useState(false); // ✅ 토스트 표시 여부
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -18,15 +20,17 @@ export default function Login() {
         password,
       });
 
-      // ✅ 토큰 저장 (localStorage 사용)
+      // ✅ 토큰 저장
       localStorage.setItem("accessToken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
-      alert("로그인 성공!");
+      setShowToast(true); // ✅ 토스트 띄우기
       console.log("로그인 성공:", res.data);
 
-      // ✅ 로그인 성공 후 메인페이지(or 마이페이지)로 이동
-      navigate("/");
+      // ✅ 로그인 성공 후 페이지 이동 (2초 뒤 이동)
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (err) {
       console.error("로그인 실패:", err);
       alert(
@@ -37,7 +41,7 @@ export default function Login() {
 
   return (
     <div className="login-container">
-      {/* ✅ 로고를 폼 밖 위로 이동 */}
+      {/* ✅ 로고 */}
       <Link to="/">
         <img src={binglogo} alt="로고" className="login-logo" />
       </Link>
@@ -82,6 +86,10 @@ export default function Login() {
           </Link>
         </div>
       </form>
+
+      {showToast && (
+        <Toast message="로그인 성공!" onClose={() => setShowToast(false)} />
+      )}
     </div>
   );
 }
