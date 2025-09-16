@@ -6,12 +6,52 @@ import "./styles/ProductDetailView.css";
 export default function ProductDetailView() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [selectedBuild, setSelectedBuild] = useState(null);
+
+  const optionLabels = {
+    manufacturer: "제조회사",
+    socket: "소켓 구분",
+    core: "코어 수",
+    thread: "스레드 수",
+    memory_type: "메모리 규격",
+    integrated_graphics: "내장 그래픽",
+    generation: "세대",
+    base_clock: "기본 클럭",
+    max_clock: "최대 클럭",
+    l2_cache: "L2 캐시",
+    l3_cache: "L3 캐시",
+    TDP: "TDP",
+    pcie: "PCIe 버전",
+    memory_clock: "메모리 클럭",
+  };
+
+  const builds = {
+    gaming: [
+      { category: "CPU", part: "AMD Ryzen 7 9800X3D" },
+      { category: "메인보드", part: "ASUS ROG STRIX B650" },
+      { category: "그래픽카드", part: "RTX 4070 Ti Super" },
+      { category: "메모리", part: "DDR5 32GB 6000MHz" },
+      { category: "파워", part: "시소닉 850W Gold" },
+      { category: "SSD", part: "삼성 990 Pro 1TB" },
+      { category: "쿨러", part: "NZXT Kraken 240" },
+      { category: "케이스", part: "Lian Li Lancool III" },
+    ],
+    office: [
+      { category: "CPU", part: "Intel i5-13400" },
+      { category: "메인보드", part: "MSI B760M Pro" },
+      { category: "그래픽카드", part: "내장그래픽 (Intel UHD)" },
+      { category: "메모리", part: "DDR5 16GB 4800MHz" },
+      { category: "파워", part: "마이크로닉스 600W Bronze" },
+      { category: "SSD", part: "삼성 970 EVO Plus 500GB" },
+      { category: "쿨러", part: "기본 쿨러" },
+      { category: "케이스", part: "ABKO Suitmaster" },
+    ],
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const res = await api.get(`/product/${id}`);
-        console.log("✅ 상품 데이터:", res.data);
         setProduct(res.data);
       } catch (err) {
         console.error("❌ 상품 불러오기 실패:", err.response || err);
@@ -22,10 +62,13 @@ export default function ProductDetailView() {
 
   if (!product) return <p>상품 불러오는 중...</p>;
 
+  const handleCardClick = (build) => {
+    setSelectedBuild((prev) => (prev === build ? null : build));
+  };
+
   return (
     <div className="product-detail-view">
       <div className="breadcrumb">PC 부품 정보 &gt; {product.type}</div>
-
       <h2 className="product-title">{product.name}</h2>
 
       <div className="tags">
@@ -34,30 +77,48 @@ export default function ProductDetailView() {
         <span>등록일: {product.reg_date}</span>
       </div>
 
+      {/* 상세 스펙 */}
       <div className="product-box">
         <div className="product-info">
-          {/* 왼쪽: 이미지 */}
           <div className="left">
             <img
               src={product.image || "/no-image.svg"}
               alt={product.name}
               className="product-detail-image"
             />
-            <p className="manufacturer">제조사: {product.manufacturer}</p>
           </div>
-
-          {/* 오른쪽: 상세 스펙 */}
           <div className="right">
             <div className="specs-tables">
               <table>
                 <tbody>
-                  {product.options &&
-                    Object.entries(product.options).map(([key, value]) => (
+                  {(() => {
+                    const entries = [
+                      ["manufacturer", product.manufacturer],
+                      ...Object.entries(product.options || {}),
+                    ];
+                    const half = Math.ceil(entries.length / 2);
+                    const left = entries.slice(0, half);
+                    const right = entries.slice(half);
+                    return left.map(([key, value], idx) => (
                       <tr key={key}>
-                        <td>{key}</td>
+                        <td>{optionLabels[key] || key}</td>
                         <td>{String(value)}</td>
+                        {right[idx] ? (
+                          <>
+                            <td>
+                              {optionLabels[right[idx][0]] || right[idx][0]}
+                            </td>
+                            <td>{String(right[idx][1])}</td>
+                          </>
+                        ) : (
+                          <>
+                            <td></td>
+                            <td></td>
+                          </>
+                        )}
                       </tr>
-                    ))}
+                    ));
+                  })()}
                 </tbody>
               </table>
             </div>
@@ -66,15 +127,15 @@ export default function ProductDetailView() {
 
         {/* 최저가 */}
         <div className="price-box">
-          <span>최저가 ({product.lowest_price?.option})</span>
+          <span>최저가</span>
           <strong>
-            {product.lowest_price?.price
-              ? `₩${Number(product.lowest_price.price).toLocaleString()}`
+            {product.lowestPrice?.price
+              ? `₩${product.lowestPrice.price.toLocaleString()}`
               : "정보 없음"}
           </strong>
-          {product.lowest_price?.link && (
+          {product.lowestPrice?.link && (
             <a
-              href={product.lowest_price.link}
+              href={product.lowestPrice.link}
               target="_blank"
               rel="noopener noreferrer"
               className="buy-link"
@@ -85,31 +146,68 @@ export default function ProductDetailView() {
         </div>
       </div>
 
-      {/* 가격 옵션 목록 */}
-      <div className="price-options">
-        <h3>판매 옵션</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>옵션</th>
-              <th>가격</th>
-              <th>구매 링크</th>
-            </tr>
-          </thead>
-          <tbody>
-            {product.price_info?.map((opt, idx) => (
-              <tr key={idx}>
-                <td>{opt.option}</td>
-                <td>₩{Number(opt.price).toLocaleString()}</td>
-                <td>
-                  <a href={opt.link} target="_blank" rel="noopener noreferrer">
-                    바로가기
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* ✅ 추천 섹션 */}
+      <div className="recommend-section">
+        <div className="recommend-overlay-text">
+          <h3>스펙메이트의 용도별 조합 추천!</h3>
+          <p>박스를 클릭해보세요!</p>
+        </div>
+
+        <div className="recommend-cards">
+          {/* 왼쪽 칸 */}
+          <div>
+            {selectedBuild === "office" ? (
+              <div className="build-list fixed-slot">
+                <h4>사무용 PC 추천 부품</h4>
+                <ul>
+                  {builds.gaming.map((b, idx) => (
+                    <li key={idx}>
+                      <strong>{b.category}</strong>: {b.part}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div
+                className="recommend-card"
+                onClick={() => handleCardClick("gaming")}
+              >
+                <img src="/gaming.svg" alt="게이밍 PC" />
+                <div className="recommend-label">게이밍</div>
+                <div className="recommend-desc">
+                  최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 오른쪽 칸 */}
+          <div>
+            {selectedBuild === "gaming" ? (
+              <div className="build-list fixed-slot">
+                <h4>게이밍 PC 추천 부품</h4>
+                <ul>
+                  {builds.office.map((b, idx) => (
+                    <li key={idx}>
+                      <strong>{b.category}</strong>: {b.part}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div
+                className="recommend-card"
+                onClick={() => handleCardClick("office")}
+              >
+                <img src="/affairs.svg" alt="사무용 PC" />
+                <div className="recommend-label">사무용</div>
+                <div className="recommend-desc">
+                  업무와 멀티태스킹에 최적화된 안정적이고 조용한 사무용 PC
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

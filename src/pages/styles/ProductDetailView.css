@@ -14,7 +14,6 @@
   font-size: 32px;
   font-weight: bold;
   margin: 10px 0;
-  position: relative;
 }
 
 .tags {
@@ -29,7 +28,7 @@
 /* ✅ product-box → 2열 그리드 */
 .product-box {
   display: grid;
-  grid-template-columns: 1fr fit-content(300px); /* 왼쪽 정보, 오른쪽 가격 */
+  grid-template-columns: 1fr fit-content(300px);
   align-items: start;
   gap: 40px;
   margin-bottom: 40px;
@@ -40,10 +39,11 @@
   gap: 40px;
 }
 
-.product-info .left img {
+.product-info .left img,
+.product-detail-image {
   width: 200px;
   border: 1px solid #eee;
-  padding: 10px;
+  padding: 5px;
   border-radius: 6px;
 }
 
@@ -64,10 +64,10 @@
   padding: 6px 10px;
   font-size: 14px;
 }
-.product-box td:first-child {
+.product-box td:first-child,
+.product-box td:nth-child(3) {
   font-weight: bold;
   color: #333;
-  width: 120px;
 }
 
 /* ✅ 오른쪽 price-box */
@@ -76,7 +76,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-self: end; /* 오른쪽 끝 */
+  justify-self: end;
 }
 .price-box span {
   font-size: 14px;
@@ -95,30 +95,45 @@
   cursor: pointer;
 }
 
+/* ✅ 추천 섹션 */
 .recommend-section {
   margin-top: 40px;
+  position: relative;
 }
 
-.recommend-overlay {
-  font-size: 18px;
-  font-weight: bold;
+.recommend-overlay-text {
   margin-bottom: 20px;
+  text-align: left;
+}
+.recommend-overlay-text h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
   color: #333;
-  text-align: left; /* 왼쪽 정렬 */
+}
+.recommend-overlay-text p {
+  font-size: 14px;
+  margin: 5px 0 10px;
+  color: #555;
 }
 
+/* ✅ 항상 2칸 유지 */
 .recommend-cards {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
-  justify-content: center;
+  margin-top: 20px;
 }
 
 .recommend-card {
   position: relative;
-  width: 400px;
+  width: 100%;
   height: 400px;
   overflow: hidden;
   border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: #fff;
 }
 
 .recommend-card img {
@@ -128,7 +143,6 @@
   display: block;
 }
 
-/* ✅ 오버레이 */
 .recommend-card::after {
   content: "";
   position: absolute;
@@ -138,13 +152,12 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.3);
   transition: background 0.3s ease;
+  z-index: 1;
 }
-
 .recommend-card:hover::after {
   background: rgba(0, 0, 0, 0.6);
 }
 
-/* ✅ 기본 텍스트 */
 .recommend-label {
   position: absolute;
   top: 50%;
@@ -154,11 +167,10 @@
   font-size: 28px;
   font-weight: bold;
   text-align: center;
-  z-index: 1;
+  z-index: 2;
   transition: all 0.3s ease;
 }
 
-/* ✅ 설명 문구 */
 .recommend-desc {
   position: absolute;
   bottom: -50px;
@@ -170,7 +182,7 @@
   text-align: center;
   opacity: 0;
   transition: all 0.3s ease;
-  z-index: 1;
+  z-index: 2;
   line-height: 1.4;
 }
 
@@ -179,21 +191,22 @@
   transform: translateX(-50%);
   font-size: 22px;
 }
-
 .recommend-card:hover .recommend-desc {
-  bottom: 20px;
+  bottom: 50%;
   opacity: 1;
 }
-.image-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 12px; /* 이미지와 제조사 간격 */
+
+/* ✅ 숨김 처리: 자리 유지 */
+.recommend-card.hidden {
+  visibility: hidden;
 }
 
-.product-detail-image {
-  width: 200px;
-  height: auto;
-  border: 1px solid #eee;
-  padding: 5px;
-  border-radius: 6px;
+/* ✅ 추천 리스트 → 사라진 카드 자리에 출력 */
+.build-list.fixed-slot {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #fafafa;
+  height: 400px;
+  overflow-y: auto;
 }
