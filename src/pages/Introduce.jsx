@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useHeaderStore } from "../store/headerStore";
 import "./styles/Introduce.css";
-import serviceImage from "/introduce_service.svg"; // ✅ 서비스 이미지 추가
+import serviceImage from "/introduce_service.svg"; // ✅ 서비스 소개 이미지
 
 export default function Introduce() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
@@ -12,7 +12,7 @@ export default function Introduce() {
 
   const messages = [
     "나만의 컴퓨터를 조금 더 쉽게 맞추고 싶어요.",
-    "부품별로 최적의 PC가 뭔지 알고싶어요.",
+    "부품별로 최적의 PC가 뭔지 알고 싶어요.",
     "지금 사도 오래 쓸 수 있는 PC 구성을 원해요.",
   ];
 
@@ -27,8 +27,9 @@ export default function Introduce() {
 
   return (
     <div className="introduce-page">
+      {/* ✅ 이미지 + 메시지 오버레이 + 하단 텍스트 */}
       <div className="image-container">
-        <div className="overlay">
+        <div className="message-overlay">
           <div className="quote-mark">"</div>
           <p className="introduce-message">{messages[currentIndex]}</p>
           <div className="dots">
@@ -60,7 +61,7 @@ export default function Introduce() {
         </p>
       </div>
 
-      {/* ✅ introduce-service.svg 추가 */}
+      {/* ✅ introduce_service.svg 추가 */}
       <div className="service-image-container">
         <img
           src={serviceImage}

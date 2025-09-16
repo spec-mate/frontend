@@ -22,7 +22,7 @@
 .header-black {
   color: black;
   background: white;
-  border-bottom: 1px solid black;
+  border-bottom: 1.5px solid #a0a0a0;
 }
 
 .header-black .nav a,
@@ -89,7 +89,6 @@
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  animation: gradientMove 1s ease infinite;
 }
 
 /* 버튼 영역 */
@@ -245,7 +244,6 @@
 .nav-link:hover {
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
-  display: inline-block;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -255,7 +253,6 @@
 .nav-link.active {
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
-  display: inline-block;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

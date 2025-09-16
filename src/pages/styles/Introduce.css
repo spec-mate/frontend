@@ -7,7 +7,7 @@
   background-color: #fff;
 }
 
-/* ✅ 이미지 + 오버레이 + 하단 텍스트 */
+/* ✅ 이미지 + 메시지 오버레이 + 하단 텍스트 */
 .image-container {
   position: relative;
   display: flex;
@@ -34,8 +34,8 @@
   z-index: 1;
 }
 
-/* ✅ 이미지 중앙 오버레이 */
-.overlay {
+/* ✅ 이미지 중앙 메시지 오버레이 */
+.message-overlay {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -45,6 +45,9 @@
   background: transparent;
   z-index: 3;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .quote-mark {
@@ -55,10 +58,12 @@
 }
 
 .introduce-message {
-  font-size: 56px;
+  font-size: 36px;
   font-weight: 600;
-  margin: 8px 0 60px;
+  margin: 8px 0 40px;
   white-space: nowrap;
+  color: #fff;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); /* ✅ 가독성 강화 */
   transition: opacity 0.5s ease-in-out;
 }
 
@@ -97,18 +102,18 @@
 }
 
 .subtitle {
-  font-size: 40px;
+  font-size: 28px;
   color: #333;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   white-space: nowrap; /* ✅ 줄바꿈 방지 */
-  text-align: center; /* ✅ 가운데 정렬 */
+  text-align: center;
 }
 
 .title {
-  font-size: 56px;
+  font-size: 40px;
   font-weight: bold;
   margin: 0;
-  text-align: center; /* ✅ 가운데 정렬 */
+  text-align: center;
 }
 
 .title .highlight {
@@ -135,6 +140,7 @@
   color: #555;
   line-height: 1.5;
 }
+
 .service-image-container {
   display: flex;
   justify-content: center;
@@ -144,8 +150,8 @@
 
 .service-image {
   display: block;
-  margin: 0 auto; /* 가운데 정렬 */
+  margin: 0 auto;
   margin-bottom: 20vh;
-  max-width: 80%; /* 반응형 대응 */
+  max-width: 80%;
   height: auto;
 }

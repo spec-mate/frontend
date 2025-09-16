@@ -29,12 +29,6 @@ export default function Home() {
           <button className="main-button">나만의 pc 조립하기</button>
         </div>
       </main>
-
-      <footer className="footer">
-        <a href="/" className="footer-link">
-          Footer Link
-        </a>
-      </footer>
     </div>
   );
 }

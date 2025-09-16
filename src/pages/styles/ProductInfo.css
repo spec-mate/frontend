@@ -94,7 +94,6 @@
   justify-content: center; /* 기본 상태: 중앙 */
   align-items: center;
   transition: all 0.3s ease;
-  padding: 15px;
 }
 
 /* 제목 */
