@@ -184,3 +184,16 @@
   bottom: 20px;
   opacity: 1;
 }
+.image-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 이미지와 제조사 간격 */
+}
+
+.product-detail-image {
+  width: 200px;
+  height: auto;
+  border: 1px solid #eee;
+  padding: 5px;
+  border-radius: 6px;
+}

@@ -23,16 +23,26 @@ export default function DetailPage() {
   };
   const pageTitle = titleMap[productName] || "상품 목록";
 
+  const apiTypeMap = {
+    mainboard: "mainboard",
+    cpu: "cpu",
+    gpu: "vga",
+    ram: "ram",
+    ssd: "ssd",
+    hdd: "hdd",
+    cooler: "cooler",
+    power: "power",
+    case: "case",
+  };
+  const apiType = apiTypeMap[productName] || productName;
+
   // 상품 불러오기
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await api.get(
-          `/product/type/${productName.toUpperCase()}`,
-          {
-            params: { page, size: 10 }, // 한 페이지 10개
-          }
-        );
+        const res = await api.get(`/product/type/${apiType}`, {
+          params: { page, size: 10 }, // 한 페이지 10개
+        });
         console.log("✅ 상품 데이터:", res.data);
 
         setProducts(res.data.content || []);
