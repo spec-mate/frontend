@@ -26,7 +26,7 @@ export default function Home() {
             복잡한 PC 부품과 설명 때문에 난감하셨나요? <br />
             이제는 스펙메이트로 한번에 해결하세요!
           </h6>
-          <button className="main-button">나만의 pc 조립하기</button>
+          <button className="main-button">나만의 PC 조립하기</button>
         </div>
       </main>
     </div>

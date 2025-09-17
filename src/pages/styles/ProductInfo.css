@@ -1,44 +1,42 @@
 .product-page {
-  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr 1000px 1fr; /* 좌-중앙-우 */
+  gap: 20px;
   padding: 100px 20px 40px;
-  /* ↑ top 100px, 좌우 20px, bottom 40px */
-  /* margin이 아니라 padding으로 헤더 아래 내려줌 */
+  text-align: center;
 }
 
-.product-title,
-.product-subtitle {
-  max-width: 1000px; /* ✅ grid와 동일한 최대 너비 */
-  width: 100%; /* ✅ 항상 꽉 차게 */
-  margin: 0 auto; /* ✅ 가운데 정렬 */
-  text-align: left; /* ✅ 가운데 글자 */
+/* 헤더 */
+.product-header {
+  grid-column: 2;
+  text-align: left;
+  margin-bottom: 30px;
 }
 
 .product-title {
-  font-size: 56px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 56px !important;
+  font-weight: 500 !important;
+  margin: 0;
 }
 
 .product-subtitle {
   font-size: 20px;
+  font-weight: 500;
   color: #555;
-  margin-bottom: 30px;
-
-  /* 밑줄 */
   border-bottom: 0.5px solid #404040;
-  padding-bottom: 8px;
+  padding-bottom: 40px;
+  margin-top: 0;
 }
 
-/* 3 x 3 그리드 */
+/* 제품 그리드 */
 .product-grid {
+  grid-column: 2;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 가로 3개 */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
 }
 
-/* 각 카드 */
+/* 카드 */
 .product-card {
   position: relative;
   display: block;
@@ -46,13 +44,12 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   text-decoration: none;
-  transition: transform 0.2s ease;
-  width: 300px; /* 카드 크기 고정 */
-  height: 150px; /* 카드 크기 고정 */
-  margin: 0 auto; /* 가운데 정렬 */
+  transition: transform 1s ease; /* ✅ 카드 애니메이션 느리게 */
+  width: 300px;
+  height: 150px;
+  margin: 0 auto;
 }
-/* 반투명 배경 (항상 표시) */
-/* 반투명 배경 */
+
 .product-card::after {
   content: "";
   position: absolute;
@@ -62,24 +59,23 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
-  transition: background 0.3s ease; /* 부드럽게 변경 */
+  transition: background 1s ease; /* ✅ 배경 전환 느리게 */
+  z-index: 1;
 }
 
-/* hover 시 불명도 강화 */
 .product-card:hover::after {
-  background: rgba(0, 0, 0, 0.8); /* ✅ 불명도 0.8 */
+  background: rgba(0, 0, 0, 0.8);
 }
 
-/* 이미지 */
 .product-card img {
-  width: 300px; /* 가로 고정 */
-  height: 150px; /* 세로 고정 */
+  width: 300px;
+  height: 150px;
   object-fit: cover;
   display: block;
   border-radius: 12px;
 }
 
-/* 오버레이 컨테이너 */
+/* 오버레이 */
 .overlay {
   position: absolute;
   top: 50%;
@@ -87,45 +83,59 @@
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
-  color: white;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 기본 상태: 중앙 */
+  justify-content: center;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: all 1s ease; /* ✅ 오버레이 애니메이션 느리게 */
+  z-index: 2;
+  color: #fff;
+  padding: 15px;
+  box-sizing: border-box;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
-/* 제목 */
-.overlay h3 {
+.overlay-content h3 {
   font-size: 32px;
   font-weight: bold;
-  margin: 0;
-  transition: all 0.3s ease;
+  margin: 0 0 12px 0; /* 설명과 간격 */
+  color: #fff !important;
+  white-space: pre-line;
+  transition: opacity 1s ease, transform 1s ease; /* ✅ 제목도 부드럽게 */
 }
 
-/* 설명 (기본 숨김) */
-.overlay p {
+.overlay-content p {
   font-size: 14px;
   line-height: 1.4;
-  opacity: 0; /* 안 보임 */
-  max-height: 0; /* 공간 차지 안함 */
+  opacity: 0;
+  max-height: 0;
   overflow: hidden;
-  transition: opacity 0.3s ease, max-height 0.3s ease;
-  margin-top: 10px;
+  transition: opacity 1s ease, max-height 1s ease; /* ✅ 설명 텍스트 부드럽게 */
+  margin: 0;
+  color: #fff !important;
 }
 
-/* hover 시 동작 */
-.product-card:hover .overlay {
-  justify-content: flex-start; /* 위로 이동 */
-  padding-top: 20px;
+/* 기본 제목 / hover 제목 전환 */
+.title-default {
+  display: block;
+  transition: opacity 1s ease;
 }
 
-.product-card:hover .overlay h3 {
-  margin-bottom: 10px; /* 설명과 간격 */
+.title-hover {
+  display: none;
+  transition: opacity 1s ease;
 }
 
-.product-card:hover .overlay p {
+.product-card:hover .title-default {
+  display: none;
+}
+.product-card:hover .title-hover {
+  display: inline;
+}
+
+/* hover 시 설명 보이기 */
+.product-card:hover .overlay-content p {
   opacity: 1;
-  max-height: 200px; /* 충분히 크게 열림 */
+  max-height: 200px;
 }

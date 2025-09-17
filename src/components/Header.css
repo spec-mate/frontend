@@ -1,6 +1,6 @@
 .header {
   width: 100%;
-  height: 65px;
+  height: 80px;
   background: transparent;
   position: fixed;
   top: 0;
@@ -30,20 +30,17 @@
   color: black;
 }
 
-/* 컨테이너 */
 .header-container {
   width: 100%;
   max-width: 1920px;
   height: 100%;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
 }
 
 .logo-img {
-  margin-left: 20px;
+  margin-left: 76px;
   height: 65px;
   width: 100px;
 }
@@ -93,7 +90,7 @@
 
 /* 버튼 영역 */
 .login-btn {
-  margin-right: 50px;
+  margin-right: 76px;
   display: none;
   gap: 10px; /* 버튼 간격 */
 }
@@ -295,8 +292,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 10px; /* 버튼 간격 */
   text-decoration: none;
+
+  /* ✅ 왼쪽에서 56px 이동 */
 }
 
 .glass-btn::before {

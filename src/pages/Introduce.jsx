@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useHeaderStore } from "../store/headerStore";
 import "./styles/Introduce.css";
 import serviceImage from "/introduce_service.svg"; // ✅ 서비스 소개 이미지
+import intro from "/quote.svg";
 
 export default function Introduce() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
@@ -30,7 +31,9 @@ export default function Introduce() {
       {/* ✅ 이미지 + 메시지 오버레이 + 하단 텍스트 */}
       <div className="image-container">
         <div className="message-overlay">
-          <div className="quote-mark">"</div>
+          <div className="quote-mark">
+            <img src={intro} alt="서비스 소개 이미지" className="quote-image" />
+          </div>
           <p className="introduce-message">{messages[currentIndex]}</p>
           <div className="dots">
             {messages.map((_, idx) => (
@@ -54,7 +57,10 @@ export default function Introduce() {
 
       {/* ✅ 이미지 밖 밑부분 텍스트 */}
       <div className="feature-section">
-        <h3 className="feature-title">필요에 따라 딱 맞는 맞춤형 PC 제안</h3>
+        <h3 className="feature-title">
+          필요에 따라 딱 맞는
+          <br /> 맞춤형 PC 제안
+        </h3>
         <p className="feature-desc">
           수많은 CPU, 그래픽카드, 메모리 옵션까지 <br />
           복잡한 부품 선택을 한 번에, 스펙메이트와 함께하세요.

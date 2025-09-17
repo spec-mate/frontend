@@ -10,7 +10,6 @@ export default function ProductInfo() {
     setHeaderVersion("black");
   }, [setHeaderVersion]);
 
-  // ✅ products 배열 그대로 안에 넣음
   const products = [
     {
       title: "메인보드",
@@ -26,24 +25,14 @@ export default function ProductInfo() {
       description: "컴퓨터의 두뇌, 계산을 처리하고 명령하는 핵심 부품",
     },
     {
-      title: (
-        <h3>
-          <span className="line-break">그래픽카드</span>
-          <span className="line-break">VGA</span>
-        </h3>
-      ),
+      title: "그래픽카드 VGA",
       img: "/gpu.svg",
       path: "/product/GPU",
       description:
         "컴퓨터가 화면에 그림, 영상, 게임 그래픽 등을 빠르고 선명하게 보여주도록 도와주는 부품",
     },
     {
-      title: (
-        <h3>
-          <span className="line-break">메모리</span>
-          <span className="line-break">RAM</span>
-        </h3>
-      ),
+      title: "메모리 RAM",
       img: "/ram.svg",
       path: "/product/RAM",
       description:
@@ -87,21 +76,38 @@ export default function ProductInfo() {
 
   return (
     <div className="product-page">
-      <h2 className="product-title">PC 부품 정보</h2>
-      <p className="product-subtitle">
-        스펙메이트는 수많은 부품들의 정보를 제공합니다!
-      </p>
+      <div className="product-header">
+        <h2 className="product-title">PC 부품 정보</h2>
+        <p className="product-subtitle">
+          스펙메이트는 수많은 부품들의 정보를 제공합니다!
+        </p>
+      </div>
 
       <div className="product-grid">
         {products.map((p, i) => (
           <Link to={p.path} key={i} className="product-card">
-            <img
-              src={p.img}
-              alt={typeof p.title === "string" ? p.title : "부품"}
-            />
+            <img src={p.img} alt={p.title} />
             <div className="overlay">
-              {typeof p.title === "string" ? <h3>{p.title}</h3> : p.title}
-              <p>{p.description}</p>
+              <div className="overlay-content">
+                <h3>
+                  {/* ✅ hover 시 교체되는 제목 처리 */}
+                  <span className="title-default">
+                    {p.title.includes("메모리")
+                      ? "메모리\nRAM"
+                      : p.title.includes("그래픽카드")
+                      ? "그래픽카드\nVGA"
+                      : p.title}
+                  </span>
+                  <span className="title-hover">
+                    {p.title.includes("메모리")
+                      ? "메모리(RAM)"
+                      : p.title.includes("그래픽카드")
+                      ? "그래픽카드(VGA)"
+                      : p.title}
+                  </span>
+                </h3>
+                <p>{p.description}</p>
+              </div>
             </div>
           </Link>
         ))}

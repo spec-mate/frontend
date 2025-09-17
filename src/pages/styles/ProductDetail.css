@@ -1,23 +1,30 @@
 .detail-page {
   display: grid;
-  grid-template-columns: 200px 1fr 200px;
-  grid-template-rows: auto 1fr; /* 첫 줄은 헤더, 두 번째 줄부터 컨텐츠 */
+  grid-template-columns: 416px 1fr 461px;
+  grid-template-rows: auto 1fr;
   justify-content: center;
-  padding: 100px 40px 20px 40px; /* 헤더 높이만큼 위쪽 패딩 */
+  padding: 80px 40px 20px 40px;
   gap: 20px;
   box-sizing: border-box;
 }
 
+/* 첫번째 열 내부 세로 분할 */
+.left-column {
+  display: grid;
+  grid-template-rows: 149px auto;
+  height: 100%;
+}
+
 /* 사이드바 */
 .sidebar {
-  grid-column: 1;
   width: 200px;
   border: 1px solid #ddd;
   overflow: hidden;
   height: fit-content;
-  margin: 0;
+  margin-left: auto; /* ✅ 오른쪽으로 붙임 */
   padding: 0;
   position: sticky;
+  top: 100px;
 }
 
 .sidebar h3 {
@@ -67,12 +74,23 @@
   color: #000;
 }
 
-/* 메인 영역 */
 .main-content {
   grid-column: 2;
+  display: grid;
+  grid-template-rows: 72px auto 1fr; /* 첫 줄은 72px, 아래는 콘텐츠 */
+  width: 100%;
+}
+
+.main-inner {
+  grid-row: 2 / span 2; /* 두 번째~세 번째 줄 차지 */
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+.main-inner h2 {
+  font-size: 56px; /* 글씨 크기 */
+  font-weight: 500; /* 두께 (보통 500~700) */
+  margin: 0 0 20px; /* 위쪽은 0, 아래쪽은 20px 간격 */
 }
 
 .main-content .filter-table {
@@ -229,7 +247,7 @@
   border-radius: 5px;
   overflow: hidden;
   height: 36px;
-  margin-top: 6px; /* 밑줄과 간격 최소 */
+  margin-top: 6px;
   align-self: flex-end;
 }
 
@@ -263,6 +281,10 @@
     gap: 16px;
   }
 
+  .left-column {
+    grid-template-rows: auto auto;
+  }
+
   .sidebar {
     width: 180px;
   }
@@ -280,6 +302,10 @@
     margin-top: 30px;
   }
 
+  .left-column {
+    display: block;
+  }
+
   .sidebar {
     width: 100%;
     border: 1px solid #ddd;
@@ -295,7 +321,7 @@
   }
 
   .main-content h2 {
-    font-size: 18px;
+    font-size: px;
   }
 
   .product-item {

@@ -41,10 +41,8 @@ export default function DetailPage() {
     const fetchProducts = async () => {
       try {
         const res = await api.get(`/product/type/${apiType}`, {
-          params: { page, size: 10 }, // 한 페이지 10개
+          params: { page, size: 10 },
         });
-        console.log("✅ 상품 데이터:", res.data);
-
         setProducts(res.data.content || []);
         setTotalPages(res.data.totalPages || 1);
       } catch (err) {
@@ -58,135 +56,135 @@ export default function DetailPage() {
 
   return (
     <div className="detail-page">
-      {/* 사이드바 */}
-      <aside className="sidebar">
-        <h3>부품종류</h3>
-        <ul>
-          {Object.entries(titleMap).map(([key, label]) => (
-            <li key={key}>
-              <NavLink
-                to={`/product/${key}`}
-                className={({ isActive }) => (isActive ? "active" : "")}
-              >
-                {label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      {/* 본문 */}
-      <div className="main-content">
-        <h2>{pageTitle}</h2>
-
-        {/* 필터 + 검색 */}
-        <div className="filter-bar">
-          <div className="filter-table">
-            {/* 제조사 */}
-            <div className="row">
-              <div className="label">제조사</div>
-              <div className="options">
-                <label>
-                  <input type="checkbox" /> AMD
-                </label>
-                <label>
-                  <input type="checkbox" /> 인텔
-                </label>
-              </div>
-            </div>
-
-            {/* 가격 */}
-            <div className="row">
-              <div className="label">가격</div>
-              <div className="options">
-                <label>
-                  <input type="checkbox" name="price" /> 낮은 가격순
-                </label>
-                <label>
-                  <input type="checkbox" name="price" /> 높은 가격순
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* 검색창 */}
-          <div className="search-box">
-            <input type="text" placeholder="검색어를 입력하세요" />
-            <button className="search-btn">
-              <img src="/search-normal.svg" alt="검색" />
-            </button>
-          </div>
-        </div>
-
-        {/* 상품 리스트 */}
-        <section className="detail-content">
-          <div className="product-list">
-            {products.length > 0 ? (
-              products.map((p) => (
-                <Link
-                  to={`/product/${productName}/${p.id}`}
-                  className="product-item"
-                  key={p.id}
+      {/* 왼쪽 열 */}
+      <div className="left-column">
+        <div></div>
+        <aside className="sidebar">
+          <h3>부품종류</h3>
+          <ul>
+            {Object.entries(titleMap).map(([key, label]) => (
+              <li key={key}>
+                <NavLink
+                  to={`/product/${key}`}
+                  className={({ isActive }) => (isActive ? "active" : "")}
                 >
-                  <img src={p.image || "/no-image.svg"} alt={p.name} />
-                  <div className="info">
-                    <h4>{p.name}</h4>
-                    <p>{p.manufacturer}</p>
-                  </div>
-                  <div className="price">
-                    <span>최저가</span>
-                    <strong>
-                      {p.lowestPrice?.price
-                        ? `₩${p.lowestPrice.price.toLocaleString()}`
-                        : "정보 없음"}
-                    </strong>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <p>상품이 없습니다.</p>
-            )}
+                  {label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      </div>
+
+      {/* 메인 콘텐츠 */}
+      <div className="main-content">
+        {/* 72px 비어있는 첫 행 */}
+        <div></div>
+
+        {/* 실제 콘텐츠 */}
+        <div className="main-inner">
+          <h2>{pageTitle}</h2>
+
+          {/* 필터 + 검색 */}
+          <div className="filter-bar">
+            <div className="filter-table">
+              <div className="row">
+                <div className="label">제조사</div>
+                <div className="options">
+                  <label>
+                    <input type="checkbox" /> AMD
+                  </label>
+                  <label>
+                    <input type="checkbox" /> 인텔
+                  </label>
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="label">가격</div>
+                <div className="options">
+                  <label>
+                    <input type="checkbox" name="price" /> 낮은 가격순
+                  </label>
+                  <label>
+                    <input type="checkbox" name="price" /> 높은 가격순
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="search-box">
+              <input type="text" placeholder="검색어를 입력하세요" />
+              <button className="search-btn">
+                <img src="/search-normal.svg" alt="검색" />
+              </button>
+            </div>
           </div>
 
-          {/* 페이지네이션 */}
-          <div className="pagination">
-            {/* 이전 버튼 */}
-            <button
-              disabled={page === 0}
-              onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-            >
-              &lt;
-            </button>
-
-            {/* 페이지 번호 (최대 10개만 보이기) */}
-            {Array.from({ length: Math.min(10, totalPages) }, (_, i) => {
-              const startPage = Math.floor(page / 10) * 10; // 0~9, 10~19 단위 그룹
-              const pageNumber = startPage + i;
-
-              return (
-                pageNumber < totalPages && (
-                  <button
-                    key={pageNumber}
-                    className={pageNumber === page ? "active" : ""}
-                    onClick={() => setPage(pageNumber)}
+          {/* 상품 리스트 */}
+          <section className="detail-content">
+            <div className="product-list">
+              {products.length > 0 ? (
+                products.map((p) => (
+                  <Link
+                    to={`/product/${productName}/${p.id}`}
+                    className="product-item"
+                    key={p.id}
                   >
-                    {pageNumber + 1}
-                  </button>
-                )
-              );
-            })}
+                    <img src={p.image || "/no-image.svg"} alt={p.name} />
+                    <div className="info">
+                      <h4>{p.name}</h4>
+                      <p>{p.manufacturer}</p>
+                    </div>
+                    <div className="price">
+                      <span>최저가</span>
+                      <strong>
+                        {p.lowestPrice?.price
+                          ? `₩${p.lowestPrice.price.toLocaleString()}`
+                          : "정보 없음"}
+                      </strong>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <p>상품이 없습니다.</p>
+              )}
+            </div>
 
-            {/* 다음 버튼 */}
-            <button
-              disabled={page === totalPages - 1}
-              onClick={() =>
-                setPage((prev) => Math.min(prev + 1, totalPages - 1))
-              }
-            >
-              &gt;
-            </button>
-          </div>
-        </section>
+            {/* 페이지네이션 */}
+            <div className="pagination">
+              <button
+                disabled={page === 0}
+                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+              >
+                &lt;
+              </button>
+              {Array.from({ length: Math.min(10, totalPages) }, (_, i) => {
+                const startPage = Math.floor(page / 10) * 10;
+                const pageNumber = startPage + i;
+                return (
+                  pageNumber < totalPages && (
+                    <button
+                      key={pageNumber}
+                      className={pageNumber === page ? "active" : ""}
+                      onClick={() => setPage(pageNumber)}
+                    >
+                      {pageNumber + 1}
+                    </button>
+                  )
+                );
+              })}
+              <button
+                disabled={page === totalPages - 1}
+                onClick={() =>
+                  setPage((prev) => Math.min(prev + 1, totalPages - 1))
+                }
+              >
+                &gt;
+              </button>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );
