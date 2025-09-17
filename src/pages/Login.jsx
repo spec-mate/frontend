@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./styles/Login.css";
 import binglogo from "/big-logo.svg";
-import api from "../api"; // ✅ axios 유틸 가져오기
-import Toast from "../components/Toast"; // ✅ 추가
+import api from "../api";
+import Toast from "../components/Toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showToast, setShowToast] = useState(false); // ✅ 토스트 표시 여부
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState(""); // ✅ 토스트 문구 상태
+  const [toastType, setToastType] = useState("success"); // ✅ success | error
+  const [nickname, setNickname] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -24,24 +27,31 @@ export default function Login() {
       localStorage.setItem("accessToken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
-      setShowToast(true); // ✅ 토스트 띄우기
+      // ✅ 닉네임 저장
+      const userNickname = res.data.nickname || "유저";
+      setNickname(userNickname);
+      localStorage.setItem("nickname", userNickname);
+
+      setToastMessage(`반가워요 ${userNickname}님!`);
+      setToastType("success");
+      setShowToast(true);
+
       console.log("로그인 성공:", res.data);
 
-      // ✅ 로그인 성공 후 페이지 이동 (2초 뒤 이동)
       setTimeout(() => {
         navigate("/");
       }, 2000);
     } catch (err) {
       console.error("로그인 실패:", err);
-      alert(
-        "로그인 실패: " + (err.response?.data?.message || "알 수 없는 오류")
-      );
+
+      setToastMessage("이메일 또는 비밀번호를 확인해주세요."); // ✅ 실패 시 문구
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
   return (
     <div className="login-container">
-      {/* ✅ 로고 */}
       <Link to="/">
         <img src={binglogo} alt="로고" className="login-logo" />
       </Link>
@@ -87,8 +97,13 @@ export default function Login() {
         </div>
       </form>
 
+      {/* ✅ 성공/실패 공통 토스트 */}
       {showToast && (
-        <Toast message="로그인 성공!" onClose={() => setShowToast(false)} />
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );

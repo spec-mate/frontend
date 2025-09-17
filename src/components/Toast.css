@@ -19,18 +19,19 @@
   color: black;
   padding: 16px 28px;
   border-radius: 40px;
-  font-size: 25px;
+  font-size: 20px;
   font-weight: 600;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease, fadeOut 0.5s ease 1.5s forwards;
   pointer-events: auto;
   text-align: center;
-  height: 100px; /* 고정 높이 */
+  width: fit-content;
+  height: fit-content; /* 고정 높이 */
 }
 
 .toast-icon {
-  width: 28px;
-  height: 28px;
+  width: 50px;
+  height: 50px;
 }
 
 @keyframes fadeIn {

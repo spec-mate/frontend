@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "./styles/Register.css";
 import binglogo from "/big-logo.svg";
 import api from "../api";
+import ErrorMessage from "../components/ErrorMessage";
+import Toast from "../components/Toast"; // ✅ 토스트 컴포넌트 추가
 
 export default function Register() {
   const navigate = useNavigate();
@@ -20,7 +22,12 @@ export default function Register() {
     "영문, 숫자, 특수문자를 조합해서 입력해주세요. (8~16자)"
   );
 
-  // 닉네임 중복 체크 (예시)
+  // ✅ 토스트 상태
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success"); // success | error
+
+  // 닉네임 중복 체크
   const handleNicknameChange = (e) => {
     const value = e.target.value;
     setNickname(value);
@@ -31,6 +38,7 @@ export default function Register() {
     }
   };
 
+  // ✅ 인증번호 전송
   const handleSendCode = async () => {
     if (!email.includes("@")) {
       setEmailError("이메일을 정확히 입력해주세요.");
@@ -40,26 +48,42 @@ export default function Register() {
 
     try {
       await api.post("/auth/send-code", null, { params: { email } });
-      alert("인증번호가 이메일로 발송되었습니다.");
+
+      setToastMessage("인증번호가 이메일로 발송되었습니다.");
+      setToastType("success");
+      setShowToast(true);
     } catch (err) {
       console.error(err);
       setEmailError("인증번호 발송 실패");
+
+      setToastMessage("인증번호 전송을 실패했어요...");
+      setToastType("error"); // ❌ 에러 토스트
+      setShowToast(true);
     }
   };
 
+  // 인증번호 확인
   const handleVerifyCode = async () => {
     try {
       await api.post("/auth/verify-code", null, {
         params: { email, code: verificationCode.trim() },
       });
-      alert("이메일 인증 성공!");
+
+      setToastMessage("이메일 인증 성공!");
+      setToastType("success");
+      setShowToast(true);
       setCodeError("");
     } catch (err) {
       console.error(err);
       setCodeError("인증번호가 올바르지 않거나 만료되었습니다.");
+
+      setToastMessage("인증번호 확인을 실패했어요...");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
+  // 비밀번호 유효성 검사
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
@@ -74,15 +98,20 @@ export default function Register() {
     }
   };
 
+  // 최종 회원가입
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("비밀번호가 일치하지 않습니다.");
+      setToastMessage("비밀번호가 일치하지 않습니다.");
+      setToastType("error");
+      setShowToast(true);
       return;
     }
     if (passwordError) {
-      alert("비밀번호 형식이 올바르지 않습니다.");
+      setToastMessage("비밀번호 형식이 올바르지 않습니다.");
+      setToastType("error");
+      setShowToast(true);
       return;
     }
 
@@ -93,13 +122,21 @@ export default function Register() {
         password,
       });
       console.log("회원가입 성공:", res.data);
-      alert("회원가입이 완료되었습니다! 로그인 화면으로 이동합니다.");
-      navigate("/login");
+
+      setToastMessage("회원가입이 완료되었습니다!");
+      setToastType("success");
+      setShowToast(true);
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
       console.error(err);
-      alert(
+      setToastMessage(
         "회원가입 실패: " + (err.response?.data?.message || "알 수 없는 오류")
       );
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -129,7 +166,7 @@ export default function Register() {
               placeholder="스펙메이트"
               required
             />
-            <p className="error-text">{nicknameError || "　"}</p>
+            <ErrorMessage message={nicknameError} />
           </div>
 
           {/* 이메일 */}
@@ -153,7 +190,7 @@ export default function Register() {
                 전송
               </button>
             </div>
-            <p className="error-text">{emailError || "　"}</p>
+            <ErrorMessage message={emailError} />
           </div>
 
           {/* 인증번호 */}
@@ -177,7 +214,7 @@ export default function Register() {
                 확인
               </button>
             </div>
-            <p className="error-text">{codeError || "　"}</p>
+            <ErrorMessage message={codeError} />
           </div>
 
           {/* 비밀번호 */}
@@ -190,7 +227,7 @@ export default function Register() {
               placeholder="비밀번호"
               required
             />
-            <p className="error-text">{passwordError || "　"}</p>
+            <ErrorMessage message={passwordError} />
           </div>
 
           {/* 비밀번호 확인 */}
@@ -203,7 +240,7 @@ export default function Register() {
               placeholder="비밀번호 입력(영,숫,특 조합)"
               required
             />
-            <p className="error-text">{"　"}</p>
+            <ErrorMessage message={""} />
           </div>
 
           <button type="submit" className="register-button">
@@ -211,6 +248,15 @@ export default function Register() {
           </button>
         </form>
       </div>
+
+      {/* ✅ 토스트 메시지 */}
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 }

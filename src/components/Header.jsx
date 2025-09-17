@@ -13,9 +13,11 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success"); // ✅ success | error
   const headerVersion = useHeaderStore((state) => state.headerVersion);
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ 현재 경로 확인
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -30,19 +32,38 @@ export default function Header() {
     setIsLoggedIn(!!token);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    try {
+      const nickname = localStorage.getItem("nickname") || "유저";
 
-    setShowToast(true);
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+      // 🔹 서버 로그아웃 API 호출 (있다면 추가)
+      // await api.post("/auth/logout", {}, {
+      //   headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+      // });
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("nickname");
+      setIsLoggedIn(false);
+
+      setToastMessage(`${nickname}님, 다음에 또 오세요!`);
+      setToastType("success");
+      setShowToast(true);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (err) {
+      console.error("로그아웃 실패:", err);
+
+      setToastMessage("로그아웃을 실패했어요...");
+      setToastType("error"); // ❌ 실패 시 빨간색 토스트
+      setShowToast(true);
+    }
   };
 
   const currentLogo = headerVersion === "black" ? logoBlue : logoWhite;
-  const isMainPage = location.pathname === "/"; // ✅ 메인페이지 여부
+  const isMainPage = location.pathname === "/";
 
   return (
     <header
@@ -169,14 +190,17 @@ export default function Header() {
               </Link>
             )}
           </div>
-          {showToast && (
-            <Toast
-              message="로그아웃 성공!"
-              onClose={() => setShowToast(false)}
-            />
-          )}
         </div>
       </div>
+
+      {/* ✅ 토스트 메시지 */}
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </header>
   );
 }
