@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./styles/Register.css";
 import binglogo from "/big-logo.svg";
 import api from "../api";
 import ErrorMessage from "../components/ErrorMessage";
-import Toast from "../components/Toast"; // ✅ 토스트 컴포넌트 추가
+import Toast from "../components/Toast";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -25,7 +25,20 @@ export default function Register() {
   // ✅ 토스트 상태
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success"); // success | error
+  const [toastType, setToastType] = useState("success");
+
+  // ✅ 타이머 상태
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   // 닉네임 중복 체크
   const handleNicknameChange = (e) => {
@@ -52,12 +65,14 @@ export default function Register() {
       setToastMessage("인증번호가 이메일로 발송되었습니다.");
       setToastType("success");
       setShowToast(true);
+
+      setTimer(300); // ✅ 5분(300초) 타이머 시작
     } catch (err) {
       console.error(err);
       setEmailError("인증번호 발송 실패");
 
       setToastMessage("인증번호 전송을 실패했어요...");
-      setToastType("error"); // ❌ 에러 토스트
+      setToastType("error");
       setShowToast(true);
     }
   };
@@ -140,6 +155,13 @@ export default function Register() {
     }
   };
 
+  // ✅ mm:ss 형식 변환
+  const formatTime = (seconds) => {
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
   return (
     <div className="register-container">
       <div className="register-box">
@@ -189,6 +211,8 @@ export default function Register() {
                 인증번호 <br />
                 전송
               </button>
+              {/* ✅ 타이머 표시 */}
+              {timer > 0 && <span className="timer">{formatTime(timer)}</span>}
             </div>
             <ErrorMessage message={emailError} />
           </div>

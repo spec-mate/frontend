@@ -61,6 +61,8 @@
   width: 100%;
   display: flex;
   gap: 10px;
+  position: relative; /* ✅ 타이머 위치 기준 */
+  align-items: center;
 }
 
 .input-group-row input {
@@ -89,6 +91,18 @@
 
 .small-button:hover {
   animation: gradientMove 1s ease infinite;
+}
+
+/* ✅ 타이머 스타일 */
+.timer {
+  position: absolute;
+  right: -65px; /* 버튼 오른쪽 띄우기 */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: bold;
+  color: #1e5cde;
+  white-space: nowrap;
 }
 
 .register-button {
@@ -182,6 +196,11 @@
     height: 56px;
     font-size: 13px;
   }
+
+  .timer {
+    right: -55px;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -227,5 +246,10 @@
     font-size: 12px;
     min-height: 16px;
     line-height: 16px;
+  }
+
+  .timer {
+    right: -50px;
+    font-size: 12px;
   }
 }
