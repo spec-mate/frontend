@@ -1,6 +1,6 @@
 .register-container {
   display: flex;
-  flex-direction: column; /* 로고 + 폼 세로 정렬 */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
@@ -12,7 +12,7 @@
   height: 100px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 30px; /* 가운데 정렬 + 아래 여백 */
+  margin: 0 auto 30px;
 }
 
 .register-form {
@@ -30,6 +30,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-bottom: 0;
 }
 
 .input-group label {
@@ -44,7 +45,7 @@
   height: 64px;
   padding: 0 14px;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -67,7 +68,7 @@
   height: 64px;
   padding: 0 14px;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
 }
@@ -78,7 +79,7 @@
   background: #303030;
   color: #fff;
   border: none;
-  border-radius: 15px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -95,14 +96,13 @@
   height: 64px;
   color: #fff;
   border: none;
+  margin-top: 60px;
   border-radius: 15px;
   font-size: 25px;
   font-weight: bold;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-
-  margin-top: 60px; /* ✅ 인풋들과 버튼 사이 여백 */
 
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
@@ -146,17 +146,15 @@
   animation: gradientMove 1s ease infinite;
 }
 
+/* ✅ 에러 메시지 항상 자리 확보 */
 .error-text {
   font-size: 13px;
   color: #ff0000;
-  margin-top: 4px;
+  min-height: 10px;
+  line-height: 10px;
+  margin-top: 0px;
 }
 
-/* ============================= */
-/* ✅ 반응형 스타일 */
-/* ============================= */
-
-/* 태블릿 (≤768px) */
 @media (max-width: 768px) {
   .register-form {
     width: 90%;
@@ -186,7 +184,6 @@
   }
 }
 
-/* 모바일 (≤480px) */
 @media (max-width: 480px) {
   .register-form {
     width: 100%;
@@ -228,5 +225,7 @@
 
   .error-text {
     font-size: 12px;
+    min-height: 16px;
+    line-height: 16px;
   }
 }

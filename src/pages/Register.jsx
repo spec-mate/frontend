@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // ✅ useNavigate 추가
+import { Link, useNavigate } from "react-router-dom";
 import "./styles/Register.css";
 import binglogo from "/big-logo.svg";
-import api from "../api"; // axios 유틸 가져오기
+import api from "../api";
 
 export default function Register() {
-  const navigate = useNavigate(); // ✅ 네비게이터 훅 선언
+  const navigate = useNavigate();
 
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
@@ -13,13 +13,24 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [nicknameError, setNicknameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [codeError, setCodeError] = useState("");
   const [passwordError, setPasswordError] = useState(
     "영문, 숫자, 특수문자를 조합해서 입력해주세요. (8~16자)"
   );
 
-  // ✅ 인증번호 전송 API
+  // 닉네임 중복 체크 (예시)
+  const handleNicknameChange = (e) => {
+    const value = e.target.value;
+    setNickname(value);
+    if (value === "중복닉네임") {
+      setNicknameError("중복된 닉네임입니다.");
+    } else {
+      setNicknameError("");
+    }
+  };
+
   const handleSendCode = async () => {
     if (!email.includes("@")) {
       setEmailError("이메일을 정확히 입력해주세요.");
@@ -36,11 +47,10 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 확인 API
   const handleVerifyCode = async () => {
     try {
       await api.post("/auth/verify-code", null, {
-        params: { email, code: verificationCode.trim() }, // ✅ trim()으로 공백 제거
+        params: { email, code: verificationCode.trim() },
       });
       alert("이메일 인증 성공!");
       setCodeError("");
@@ -50,7 +60,6 @@ export default function Register() {
     }
   };
 
-  // ✅ 비밀번호 입력 시 실시간 검사
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
@@ -65,7 +74,6 @@ export default function Register() {
     }
   };
 
-  // ✅ 최종 회원가입 API
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -86,8 +94,6 @@ export default function Register() {
       });
       console.log("회원가입 성공:", res.data);
       alert("회원가입이 완료되었습니다! 로그인 화면으로 이동합니다.");
-
-      // ✅ 로그인 페이지로 이동
       navigate("/login");
     } catch (err) {
       console.error(err);
@@ -119,10 +125,11 @@ export default function Register() {
               id="nickname"
               type="text"
               value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              onChange={handleNicknameChange}
               placeholder="스펙메이트"
               required
             />
+            <p className="error-text">{nicknameError || "　"}</p>
           </div>
 
           {/* 이메일 */}
@@ -146,7 +153,7 @@ export default function Register() {
                 전송
               </button>
             </div>
-            {emailError && <p className="error-text">{emailError}</p>}
+            <p className="error-text">{emailError || "　"}</p>
           </div>
 
           {/* 인증번호 */}
@@ -170,7 +177,7 @@ export default function Register() {
                 확인
               </button>
             </div>
-            {codeError && <p className="error-text">{codeError}</p>}
+            <p className="error-text">{codeError || "　"}</p>
           </div>
 
           {/* 비밀번호 */}
@@ -183,7 +190,7 @@ export default function Register() {
               placeholder="비밀번호"
               required
             />
-            {passwordError && <p className="error-text">{passwordError}</p>}
+            <p className="error-text">{passwordError || "　"}</p>
           </div>
 
           {/* 비밀번호 확인 */}
@@ -196,6 +203,7 @@ export default function Register() {
               placeholder="비밀번호 입력(영,숫,특 조합)"
               required
             />
+            <p className="error-text">{"　"}</p>
           </div>
 
           <button type="submit" className="register-button">

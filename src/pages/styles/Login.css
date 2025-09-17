@@ -43,7 +43,7 @@
   height: 64px;
   padding: 12px 14px;
   border: 1px solid #ddd;
-  border-radius: 15px !important;
+  border-radius: 15px;
   font-size: 16px;
   transition: all 0.3s ease;
   box-sizing: border-box;

@@ -1,21 +1,31 @@
 .product-detail-view {
+  display: grid;
+  grid-template-rows: 152px auto; /* 첫 row 72px 빈칸, 두 번째 row에 콘텐츠 */
   width: 80%;
   margin: 0 auto;
-  padding: 40px 0;
+  padding: 0 0 40px; /* 상단 padding 제거, 하단만 유지 */
+  box-sizing: border-box;
 }
 
+.product-content {
+  grid-row: 2; /* 콘텐츠는 두 번째 row */
+}
+
+/* breadcrumb */
 .breadcrumb {
   font-size: 14px;
   color: #777;
   margin-bottom: 10px;
 }
 
+/* 제목 */
 .product-title {
   font-size: 32px;
   font-weight: bold;
   margin: 10px 0;
 }
 
+/* 태그 */
 .tags {
   margin-bottom: 20px;
 }
@@ -25,7 +35,7 @@
   font-size: 14px;
 }
 
-/* ✅ product-box → 2열 그리드 */
+/* ✅ product-box → 2열 */
 .product-box {
   display: grid;
   grid-template-columns: 1fr fit-content(300px);
@@ -85,14 +95,6 @@
 .price-box strong {
   font-size: 24px;
   color: #1e5cde;
-}
-.save-btn {
-  padding: 8px 16px;
-  background: #1e5cde;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
 /* ✅ 추천 섹션 */
@@ -194,11 +196,6 @@
 .recommend-card:hover .recommend-desc {
   bottom: 50%;
   opacity: 1;
-}
-
-/* ✅ 숨김 처리: 자리 유지 */
-.recommend-card.hidden {
-  visibility: hidden;
 }
 
 /* ✅ 추천 리스트 → 사라진 카드 자리에 출력 */

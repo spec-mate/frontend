@@ -68,144 +68,150 @@ export default function ProductDetailView() {
 
   return (
     <div className="product-detail-view">
-      <div className="breadcrumb">PC 부품 정보 &gt; {product.type}</div>
-      <h2 className="product-title">{product.name}</h2>
+      {/* ✅ 첫 번째 row : 헤더 높이(72px) 빈칸 */}
+      <div></div>
 
-      <div className="tags">
-        <span>#{product.manufacturer}</span>
-        <span>#{product.type}</span>
-        <span>등록일: {product.reg_date}</span>
-      </div>
+      {/* ✅ 두 번째 row : 실제 콘텐츠 */}
+      <div className="product-content">
+        <div className="breadcrumb">PC 부품 정보 &gt; {product.type}</div>
+        <h2 className="product-title">{product.name}</h2>
 
-      {/* 상세 스펙 */}
-      <div className="product-box">
-        <div className="product-info">
-          <div className="left">
-            <img
-              src={product.image || "/no-image.svg"}
-              alt={product.name}
-              className="product-detail-image"
-            />
-          </div>
-          <div className="right">
-            <div className="specs-tables">
-              <table>
-                <tbody>
-                  {(() => {
-                    const entries = [
-                      ["manufacturer", product.manufacturer],
-                      ...Object.entries(product.options || {}),
-                    ];
-                    const half = Math.ceil(entries.length / 2);
-                    const left = entries.slice(0, half);
-                    const right = entries.slice(half);
-                    return left.map(([key, value], idx) => (
-                      <tr key={key}>
-                        <td>{optionLabels[key] || key}</td>
-                        <td>{String(value)}</td>
-                        {right[idx] ? (
-                          <>
-                            <td>
-                              {optionLabels[right[idx][0]] || right[idx][0]}
-                            </td>
-                            <td>{String(right[idx][1])}</td>
-                          </>
-                        ) : (
-                          <>
-                            <td></td>
-                            <td></td>
-                          </>
-                        )}
-                      </tr>
-                    ));
-                  })()}
-                </tbody>
-              </table>
+        <div className="tags">
+          <span>#{product.manufacturer}</span>
+          <span>#{product.type}</span>
+          <span>등록일: {product.reg_date}</span>
+        </div>
+
+        {/* 상세 스펙 */}
+        <div className="product-box">
+          <div className="product-info">
+            <div className="left">
+              <img
+                src={product.image || "/no-image.svg"}
+                alt={product.name}
+                className="product-detail-image"
+              />
+            </div>
+            <div className="right">
+              <div className="specs-tables">
+                <table>
+                  <tbody>
+                    {(() => {
+                      const entries = [
+                        ["manufacturer", product.manufacturer],
+                        ...Object.entries(product.options || {}),
+                      ];
+                      const half = Math.ceil(entries.length / 2);
+                      const left = entries.slice(0, half);
+                      const right = entries.slice(half);
+                      return left.map(([key, value], idx) => (
+                        <tr key={key}>
+                          <td>{optionLabels[key] || key}</td>
+                          <td>{String(value)}</td>
+                          {right[idx] ? (
+                            <>
+                              <td>
+                                {optionLabels[right[idx][0]] || right[idx][0]}
+                              </td>
+                              <td>{String(right[idx][1])}</td>
+                            </>
+                          ) : (
+                            <>
+                              <td></td>
+                              <td></td>
+                            </>
+                          )}
+                        </tr>
+                      ));
+                    })()}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* 최저가 */}
-        <div className="price-box">
-          <span>최저가</span>
-          <strong>
-            {product.lowestPrice?.price
-              ? `₩${product.lowestPrice.price.toLocaleString()}`
-              : "정보 없음"}
-          </strong>
-          {product.lowestPrice?.link && (
-            <a
-              href={product.lowestPrice.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="buy-link"
-            >
-              구매하기
-            </a>
-          )}
-        </div>
-      </div>
-
-      {/* ✅ 추천 섹션 */}
-      <div className="recommend-section">
-        <div className="recommend-overlay-text">
-          <h3>스펙메이트의 용도별 조합 추천!</h3>
-          <p>박스를 클릭해보세요!</p>
-        </div>
-
-        <div className="recommend-cards">
-          {/* 왼쪽 칸 */}
-          <div>
-            {selectedBuild === "office" ? (
-              <div className="build-list fixed-slot">
-                <h4>사무용 PC 추천 부품</h4>
-                <ul>
-                  {builds.gaming.map((b, idx) => (
-                    <li key={idx}>
-                      <strong>{b.category}</strong>: {b.part}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div
-                className="recommend-card"
-                onClick={() => handleCardClick("gaming")}
+          {/* 최저가 */}
+          <div className="price-box">
+            <span>최저가</span>
+            <strong>
+              {product.lowestPrice?.price
+                ? `₩${product.lowestPrice.price.toLocaleString()}`
+                : "정보 없음"}
+            </strong>
+            {product.lowestPrice?.link && (
+              <a
+                href={product.lowestPrice.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="buy-link"
               >
-                <img src="/gaming.svg" alt="게이밍 PC" />
-                <div className="recommend-label">게이밍</div>
-                <div className="recommend-desc">
-                  최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC
-                </div>
-              </div>
+                구매하기
+              </a>
             )}
           </div>
+        </div>
 
-          {/* 오른쪽 칸 */}
-          <div>
-            {selectedBuild === "gaming" ? (
-              <div className="build-list fixed-slot">
-                <h4>게이밍 PC 추천 부품</h4>
-                <ul>
-                  {builds.office.map((b, idx) => (
-                    <li key={idx}>
-                      <strong>{b.category}</strong>: {b.part}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div
-                className="recommend-card"
-                onClick={() => handleCardClick("office")}
-              >
-                <img src="/affairs.svg" alt="사무용 PC" />
-                <div className="recommend-label">사무용</div>
-                <div className="recommend-desc">
-                  업무와 멀티태스킹에 최적화된 안정적이고 조용한 사무용 PC
+        {/* ✅ 추천 섹션 */}
+        <div className="recommend-section">
+          <div className="recommend-overlay-text">
+            <h3>스펙메이트의 용도별 조합 추천!</h3>
+            <p>박스를 클릭해보세요!</p>
+          </div>
+
+          <div className="recommend-cards">
+            {/* 왼쪽 칸 */}
+            <div>
+              {selectedBuild === "office" ? (
+                <div className="build-list fixed-slot">
+                  <h4>사무용 PC 추천 부품</h4>
+                  <ul>
+                    {builds.gaming.map((b, idx) => (
+                      <li key={idx}>
+                        <strong>{b.category}</strong>: {b.part}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div
+                  className="recommend-card"
+                  onClick={() => handleCardClick("gaming")}
+                >
+                  <img src="/gaming.svg" alt="게이밍 PC" />
+                  <div className="recommend-label">게이밍</div>
+                  <div className="recommend-desc">
+                    최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 오른쪽 칸 */}
+            <div>
+              {selectedBuild === "gaming" ? (
+                <div className="build-list fixed-slot">
+                  <h4>게이밍 PC 추천 부품</h4>
+                  <ul>
+                    {builds.office.map((b, idx) => (
+                      <li key={idx}>
+                        <strong>{b.category}</strong>: {b.part}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div
+                  className="recommend-card"
+                  onClick={() => handleCardClick("office")}
+                >
+                  <img src="/affairs.svg" alt="사무용 PC" />
+                  <div className="recommend-label">사무용</div>
+                  <div className="recommend-desc">
+                    업무와 멀티태스킹에 최적화된 안정적이고 조용한 사무용 PC
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
