@@ -1,5 +1,7 @@
+// Header.jsx
+
 import React, { useState, useEffect } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import logoWhite from "/logo.svg";
 import logoBlue from "/blue-logo.svg";
 import Toast from "../components/Toast";
@@ -9,10 +11,11 @@ import { useHeaderStore } from "../store/headerStore";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // ✅ 로그인 상태
-  const headerVersion = useHeaderStore((state) => state.headerVersion);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const headerVersion = useHeaderStore((state) => state.headerVersion);
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ 현재 경로 확인
 
   useEffect(() => {
     const handleResize = () => {
@@ -22,7 +25,6 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ 마운트 시 localStorage 토큰 체크
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
@@ -33,13 +35,14 @@ export default function Header() {
     localStorage.removeItem("refreshToken");
     setIsLoggedIn(false);
 
-    setShowToast(true); // ✅ 토스트 띄우기
+    setShowToast(true);
     setTimeout(() => {
-      navigate("/"); // 2초 뒤 홈으로 이동
+      navigate("/");
     }, 2000);
   };
 
   const currentLogo = headerVersion === "black" ? logoBlue : logoWhite;
+  const isMainPage = location.pathname === "/"; // ✅ 메인페이지 여부
 
   return (
     <header
@@ -80,36 +83,28 @@ export default function Header() {
         <div className="login-btn">
           {isLoggedIn ? (
             <>
-              <Link to="/mypage" className="mypage-link">
+              <Link
+                to="/mypage"
+                className={isMainPage ? "glass-btn" : "mypage-link"}
+              >
                 마이페이지
               </Link>
-              <button onClick={handleLogout} className="logout-link">
+              <button
+                onClick={handleLogout}
+                className={isMainPage ? "glass-btn" : "logout-link"}
+              >
                 로그아웃
               </button>
             </>
           ) : (
-            <Link to="/login" className="login-link">
+            <Link
+              to="/login"
+              className={isMainPage ? "glass-btn" : "login-link"}
+            >
               로그인
             </Link>
           )}
         </div>
-
-        {/* 햄버거 */}
-        <button
-          type="button"
-          className="hamburger"
-          onClick={() => setOpen(!open)}
-        >
-          {!open ? (
-            <svg width="24" height="24" fill="none" stroke="currentColor">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" fill="none" stroke="currentColor">
-              <path d="M6 6l12 12M18 6l-12 12" />
-            </svg>
-          )}
-        </button>
       </div>
 
       {/* 모바일 메뉴 */}
@@ -149,7 +144,7 @@ export default function Header() {
               <>
                 <Link
                   to="/mypage"
-                  className="mypage-link"
+                  className={isMainPage ? "glass-btn" : "mypage-link"}
                   onClick={() => setOpen(false)}
                 >
                   마이페이지
@@ -159,7 +154,7 @@ export default function Header() {
                     handleLogout();
                     setOpen(false);
                   }}
-                  className="logout-link"
+                  className={isMainPage ? "glass-btn" : "logout-link"}
                 >
                   로그아웃
                 </button>
@@ -167,7 +162,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className="login-link"
+                className={isMainPage ? "glass-btn" : "login-link"}
                 onClick={() => setOpen(false)}
               >
                 로그인
