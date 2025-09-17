@@ -60,13 +60,18 @@ export default function Register() {
     setEmailError("");
 
     try {
-      await api.post("/auth/send-code", null, { params: { email } });
+      const res = await api.post("/auth/send-code", null, {
+        params: { email },
+      });
 
-      setToastMessage("인증번호가 이메일로 발송되었습니다.");
-      setToastType("success");
-      setShowToast(true);
+      // ✅ API 성공 시만 알람 + 타이머 시작
+      if (res.status === 200) {
+        setToastMessage("인증번호가 이메일로 발송되었습니다.");
+        setToastType("success");
+        setShowToast(true);
 
-      setTimer(300); // ✅ 5분(300초) 타이머 시작
+        setTimer(300); // ✅ 5분 타이머 시작
+      }
     } catch (err) {
       console.error(err);
       setEmailError("인증번호 발송 실패");
