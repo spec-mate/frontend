@@ -46,6 +46,7 @@ export default function ProductDetailView() {
         productId: product.id, // 🔹 상품 ID
         category: product.type, // 🔹 카테고리 (CPU, GPU 등)
         quantity: 1, // 🔹 기본 수량
+        productImage: product.image, // 🔹 상품 이미지 추가
       });
 
       setMessage("견적 보관함에 저장했어요!");

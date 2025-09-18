@@ -10,6 +10,8 @@ import ProductInfo from "./pages/ProductInfo";
 import ProductDetail from "./pages/ProductDetail";
 import ProductDetailView from "./pages/ProductDetailView";
 import MyPage from "./pages/Mypage";
+import EstimateDetail from "./pages/EstimateDetail";
+
 function App() {
   const location = useLocation();
   const hideHeaderRoutes = ["/login", "/register", "/usage"];
@@ -26,6 +28,7 @@ function App() {
         <Route path="/info" element={<ProductInfo />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/product/:productName" element={<ProductDetail />} />
+        <Route path="/estimate/:id" element={<EstimateDetail />} />
         <Route
           path="/product/:productName/:id"
           element={<ProductDetailView />}
