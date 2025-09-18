@@ -19,6 +19,7 @@ body {
   position: absolute;
   inset: 0;
   padding: 0px;
+  pointer-events: none; /* ✅ 버튼 클릭 막지 않도록 */
 }
 
 .main {
@@ -92,13 +93,17 @@ body {
 
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
+/* ✅ 마우스 오버 시 */
 .main-button:hover {
-  animation: gradientMove 1s ease infinite;
+  animation: gradientMove 3s ease infinite; /* 배경 움직임 */
+  background-size: 200% 200%;
+  cursor: pointer; /* 커서 손가락 모양 */
 }
 
+/* 🔥 그라데이션 움직임 정의 */
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
