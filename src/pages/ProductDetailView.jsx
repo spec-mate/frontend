@@ -67,21 +67,13 @@ export default function ProductDetailView() {
     setSelectedBuild((prev) => (prev === build ? null : build));
   };
 
-  // ✅ 견적 보관함 저장 요청
+  // ✅ 견적 보관함 저장 요청 (인터셉터가 토큰 추가)
   const handleSaveToEstimate = async () => {
     try {
-      const res = await api.post(
-        "/estimate/products/save",
-        {
-          productId: product.id, // 🔹 DTO에 맞춰 전송
-          quantity: 1, // 기본 수량
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
+      const res = await api.post("/estimate/products/save", {
+        productId: product.id, // 🔹 DTO에 맞춰 전송
+        quantity: 1, // 기본 수량
+      });
 
       setMessage("견적 보관함에 저장했어요!");
       console.log("✅ 저장 성공:", res.data);

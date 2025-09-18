@@ -27,14 +27,14 @@ export default function ProductInfo() {
     {
       title: "그래픽카드 VGA",
       img: "/gpu.svg",
-      path: "/product/GPU",
+      path: "/product/vga",
       description:
         "컴퓨터가 화면에 그림, 영상, 게임 그래픽 등을 빠르고 선명하게 보여주도록 도와주는 부품",
     },
     {
       title: "메모리 RAM",
       img: "/ram.svg",
-      path: "/product/RAM",
+      path: "/product/ram",
       description:
         "컴퓨터가 작업할 때 필요한 내용을 잠시 저장해 두는 빠른 임시 저장공간",
     },

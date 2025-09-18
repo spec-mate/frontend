@@ -1,4 +1,3 @@
-// src/api.js
 import axios from "axios";
 
 const api = axios.create({
@@ -18,15 +17,17 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 🔹 응답 인터셉터 (선택): 401 에러 → refreshToken 처리 가능
+// 🔹 응답 인터셉터: 401 처리 (토큰 만료 시)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      console.warn("⚠️ 401 Unauthorized - accessToken 만료됨");
-      // 여기서 refreshToken 갱신 로직 추가 가능
-      // ex) const refresh = localStorage.getItem("refreshToken");
-      // await api.post("/auth/refresh", { refresh });
+    if (error.response && error.response.status === 401) {
+      console.warn("⏰ AccessToken 만료, 재로그인이 필요합니다.");
+      // 👉 여기서 refreshToken 로직을 추가하거나,
+      // 로그인 페이지로 강제 이동하는 로직을 넣을 수 있음
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
