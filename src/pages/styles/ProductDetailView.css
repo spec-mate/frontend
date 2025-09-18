@@ -1,14 +1,27 @@
+/* 🔥 gradientMove 애니메이션 */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .product-detail-view {
   display: grid;
   grid-template-rows: 152px auto; /* 첫 row 72px 빈칸, 두 번째 row에 콘텐츠 */
   width: 80%;
   margin: 0 auto;
-  padding: 0 0 40px; /* 상단 padding 제거, 하단만 유지 */
+  padding: 0 0 40px;
   box-sizing: border-box;
 }
 
 .product-content {
-  grid-row: 2; /* 콘텐츠는 두 번째 row */
+  grid-row: 2;
 }
 
 /* breadcrumb */
@@ -82,22 +95,121 @@
 
 /* ✅ 오른쪽 price-box */
 .price-box {
-  width: fit-content;
+  margin-top: 20px;
+  text-align: left;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 10px;
   justify-self: end;
 }
-.price-box span {
-  font-size: 14px;
-  color: #333;
+
+.price-label {
+  font-size: 20px;
+  font-weight: 600;
+  color: #555;
+  text-align: right; /* ✅ 오른쪽 정렬 */
+  width: 100%; /* ✅ 정렬 적용 위해 전체 차지 */
 }
-.price-box strong {
+
+.price-value {
   font-size: 24px;
+  font-weight: 700;
+  text-align: right; /* ✅ 오른쪽 정렬 */
+
   color: #1e5cde;
 }
 
-/* ✅ 추천 섹션 */
+.price-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* BUY 버튼 */
+.buy-btn {
+  display: flex;
+  justify-content: center; /* 아이콘 가운데 */
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  cursor: pointer;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* 아이콘 (mask 방식 적용) */
+.buy-btn .btn-icon {
+  width: 24px;
+  height: 24px;
+  background: #000;
+  -webkit-mask: url("/link.svg") no-repeat center / contain;
+  mask: url("/link.svg") no-repeat center / contain;
+}
+
+.buy-btn:hover .btn-icon {
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  animation: gradientMove 2s ease infinite;
+}
+
+/* CART 버튼 */
+.cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 150px;
+  height: 50px;
+  gap: 12px;
+  padding: 0 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #1e5cde;
+  color: #fff;
+  border: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* hover 효과 */
+.cart-btn:hover {
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  animation: gradientMove 2s ease infinite;
+  color: #fff;
+}
+
+/* 아이콘 */
+.cart-btn .btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.cart-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  line-height: 1.2;
+  flex-grow: 1;
+}
+
+.cart-subtitle {
+  font-size: 10px;
+  color: #fff;
+}
+
+.cart-main {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
 .recommend-section {
   margin-top: 40px;
   position: relative;
@@ -119,7 +231,6 @@
   color: #555;
 }
 
-/* ✅ 항상 2칸 유지 */
 .recommend-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -198,7 +309,6 @@
   opacity: 1;
 }
 
-/* ✅ 추천 리스트 → 사라진 카드 자리에 출력 */
 .build-list.fixed-slot {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -206,4 +316,22 @@
   background: #fafafa;
   height: 400px;
   overflow-y: auto;
+}
+
+.price-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.price-number {
+  font-size: 45px;
+  font-weight: 600;
+  color: #1e5cde;
+}
+
+.price-unit {
+  color: #555;
+  font-size: 20px;
+  margin-left: 2px;
+  font-weight: 600;
 }

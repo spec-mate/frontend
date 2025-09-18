@@ -132,22 +132,43 @@ export default function ProductDetailView() {
 
           {/* 최저가 */}
           <div className="price-box">
-            <span>최저가</span>
-            <strong>
-              {product.lowestPrice?.price
-                ? `₩${product.lowestPrice.price.toLocaleString()}`
-                : "정보 없음"}
+            <span className="price-label">최저가</span>
+            <strong className="price-value">
+              {product.lowestPrice?.price ? (
+                <>
+                  <span className="price-number">
+                    {product.lowestPrice.price.toLocaleString()}
+                  </span>
+                  <span className="price-unit"> 원</span>
+                </>
+              ) : (
+                "정보 없음"
+              )}
             </strong>
-            {product.lowestPrice?.link && (
-              <a
-                href={product.lowestPrice.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="buy-link"
-              >
-                구매하기
-              </a>
-            )}
+
+            {/* 버튼 */}
+            <div className="price-actions">
+              {product.lowestPrice?.link && (
+                <a
+                  href={product.lowestPrice.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="buy-btn"
+                >
+                  {/* ✅ link.svg 아이콘을 span + mask로 처리 */}
+                  <span className="btn-icon"></span>
+                </a>
+              )}
+              <button className="cart-btn">
+                <span className="btn-icon">
+                  <img src="/cart.svg" alt="장바구니" />
+                </span>
+                <div className="cart-text">
+                  <small className="cart-subtitle">나만의 견적 보관함</small>
+                  <span className="cart-main">보관하기</span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 

@@ -92,12 +92,23 @@ export default function ProductInfo() {
                 <h3>
                   {/* ✅ hover 시 교체되는 제목 처리 */}
                   <span className="title-default">
-                    {p.title.includes("메모리")
-                      ? "메모리\nRAM"
-                      : p.title.includes("그래픽카드")
-                      ? "그래픽카드\nVGA"
-                      : p.title}
+                    {p.title.includes("메모리") ? (
+                      <>
+                        <span className="memory-text">메모리</span>
+                        <br />
+                        <span className="ram-text">RAM</span>
+                      </>
+                    ) : p.title.includes("그래픽카드") ? (
+                      <>
+                        <span className="gpu-text">그래픽카드</span>
+                        <br />
+                        <span className="vga-text">VGA</span>
+                      </>
+                    ) : (
+                      p.title
+                    )}
                   </span>
+
                   <span className="title-hover">
                     {p.title.includes("메모리")
                       ? "메모리(RAM)"
