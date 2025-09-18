@@ -153,35 +153,50 @@ export default function DetailPage() {
 
             {/* 페이지네이션 */}
             <div className="pagination">
-              <button
-                disabled={page === 0}
-                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-              >
-                &lt;
-              </button>
-              {Array.from({ length: Math.min(10, totalPages) }, (_, i) => {
-                const startPage = Math.floor(page / 10) * 10;
-                const pageNumber = startPage + i;
-                return (
-                  pageNumber < totalPages && (
-                    <button
-                      key={pageNumber}
-                      className={pageNumber === page ? "active" : ""}
-                      onClick={() => setPage(pageNumber)}
-                    >
-                      {pageNumber + 1}
-                    </button>
-                  )
-                );
-              })}
-              <button
-                disabled={page === totalPages - 1}
-                onClick={() =>
-                  setPage((prev) => Math.min(prev + 1, totalPages - 1))
+              {/* ◀ 이전 블록 */}
+              {page > 0 && (
+                <button
+                  onClick={() => {
+                    const startPage = Math.floor(page / 10) * 10;
+                    setPage(Math.max(startPage - 10, 0));
+                  }}
+                >
+                  &lt;
+                </button>
+              )}
+
+              {Array.from(
+                {
+                  length: Math.min(10, totalPages - Math.floor(page / 10) * 10),
+                },
+                (_, i) => {
+                  const startPage = Math.floor(page / 10) * 10;
+                  const pageNumber = startPage + i;
+                  return (
+                    pageNumber < totalPages && (
+                      <button
+                        key={pageNumber}
+                        className={pageNumber === page ? "active" : ""}
+                        onClick={() => setPage(pageNumber)}
+                      >
+                        {pageNumber + 1}
+                      </button>
+                    )
+                  );
                 }
-              >
-                &gt;
-              </button>
+              )}
+
+              {/* ▶ 다음 블록 */}
+              {page < totalPages - 1 && (
+                <button
+                  onClick={() => {
+                    const startPage = Math.floor(page / 10) * 10;
+                    setPage(Math.min(startPage + 10, totalPages - 1));
+                  }}
+                >
+                  &gt;
+                </button>
+              )}
             </div>
           </section>
         </div>

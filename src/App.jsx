@@ -9,7 +9,7 @@ import Usage from "./pages/Usage";
 import ProductInfo from "./pages/ProductInfo";
 import ProductDetail from "./pages/ProductDetail";
 import ProductDetailView from "./pages/ProductDetailView";
-
+import MyPage from "./pages/MyPage";
 function App() {
   const location = useLocation();
   const hideHeaderRoutes = ["/login", "/register", "/usage"];
@@ -24,6 +24,7 @@ function App() {
         <Route path="/introduce" element={<Introduce />} />
         <Route path="/usage" element={<Usage />} />
         <Route path="/info" element={<ProductInfo />} />
+        <Route path="/mypage" element={<MyPage />} />
         <Route path="/product/:productName" element={<ProductDetail />} />
         <Route
           path="/product/:productName/:id"

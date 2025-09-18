@@ -1,0 +1,70 @@
+.mypage {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 192px 20px;
+  font-family: Pretendard, sans-serif;
+}
+
+/* 헤더 */
+.mypage-header {
+  margin-bottom: 30px;
+}
+
+.mypage-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.user-role {
+  font-size: 14px;
+  color: #1e5cde;
+  margin-left: 4px;
+}
+
+/* 섹션 */
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+/* 블록 */
+.estimate-block {
+  margin-bottom: 40px;
+}
+
+.block-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 15px 0;
+  text-align: left;
+}
+
+/* 카드 그리드 */
+.estimate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.estimate-card {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 10px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.estimate-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.estimate-card:hover {
+  transform: translateY(-5px);
+}
