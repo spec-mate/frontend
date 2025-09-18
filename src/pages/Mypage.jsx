@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./styles/MyPage.css";
+import "./styles/Mypage.css";
 import api from "../api";
 
 export default function MyPage() {
