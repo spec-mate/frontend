@@ -13,15 +13,20 @@
 
 .product-detail-view {
   display: grid;
-  grid-template-rows: 152px auto; /* 첫 row 72px 빈칸, 두 번째 row에 콘텐츠 */
-  width: 80%;
+  grid-template-columns: 408px 1fr 408px; /* 좌 408px / 중앙 / 우 408px */
+  gap: 20px;
+  width: 100%;
+  min-height: 100vh;
   margin: 0 auto;
-  padding: 0 0 40px;
+  padding: 159px 0 40px; /* ✅ 위쪽에 159px 패딩 */
   box-sizing: border-box;
 }
 
 .product-content {
-  grid-row: 2;
+  grid-column: 2; /* 중앙 컬럼 */
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 /* breadcrumb */
@@ -33,7 +38,7 @@
 
 /* 제목 */
 .product-title {
-  font-size: 32px;
+  font-size: 45px;
   font-weight: bold;
   margin: 10px 0;
 }
@@ -107,15 +112,14 @@
   font-size: 20px;
   font-weight: 600;
   color: #555;
-  text-align: right; /* ✅ 오른쪽 정렬 */
-  width: 100%; /* ✅ 정렬 적용 위해 전체 차지 */
+  text-align: right;
+  width: 100%;
 }
 
 .price-value {
   font-size: 24px;
   font-weight: 700;
-  text-align: right; /* ✅ 오른쪽 정렬 */
-
+  text-align: right;
   color: #1e5cde;
 }
 
@@ -128,7 +132,7 @@
 /* BUY 버튼 */
 .buy-btn {
   display: flex;
-  justify-content: center; /* 아이콘 가운데 */
+  justify-content: center;
   align-items: center;
   width: 50px;
   height: 50px;
@@ -172,7 +176,6 @@
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* hover 효과 */
 .cart-btn:hover {
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
@@ -180,7 +183,6 @@
   color: #fff;
 }
 
-/* 아이콘 */
 .cart-btn .btn-icon {
   display: flex;
   align-items: center;

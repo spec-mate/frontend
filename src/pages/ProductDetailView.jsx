@@ -7,7 +7,7 @@ export default function ProductDetailView() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedBuild, setSelectedBuild] = useState(null);
-  const [message, setMessage] = useState(""); // ✅ 저장 결과 메시지
+  const [message, setMessage] = useState("");
 
   const optionLabels = {
     manufacturer: "제조회사",
@@ -26,29 +26,6 @@ export default function ProductDetailView() {
     memory_clock: "메모리 클럭",
   };
 
-  const builds = {
-    gaming: [
-      { category: "CPU", part: "AMD Ryzen 7 9800X3D" },
-      { category: "메인보드", part: "ASUS ROG STRIX B650" },
-      { category: "그래픽카드", part: "RTX 4070 Ti Super" },
-      { category: "메모리", part: "DDR5 32GB 6000MHz" },
-      { category: "파워", part: "시소닉 850W Gold" },
-      { category: "SSD", part: "삼성 990 Pro 1TB" },
-      { category: "쿨러", part: "NZXT Kraken 240" },
-      { category: "케이스", part: "Lian Li Lancool III" },
-    ],
-    office: [
-      { category: "CPU", part: "Intel i5-13400" },
-      { category: "메인보드", part: "MSI B760M Pro" },
-      { category: "그래픽카드", part: "내장그래픽 (Intel UHD)" },
-      { category: "메모리", part: "DDR5 16GB 4800MHz" },
-      { category: "파워", part: "마이크로닉스 600W Bronze" },
-      { category: "SSD", part: "삼성 970 EVO Plus 500GB" },
-      { category: "쿨러", part: "기본 쿨러" },
-      { category: "케이스", part: "ABKO Suitmaster" },
-    ],
-  };
-
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -63,18 +40,12 @@ export default function ProductDetailView() {
 
   if (!product) return <p>상품 불러오는 중...</p>;
 
-  const handleCardClick = (build) => {
-    setSelectedBuild((prev) => (prev === build ? null : build));
-  };
-
-  // ✅ 견적 보관함 저장 요청 (인터셉터가 토큰 추가)
   const handleSaveToEstimate = async () => {
     try {
       const res = await api.post("/estimate/products/save", {
-        productId: product.id, // 🔹 DTO에 맞춰 전송
-        quantity: 1, // 기본 수량
+        productId: product.id,
+        quantity: 1,
       });
-
       setMessage("견적 보관함에 저장했어요!");
       console.log("✅ 저장 성공:", res.data);
     } catch (err) {
@@ -83,12 +54,16 @@ export default function ProductDetailView() {
     }
   };
 
+  const handleCardClick = (build) => {
+    setSelectedBuild((prev) => (prev === build ? null : build));
+  };
+
   return (
     <div className="product-detail-view">
-      {/* ✅ 첫 번째 row : 헤더 높이(72px) 빈칸 */}
+      {/* 왼쪽 408px */}
       <div></div>
 
-      {/* ✅ 두 번째 row : 실제 콘텐츠 */}
+      {/* 중앙 콘텐츠 */}
       <div className="product-content">
         <div className="breadcrumb">PC 부품 정보 &gt; {product.type}</div>
         <h2 className="product-title">{product.name}</h2>
@@ -186,12 +161,11 @@ export default function ProductDetailView() {
               </button>
             </div>
 
-            {/* ✅ 저장 결과 메시지 */}
             {message && <p className="save-message">{message}</p>}
           </div>
         </div>
 
-        {/* ✅ 추천 섹션 */}
+        {/* 추천 섹션 */}
         <div className="recommend-section">
           <div className="recommend-overlay-text">
             <h3>스펙메이트의 용도별 조합 추천!</h3>
@@ -199,13 +173,25 @@ export default function ProductDetailView() {
           </div>
 
           <div className="recommend-cards">
-            {/* 왼쪽 칸 */}
+            {/* 좌측 */}
             <div>
               {selectedBuild === "office" ? (
                 <div className="build-list fixed-slot">
                   <h4>사무용 PC 추천 부품</h4>
                   <ul>
-                    {builds.gaming.map((b, idx) => (
+                    {[
+                      { category: "CPU", part: "Intel i5-13400" },
+                      { category: "메인보드", part: "MSI B760M Pro" },
+                      {
+                        category: "그래픽카드",
+                        part: "내장그래픽 (Intel UHD)",
+                      },
+                      { category: "메모리", part: "DDR5 16GB 4800MHz" },
+                      { category: "파워", part: "마이크로닉스 600W Bronze" },
+                      { category: "SSD", part: "삼성 970 EVO Plus 500GB" },
+                      { category: "쿨러", part: "기본 쿨러" },
+                      { category: "케이스", part: "ABKO Suitmaster" },
+                    ].map((b, idx) => (
                       <li key={idx}>
                         <strong>{b.category}</strong>: {b.part}
                       </li>
@@ -226,13 +212,22 @@ export default function ProductDetailView() {
               )}
             </div>
 
-            {/* 오른쪽 칸 */}
+            {/* 우측 */}
             <div>
               {selectedBuild === "gaming" ? (
                 <div className="build-list fixed-slot">
                   <h4>게이밍 PC 추천 부품</h4>
                   <ul>
-                    {builds.office.map((b, idx) => (
+                    {[
+                      { category: "CPU", part: "AMD Ryzen 7 9800X3D" },
+                      { category: "메인보드", part: "ASUS ROG STRIX B650" },
+                      { category: "그래픽카드", part: "RTX 4070 Ti Super" },
+                      { category: "메모리", part: "DDR5 32GB 6000MHz" },
+                      { category: "파워", part: "시소닉 850W Gold" },
+                      { category: "SSD", part: "삼성 990 Pro 1TB" },
+                      { category: "쿨러", part: "NZXT Kraken 240" },
+                      { category: "케이스", part: "Lian Li Lancool III" },
+                    ].map((b, idx) => (
                       <li key={idx}>
                         <strong>{b.category}</strong>: {b.part}
                       </li>
@@ -255,6 +250,9 @@ export default function ProductDetailView() {
           </div>
         </div>
       </div>
+
+      {/* 오른쪽 408px */}
+      <div></div>
     </div>
   );
 }
