@@ -9,7 +9,7 @@ import Usage from "./pages/Usage";
 import ProductInfo from "./pages/ProductInfo";
 import ProductDetail from "./pages/ProductDetail";
 import ProductDetailView from "./pages/ProductDetailView";
-import MyPage from "./pages/MyPage";
+import MyPage from "./pages/Mypage";
 function App() {
   const location = useLocation();
   const hideHeaderRoutes = ["/login", "/register", "/usage"];
