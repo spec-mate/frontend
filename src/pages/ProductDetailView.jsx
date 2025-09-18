@@ -7,6 +7,7 @@ export default function ProductDetailView() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedBuild, setSelectedBuild] = useState(null);
+  const [message, setMessage] = useState(""); // ✅ 저장 결과 메시지
 
   const optionLabels = {
     manufacturer: "제조회사",
@@ -64,6 +65,30 @@ export default function ProductDetailView() {
 
   const handleCardClick = (build) => {
     setSelectedBuild((prev) => (prev === build ? null : build));
+  };
+
+  // ✅ 견적 보관함 저장 요청
+  const handleSaveToEstimate = async () => {
+    try {
+      const res = await api.post(
+        "/estimate/products/save",
+        {
+          productId: product.id, // 🔹 DTO에 맞춰 전송
+          quantity: 1, // 기본 수량
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+
+      setMessage("견적 보관함에 저장했어요!");
+      console.log("✅ 저장 성공:", res.data);
+    } catch (err) {
+      console.error("❌ 저장 실패:", err.response || err);
+      setMessage("저장에 실패했어요. 다시 시도해주세요.");
+    }
   };
 
   return (
@@ -155,11 +180,10 @@ export default function ProductDetailView() {
                   rel="noopener noreferrer"
                   className="buy-btn"
                 >
-                  {/* ✅ link.svg 아이콘을 span + mask로 처리 */}
                   <span className="btn-icon"></span>
                 </a>
               )}
-              <button className="cart-btn">
+              <button className="cart-btn" onClick={handleSaveToEstimate}>
                 <span className="btn-icon">
                   <img src="/cart.svg" alt="장바구니" />
                 </span>
@@ -169,6 +193,9 @@ export default function ProductDetailView() {
                 </div>
               </button>
             </div>
+
+            {/* ✅ 저장 결과 메시지 */}
+            {message && <p className="save-message">{message}</p>}
           </div>
         </div>
 
