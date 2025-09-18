@@ -43,9 +43,11 @@ export default function ProductDetailView() {
   const handleSaveToEstimate = async () => {
     try {
       const res = await api.post("/estimate/products/save", {
-        productId: product.id,
-        quantity: 1,
+        productId: product.id, // 🔹 상품 ID
+        category: product.type, // 🔹 카테고리 (CPU, GPU 등)
+        quantity: 1, // 🔹 기본 수량
       });
+
       setMessage("견적 보관함에 저장했어요!");
       console.log("✅ 저장 성공:", res.data);
     } catch (err) {

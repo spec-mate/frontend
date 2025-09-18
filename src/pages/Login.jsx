@@ -24,8 +24,12 @@ export default function Login() {
       });
 
       // ✅ 토큰 저장
-      localStorage.setItem("accessToken", res.data.accessToken);
-      localStorage.setItem("refreshToken", res.data.refreshToken);
+      // ✅ 토큰 저장 위치 변경
+      sessionStorage.setItem("accessToken", res.data.accessToken); // 👉 AccessToken은 세션스토리지
+      localStorage.setItem("nickname", res.data.nickname || "유저"); // 👉 닉네임 로컬스토리지
+      localStorage.setItem("email", email); // 👉 이메일 로컬스토리지
+
+      // ❌ RefreshToken은 저장하지 않음 (HttpOnly 쿠키로 내려옴, JS에서 접근 불가)
 
       // ✅ 닉네임 저장
       const userNickname = res.data.nickname || "유저";

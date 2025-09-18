@@ -27,21 +27,28 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // ✅ 로그인 상태 감지 (localStorage / sessionStorage 변경 감지)
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    setIsLoggedIn(!!token);
+    const checkLogin = () => {
+      const token =
+        sessionStorage.getItem("accessToken") ||
+        localStorage.getItem("accessToken");
+      setIsLoggedIn(!!token);
+    };
+
+    checkLogin(); // 첫 실행
+    window.addEventListener("storage", checkLogin); // storage 변경 감지
+    return () => window.removeEventListener("storage", checkLogin);
   }, []);
 
   const handleLogout = async () => {
     try {
       const nickname = localStorage.getItem("nickname") || "유저";
 
-      // 🔹 서버 로그아웃 API 호출 (있다면 추가)
-      // await api.post("/auth/logout", {}, {
-      //   headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-      // });
+      // 필요하다면 서버 로그아웃 API 호출
+      // await api.post("/auth/logout");
 
-      localStorage.removeItem("accessToken");
+      sessionStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("nickname");
       setIsLoggedIn(false);
@@ -57,7 +64,7 @@ export default function Header() {
       console.error("로그아웃 실패:", err);
 
       setToastMessage("로그아웃을 실패했어요...");
-      setToastType("error"); // ❌ 실패 시 빨간색 토스트
+      setToastType("error");
       setShowToast(true);
     }
   };
