@@ -95,15 +95,14 @@
   gap: 10px; /* 버튼 간격 */
 }
 
-/* 로그인 / 로그아웃 버튼 (검은 배경 + 흰 글자) */
+/* 로그인 / 로그아웃 버튼 */
 .login-btn .login-link,
 .login-btn .logout-link {
   background: #303030 !important;
-  padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 20px;
   width: 110px;
-  height: 50px;
+  height: 50px; /* ✅ 고정 */
   font-weight: 700;
   text-decoration: none;
   color: white !important;
@@ -111,7 +110,8 @@
   cursor: pointer;
   transition: background 0.3s ease;
 
-  /* ✅ 글자 가운데 정렬 */
+  box-sizing: border-box; /* ✅ border 포함 */
+  line-height: 50px; /* ✅ 텍스트 세로정렬 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,12 +123,12 @@
   text-decoration: none;
 }
 
-/* 마이페이지 버튼 (흰 배경 + 검은 글자, 같은 버튼 구조) */
+/* 마이페이지 버튼 */
 .login-btn .mypage-link {
   background: white !important;
   color: black !important;
   width: 110px;
-  height: 50px;
+  height: 50px; /* ✅ 고정 */
   border-radius: 20px;
   font-size: 20px;
   font-weight: 700;
@@ -137,9 +137,11 @@
   cursor: pointer;
   transition: background 0.3s ease, color 0.3s ease;
 
-  display: flex; /* ✅ Flexbox 사용 */
-  align-items: center; /* ✅ 세로 가운데 */
-  justify-content: center; /* ✅ 가로 가운데 */
+  box-sizing: border-box;
+  line-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-btn .mypage-link:hover {
@@ -196,7 +198,7 @@
   gap: 0.75rem;
 }
 
-/* 모바일 로그인 (항상 고정) */
+/* 모바일 로그인 */
 .mobile-login {
   margin-top: 1rem;
 }
@@ -204,15 +206,17 @@
 .mobile-login a {
   display: inline-block;
   width: 100%;
+  height: 50px; /* ✅ 고정 */
+  line-height: 50px;
   text-align: center;
   background: #303030 !important;
-  padding: 0.5rem 1rem;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
   color: white !important;
   transition: background 0.3s ease;
+  box-sizing: border-box;
 }
 
 .mobile-login a:hover {
@@ -279,12 +283,11 @@
   background-size: 200% 200%;
   animation: gradientMove 3s ease infinite;
 }
-/* ✅ 기존 header 스타일은 그대로 두고 밑에 glass-btn 추가 */
 
-/* 메인페이지 전용 글래스 버튼 */
+/* 글래스 버튼 */
 .glass-btn {
   width: 110px;
-  height: 50px;
+  height: 50px; /* ✅ 고정 */
   font-size: 18px;
   font-weight: bold;
   color: #fff !important;
@@ -305,8 +308,7 @@
   justify-content: center;
   align-items: center;
   text-decoration: none;
-
-  /* ✅ 왼쪽에서 56px 이동 */
+  box-sizing: border-box;
 }
 
 .glass-btn::before {
