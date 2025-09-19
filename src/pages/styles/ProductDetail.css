@@ -357,3 +357,21 @@
     flex: unset;
   }
 }
+
+/* 🔥 그라데이션 로딩 스피너 */
+.loader {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  animation: spin 1s linear infinite, gradientMove 2s ease infinite;
+  margin: 40px auto;
+  position: relative;
+}
+/* 로딩 시 product-item 블러 처리 */
+.blurred {
+  filter: blur(3px);
+  pointer-events: none;
+  user-select: none;
+}

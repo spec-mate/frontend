@@ -11,6 +11,7 @@ import ProductDetail from "./pages/ProductDetail";
 import ProductDetailView from "./pages/ProductDetailView";
 import MyPage from "./pages/Mypage";
 import EstimateDetail from "./pages/EstimateDetail";
+import ProgressBar from "./components/ProgressBar";
 
 function App() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function App() {
 
   return (
     <>
+      <ProgressBar />
       {!hideHeaderRoutes.includes(location.pathname) && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />

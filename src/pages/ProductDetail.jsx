@@ -1,6 +1,9 @@
+// src/pages/DetailPage.jsx
 import React, { useEffect, useState } from "react";
 import { NavLink, Link, useParams } from "react-router-dom";
 import api from "../api"; // axios instance
+import { useProgressStore } from "../store/progressStore"; // ✅ zustand progress store
+import "../components/ProgressBar"; // ✅ ProgressBar 전역에서 App.jsx에 추가됨
 import "./styles/ProductDetail.css";
 
 export default function DetailPage() {
@@ -8,6 +11,9 @@ export default function DetailPage() {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+
+  const setProgress = useProgressStore((state) => state.setProgress);
 
   // 제목 매핑
   const titleMap = {
@@ -39,20 +45,30 @@ export default function DetailPage() {
   // 상품 불러오기
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
+      setProgress(30); // ✅ 시작할 때 progress 30%
+
       try {
         const res = await api.get(`/product/type/${apiType}`, {
           params: { page, size: 10 },
         });
         setProducts(res.data.content || []);
         setTotalPages(res.data.totalPages || 1);
+
+        setProgress(70); // ✅ 데이터 세팅 중간 단계
       } catch (err) {
         console.error("❌ 상품 불러오기 실패:", err.response || err);
         setProducts([]);
+      } finally {
+        setTimeout(() => {
+          setProgress(100); // ✅ 완료 시 100%
+          setLoading(false);
+        }, 300); // 살짝 딜레이 후 완료
       }
     };
 
     fetchProducts();
-  }, [productName, page]);
+  }, [productName, page, apiType, setProgress]);
 
   return (
     <div className="detail-page">
@@ -78,10 +94,8 @@ export default function DetailPage() {
 
       {/* 메인 콘텐츠 */}
       <div className="main-content">
-        {/* 72px 비어있는 첫 행 */}
         <div></div>
 
-        {/* 실제 콘텐츠 */}
         <div className="main-inner">
           <h2>{pageTitle}</h2>
 
@@ -124,80 +138,88 @@ export default function DetailPage() {
           {/* 상품 리스트 */}
           <section className="detail-content">
             <div className="product-list">
-              {products.length > 0 ? (
-                products.map((p) => (
-                  <Link
-                    to={`/product/${productName}/${p.id}`}
-                    className="product-item"
-                    key={p.id}
-                  >
-                    <img src={p.image || "/no-image.svg"} alt={p.name} />
-                    <div className="info">
-                      <h4>{p.name}</h4>
-                      <p>{p.manufacturer}</p>
-                    </div>
-                    <div className="price">
-                      <span>최저가</span>
-                      <strong>
-                        {p.lowestPrice?.price
-                          ? `₩${p.lowestPrice.price.toLocaleString()}`
-                          : "정보 없음"}
-                      </strong>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <p>상품이 없습니다.</p>
-              )}
+              {products.length > 0
+                ? products.map((p) => (
+                    <Link
+                      to={`/product/${productName}/${p.id}`}
+                      className={`product-item ${loading ? "blurred" : ""}`} // ✅ 로딩 시 blur
+                      key={p.id}
+                    >
+                      <img src={p.image || "/no-image.svg"} alt={p.name} />
+                      <div className="info">
+                        <h4>{p.name}</h4>
+                        <p>{p.manufacturer}</p>
+                      </div>
+                      <div className="price">
+                        <span>최저가</span>
+                        <strong>
+                          {p.lowestPrice?.price
+                            ? `₩${p.lowestPrice.price.toLocaleString()}`
+                            : "정보 없음"}
+                        </strong>
+                      </div>
+                    </Link>
+                  ))
+                : !loading && <p>상품이 없습니다.</p>}
             </div>
+
+            {/* ✅ 로딩 스피너 */}
+            {loading && (
+              <div className="loader-overlay">
+                <div className="loader"></div>
+              </div>
+            )}
 
             {/* 페이지네이션 */}
-            <div className="pagination">
-              {/* ◀ 이전 블록 */}
-              {page > 0 && (
-                <button
-                  onClick={() => {
-                    const startPage = Math.floor(page / 10) * 10;
-                    setPage(Math.max(startPage - 10, 0));
-                  }}
-                >
-                  &lt;
-                </button>
-              )}
+            {!loading && (
+              <div className="pagination">
+                {page > 0 && (
+                  <button
+                    onClick={() => {
+                      const startPage = Math.floor(page / 10) * 10;
+                      setPage(Math.max(startPage - 10, 0));
+                    }}
+                  >
+                    &lt;
+                  </button>
+                )}
 
-              {Array.from(
-                {
-                  length: Math.min(10, totalPages - Math.floor(page / 10) * 10),
-                },
-                (_, i) => {
-                  const startPage = Math.floor(page / 10) * 10;
-                  const pageNumber = startPage + i;
-                  return (
-                    pageNumber < totalPages && (
-                      <button
-                        key={pageNumber}
-                        className={pageNumber === page ? "active" : ""}
-                        onClick={() => setPage(pageNumber)}
-                      >
-                        {pageNumber + 1}
-                      </button>
-                    )
-                  );
-                }
-              )}
-
-              {/* ▶ 다음 블록 */}
-              {page < totalPages - 1 && (
-                <button
-                  onClick={() => {
+                {Array.from(
+                  {
+                    length: Math.min(
+                      10,
+                      totalPages - Math.floor(page / 10) * 10
+                    ),
+                  },
+                  (_, i) => {
                     const startPage = Math.floor(page / 10) * 10;
-                    setPage(Math.min(startPage + 10, totalPages - 1));
-                  }}
-                >
-                  &gt;
-                </button>
-              )}
-            </div>
+                    const pageNumber = startPage + i;
+                    return (
+                      pageNumber < totalPages && (
+                        <button
+                          key={pageNumber}
+                          className={pageNumber === page ? "active" : ""}
+                          onClick={() => setPage(pageNumber)}
+                        >
+                          {pageNumber + 1}
+                        </button>
+                      )
+                    );
+                  }
+                )}
+
+                {page < totalPages - 1 && (
+                  <button
+                    onClick={() => {
+                      const startPage = Math.floor(page / 10) * 10;
+                      setPage(Math.min(startPage + 10, totalPages - 1));
+                    }}
+                  >
+                    &gt;
+                  </button>
+                )}
+              </div>
+            )}
           </section>
         </div>
       </div>

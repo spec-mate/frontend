@@ -102,7 +102,7 @@
   border-radius: 20px;
   font-size: 20px;
   width: 110px;
-  height: 50px; /* ✅ 고정 */
+  height: 45px; /* ✅ 고정 */
   font-weight: 700;
   text-decoration: none;
   color: white !important;
@@ -111,7 +111,6 @@
   transition: background 0.3s ease;
 
   box-sizing: border-box; /* ✅ border 포함 */
-  line-height: 50px; /* ✅ 텍스트 세로정렬 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,7 +127,7 @@
   background: white !important;
   color: black !important;
   width: 110px;
-  height: 50px; /* ✅ 고정 */
+  height: 45px; /* ✅ 고정 */
   border-radius: 20px;
   font-size: 20px;
   font-weight: 700;
@@ -138,7 +137,6 @@
   transition: background 0.3s ease, color 0.3s ease;
 
   box-sizing: border-box;
-  line-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,6 +159,7 @@
   padding: 0.5rem;
   border-radius: 6px;
   cursor: pointer;
+  height: 45px; /* ✅ 통일 */
 }
 
 .hamburger:hover {
@@ -206,8 +205,8 @@
 .mobile-login a {
   display: inline-block;
   width: 100%;
-  height: 50px; /* ✅ 고정 */
-  line-height: 50px;
+  height: 45px; /* ✅ 고정 */
+  line-height: 45px;
   text-align: center;
   background: #303030 !important;
   border-radius: 6px;
@@ -287,7 +286,7 @@
 /* 글래스 버튼 */
 .glass-btn {
   width: 110px;
-  height: 50px; /* ✅ 고정 */
+  height: 45px; /* ✅ 통일 */
   font-size: 18px;
   font-weight: bold;
   color: #fff !important;
@@ -295,7 +294,7 @@
   border: 0.5px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.01);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(45px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
