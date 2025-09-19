@@ -18,9 +18,7 @@ export default function Register() {
   const [nicknameError, setNicknameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [codeError, setCodeError] = useState("");
-  const [passwordError, setPasswordError] = useState(
-    "영문, 숫자, 특수문자를 조합해서 입력해주세요. (8~16자)"
-  );
+  const [passwordError, setPasswordError] = useState(""); // ✅ 초기값을 빈 문자열로 수정
 
   // ✅ 토스트 상태
   const [showToast, setShowToast] = useState(false);
@@ -40,7 +38,7 @@ export default function Register() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // 닉네임 중복 체크
+  // 닉네임 중복 체크 (예시)
   const handleNicknameChange = (e) => {
     const value = e.target.value;
     setNickname(value);
@@ -64,13 +62,12 @@ export default function Register() {
         params: { email },
       });
 
-      // ✅ API 성공 시만 알람 + 타이머 시작
       if (res.status === 200) {
         setToastMessage("인증번호가 이메일로 발송되었습니다.");
         setToastType("success");
         setShowToast(true);
 
-        setTimer(300); // ✅ 5분 타이머 시작
+        setTimer(300); // 5분 타이머 시작
       }
     } catch (err) {
       console.error(err);
@@ -103,18 +100,21 @@ export default function Register() {
     }
   };
 
-  // 비밀번호 유효성 검사
+  // ✅ 비밀번호 유효성 검사 (실시간)
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
 
     const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,16}$/;
-    if (!regex.test(value)) {
+
+    if (value.length === 0) {
+      setPasswordError(""); // 입력 없으면 숨김
+    } else if (!regex.test(value)) {
       setPasswordError(
         "영문, 숫자, 특수문자를 조합해서 입력해주세요. (8~16자)"
       );
     } else {
-      setPasswordError("");
+      setPasswordError(""); // 조건 충족 시 숨김
     }
   };
 
@@ -174,14 +174,15 @@ export default function Register() {
           <img src={binglogo} alt="로고" className="register-logo" />
         </Link>
 
-        <form className="register-form" onSubmit={handleSubmit}>
-          <p className="login-text">
-            이미 회원이신가요?{" "}
-            <Link to="/login" className="login-link">
-              로그인하기
-            </Link>
-          </p>
+        {/* ✅ 로고 밑에 로그인 안내 */}
+        <p className="login-text">
+          이미 회원이신가요?{" "}
+          <Link to="/login" className="login-link">
+            로그인하기
+          </Link>
+        </p>
 
+        <form className="register-form" onSubmit={handleSubmit}>
           {/* 닉네임 */}
           <div className="input-group">
             <label htmlFor="nickname">닉네임</label>
@@ -216,7 +217,6 @@ export default function Register() {
                 인증번호 <br />
                 전송
               </button>
-              {/* ✅ 타이머 표시 */}
               {timer > 0 && <span className="timer">{formatTime(timer)}</span>}
             </div>
             <ErrorMessage message={emailError} />
@@ -256,7 +256,8 @@ export default function Register() {
               placeholder="비밀번호"
               required
             />
-            <ErrorMessage message={passwordError} />
+            {passwordError && <ErrorMessage message={passwordError} />}{" "}
+            {/* ✅ 조건부 표시 */}
           </div>
 
           {/* 비밀번호 확인 */}

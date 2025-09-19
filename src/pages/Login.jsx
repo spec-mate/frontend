@@ -9,8 +9,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState(""); // ✅ 토스트 문구 상태
-  const [toastType, setToastType] = useState("success"); // ✅ success | error
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
   const [nickname, setNickname] = useState("");
   const navigate = useNavigate();
 
@@ -18,20 +18,12 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const res = await api.post("/auth/login", {
-        email,
-        password,
-      });
+      const res = await api.post("/auth/login", { email, password });
 
-      // ✅ 토큰 저장
-      // ✅ 토큰 저장 위치 변경
-      sessionStorage.setItem("accessToken", res.data.accessToken); // 👉 AccessToken은 세션스토리지
-      localStorage.setItem("nickname", res.data.nickname || "유저"); // 👉 닉네임 로컬스토리지
-      localStorage.setItem("email", email); // 👉 이메일 로컬스토리지
+      sessionStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("nickname", res.data.nickname || "유저");
+      localStorage.setItem("email", email);
 
-      // ❌ RefreshToken은 저장하지 않음 (HttpOnly 쿠키로 내려옴, JS에서 접근 불가)
-
-      // ✅ 닉네임 저장
       const userNickname = res.data.nickname || "유저";
       setNickname(userNickname);
       localStorage.setItem("nickname", userNickname);
@@ -40,15 +32,12 @@ export default function Login() {
       setToastType("success");
       setShowToast(true);
 
-      console.log("로그인 성공:", res.data);
-
       setTimeout(() => {
         navigate("/");
       }, 2000);
     } catch (err) {
       console.error("로그인 실패:", err);
-
-      setToastMessage("이메일 또는 비밀번호를 확인해주세요."); // ✅ 실패 시 문구
+      setToastMessage("이메일 또는 비밀번호를 확인해주세요.");
       setToastType("error");
       setShowToast(true);
     }
@@ -60,14 +49,15 @@ export default function Login() {
         <img src={binglogo} alt="로고" className="login-logo" />
       </Link>
 
-      <form className="login-form" onSubmit={handleSubmit}>
-        <p className="signup-text">
-          회원이 아니신가요?{" "}
-          <Link to="/register" className="signup-link">
-            회원가입하기
-          </Link>
-        </p>
+      {/* ✅ 로고 바로 아래 회원가입 문구 */}
+      <p className="signup-text">
+        회원이 아니신가요?{" "}
+        <Link to="/register" className="signup-link">
+          회원가입하기
+        </Link>
+      </p>
 
+      <form className="login-form" onSubmit={handleSubmit}>
         <div className="input-group">
           <input
             type="email"
@@ -101,7 +91,6 @@ export default function Login() {
         </div>
       </form>
 
-      {/* ✅ 성공/실패 공통 토스트 */}
       {showToast && (
         <Toast
           message={toastMessage}

@@ -12,7 +12,6 @@
   height: 100px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 30px;
 }
 
 .register-form {
@@ -34,8 +33,8 @@
 }
 
 .input-group label {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 500;
   color: #696f79;
   margin-bottom: 6px;
   display: block;
@@ -140,8 +139,11 @@
 }
 
 .login-text {
-  font-size: 14px;
+  margin: 10px 0 30px 0; /* 로고랑 폼 사이 여백 */
+  font-size: 30px;
   color: #333;
+  font-weight: 500;
+  text-align: center;
 }
 
 .login-link {
