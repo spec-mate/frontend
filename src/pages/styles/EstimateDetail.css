@@ -26,16 +26,15 @@
   margin-bottom: 20px;
 }
 
-/* ✅ 제품 리스트 → 2열 */
-.product-list {
+/* ✅ 제품 리스트 → 견적 전용 네이밍 */
+.estimate-products {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 2열 */
   gap: 24px;
   margin-bottom: 40px;
 }
 
 /* 각 제품 카드 */
-.product-row {
+.estimate-product-row {
   display: grid;
   grid-template-columns: 100px 150px 1fr; /* 카테고리 | 이미지 | 상세정보 */
   align-items: center;
@@ -47,7 +46,7 @@
 }
 
 /* 카테고리 */
-.product-category {
+.estimate-product-category {
   font-size: 14px;
   font-weight: bold;
   color: #333;
@@ -55,43 +54,43 @@
 }
 
 /* 이미지 영역 */
-.product-image {
+.estimate-product-image {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 150px; /* ✅ 넓게 */
-  height: 150px; /* ✅ 크게 */
+  width: 150px;
+  height: 150px;
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 8px;
   background: #fafafa;
 }
 
-.product-image img {
+.estimate-product-image img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain; /* 비율 유지 */
+  object-fit: contain;
 }
 
 /* 오른쪽 상세 정보 */
-.product-details {
+.estimate-product-details {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.product-name {
+.estimate-product-name {
   font-size: 15px;
   font-weight: 600;
   color: #222;
 }
 
-.product-price {
+.estimate-product-price {
   font-size: 14px;
   color: #555;
 }
 
-.product-total {
+.estimate-product-total {
   font-size: 15px;
   font-weight: bold;
   color: #1e5cde;

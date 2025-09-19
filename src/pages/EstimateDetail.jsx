@@ -47,27 +47,24 @@ export default function EstimateDetail({ estimate, onClose }) {
       <h2>{estimate.title}</h2>
       <p>{new Date(estimate.createdAt).toLocaleDateString()}</p>
 
-      <div className="product-list">
+      <div className="estimate-products">
         {products.map((p) => (
-          <div key={p.id} className="product-row">
+          <div key={p.id} className="estimate-product-row">
             {/* 부품 카테고리 */}
-            <div className="product-category">{p.category}</div>
+            <div className="estimate-product-category">{p.category}</div>
 
             {/* 이미지 */}
-            <div className="product-image">
-              <img
-                src={p.image || "/no-image.svg"} // ✅ 수정된 부분
-                alt={p.productName}
-              />
+            <div className="estimate-product-image">
+              <img src={p.image || "/no-image.svg"} alt={p.productName} />
             </div>
 
             {/* 오른쪽 정보 */}
-            <div className="product-details">
-              <p className="product-name">{p.productName}</p>
-              <p className="product-price">
+            <div className="estimate-product-details">
+              <p className="estimate-product-name">{p.productName}</p>
+              <p className="estimate-product-price">
                 {p.unitPrice.toLocaleString()} 원 × {p.quantity}
               </p>
-              <p className="product-total">
+              <p className="estimate-product-total">
                 합계: {(p.totalPrice || 0).toLocaleString()} 원
               </p>
             </div>
