@@ -145,20 +145,20 @@
 /* =========================== */
 .memory-text {
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .ram-text {
   font-size: 24px;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .gpu-text {
   font-size: 32px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .vga-text {
   font-size: 24px;
-  font-weight: 400;
+  font-weight: 500;
 }
