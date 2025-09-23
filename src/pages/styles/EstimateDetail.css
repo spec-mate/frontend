@@ -26,23 +26,30 @@
   margin-bottom: 20px;
 }
 
-/* ✅ 제품 리스트 → 견적 전용 네이밍 */
+/* ✅ 제품 리스트: 2열 그리드 */
 .estimate-products {
   display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 👉 두 열로 배치 */
   gap: 24px;
   margin-bottom: 40px;
 }
 
 /* 각 제품 카드 */
 .estimate-product-row {
-  display: grid;
-  grid-template-columns: 100px 150px 1fr; /* 카테고리 | 이미지 | 상세정보 */
-  align-items: center;
-  gap: 16px;
+  display: flex;
+  flex-direction: column; /* 카드 내부는 세로 배치 */
+  align-items: flex-start;
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 16px;
   background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.estimate-product-row:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* 카테고리 */
@@ -50,7 +57,7 @@
   font-size: 14px;
   font-weight: bold;
   color: #333;
-  text-align: center;
+  margin-bottom: 8px;
 }
 
 /* 이미지 영역 */
@@ -58,12 +65,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 150px;
+  width: 100%;
   height: 150px;
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 8px;
   background: #fafafa;
+  margin-bottom: 12px;
 }
 
 .estimate-product-image img {
@@ -72,11 +80,12 @@
   object-fit: contain;
 }
 
-/* 오른쪽 상세 정보 */
+/* 상세 정보 */
 .estimate-product-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  width: 100%;
 }
 
 .estimate-product-name {
@@ -96,6 +105,28 @@
   color: #1e5cde;
 }
 
+/* 삭제 버튼 */
+.estimate-product-actions {
+  margin-top: 12px;
+  width: 100%;
+  text-align: right;
+}
+
+.delete-product-btn {
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.delete-product-btn:hover {
+  background: #d9363e;
+}
+
 /* ✅ 최종 합계 */
 .total-price {
   text-align: right;
@@ -103,4 +134,11 @@
   font-weight: bold;
   color: red;
   margin-top: 20px;
+}
+
+/* ✅ 반응형: 모바일에서는 1열 */
+@media (max-width: 768px) {
+  .estimate-products {
+    grid-template-columns: 1fr;
+  }
 }
