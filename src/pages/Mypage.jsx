@@ -1,4 +1,4 @@
-// MyPage.jsx
+// src/pages/MyPage.jsx
 import React, { useEffect, useState } from "react";
 import "./styles/Mypage.css";
 import api from "../api";
@@ -51,10 +51,11 @@ export default function MyPage() {
     <div className="mypage">
       {!selectedEstimate ? (
         <>
-          <header className="mypage-header">
+          {/* 🔹 header → div 로 변경 */}
+          <div className="mypage-header">
             <h2>{localStorage.getItem("nickname") || "유저"}</h2>
             <span className="user-role">스펙메이트 회원</span>
-          </header>
+          </div>
 
           <section className="mypage-section">
             <h3 className="section-title">스펙메이트 보관함 확인하기 &gt;</h3>
