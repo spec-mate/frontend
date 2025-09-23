@@ -1,5 +1,5 @@
 // src/pages/DetailPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Link, useParams } from "react-router-dom";
 import api from "../api"; // axios instance
 import { useProgressStore } from "../store/progressStore"; // ✅ zustand progress store
@@ -14,6 +14,9 @@ export default function DetailPage() {
   const [loading, setLoading] = useState(true);
 
   const setProgress = useProgressStore((state) => state.setProgress);
+
+  // ✅ 스크롤 이동할 대상 ref (페이지 상단)
+  const topRef = useRef(null);
 
   // 제목 매핑
   const titleMap = {
@@ -70,6 +73,13 @@ export default function DetailPage() {
     fetchProducts();
   }, [productName, page, apiType, setProgress]);
 
+  // ✅ page가 바뀔 때마다 맨 위로 이동
+  useEffect(() => {
+    if (topRef.current) {
+      topRef.current.scrollIntoView({ behavior: "auto" }); // 바로 이동
+    }
+  }, [page]);
+
   return (
     <div className="detail-page">
       {/* 왼쪽 열 */}
@@ -96,7 +106,7 @@ export default function DetailPage() {
       <div className="main-content">
         <div></div>
 
-        <div className="main-inner">
+        <div className="main-inner" ref={topRef}>
           <h2>{pageTitle}</h2>
 
           {/* 필터 + 검색 */}
@@ -142,7 +152,7 @@ export default function DetailPage() {
                 ? products.map((p) => (
                     <Link
                       to={`/product/${productName}/${p.id}`}
-                      className={`product-item ${loading ? "blurred" : ""}`} // ✅ 로딩 시 blur
+                      className={`product-item ${loading ? "blurred" : ""}`}
                       key={p.id}
                     >
                       <img src={p.image || "/no-image.svg"} alt={p.name} />
@@ -173,7 +183,8 @@ export default function DetailPage() {
             {/* 페이지네이션 */}
             {!loading && (
               <div className="pagination">
-                {page > 0 && (
+                {/* ✅ 첫 번째 구간(0~9페이지)에서는 < 버튼 숨김 */}
+                {page >= 10 && (
                   <button
                     onClick={() => {
                       const startPage = Math.floor(page / 10) * 10;
