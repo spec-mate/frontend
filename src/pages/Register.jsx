@@ -48,7 +48,7 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 전송
+  // ✅ 인증번호 전송 (body로 전송, /api 제거)
   const handleSendCode = async () => {
     if (!email.includes("@")) {
       setEmailError("이메일을 정확히 입력해주세요.");
@@ -57,9 +57,7 @@ export default function Register() {
     setEmailError("");
 
     try {
-      const res = await api.post("/auth/send-code", null, {
-        params: { email },
-      });
+      const res = await api.post("/auth/send-code", { email });
 
       if (res.status === 200) {
         setToastMessage("인증번호가 이메일로 발송되었습니다.");
@@ -79,11 +77,12 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 확인
+  // ✅ 인증번호 확인 (body로 전송, /api 제거)
   const handleVerifyCode = async () => {
     try {
-      await api.post("/auth/verify-code", null, {
-        params: { email, code: verificationCode.trim() },
+      await api.post("/auth/verify-code", {
+        email,
+        code: verificationCode.trim(),
       });
 
       setToastMessage("이메일 인증 성공!");
