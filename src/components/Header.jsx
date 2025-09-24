@@ -48,9 +48,16 @@ export default function Header() {
       // 필요하다면 서버 로그아웃 API 호출
       // await api.post("/auth/logout");
 
+      // ✅ 세션스토리지 클리어
       sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("email");
+
+      // ✅ 로컬스토리지 클리어
+      localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("nickname");
+      localStorage.removeItem("email");
+
       setIsLoggedIn(false);
 
       setToastMessage(`${nickname}님, 다음에 또 오세요!`);

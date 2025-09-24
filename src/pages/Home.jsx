@@ -3,8 +3,7 @@ import "./styles/Home.css";
 import { useHeaderStore } from "../store/headerStore";
 import { useNavigate } from "react-router-dom";
 
-import pcImage1 from "/pcimage1.svg";
-import pcImage2 from "/pcimage2.svg";
+import pcImage from "/usageimage.svg";
 
 export default function Home() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
@@ -43,12 +42,7 @@ export default function Home() {
           </div>
 
           <div className="main-images">
-            <img src={pcImage1} alt="PC Image 1" className="pc-image pc-left" />
-            <img
-              src={pcImage2}
-              alt="PC Image 2"
-              className="pc-image pc-right"
-            />
+            <img src={pcImage} alt="PC Image 1" className="pc-image pc-left" />
           </div>
         </main>
       </section>

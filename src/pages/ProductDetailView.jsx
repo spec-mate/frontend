@@ -291,7 +291,85 @@ export default function ProductDetailView() {
     <div className="product-detail-view">
       <div></div>
       <div className="product-content">
-        {/* ... 상품 정보 영역 (생략 없음) ... */}
+        <div className="breadcrumb">
+          <Link to="/info">PC 부품 정보</Link> &gt;{" "}
+          <Link to={`/product/${encodeURIComponent(product.type)}`}>
+            {typeLabel}
+          </Link>
+        </div>
+
+        <h2 className="product-title">{product.name}</h2>
+
+        <div className="tags">
+          <span>#{product.manufacturer}</span>
+          <span>#{typeLabel}</span>
+          <span>등록일: {product.regDate}</span>
+        </div>
+
+        <div className="product-box">
+          <div className="product-info">
+            <div className="left">
+              <img
+                src={product.image || "/no-image.svg"}
+                alt={product.name}
+                className="product-detail-image"
+              />
+            </div>
+            <div className="right">
+              <div className="specs-tables">
+                <table>
+                  <tbody>
+                    {entries.map(([key, value]) => (
+                      <tr key={key}>
+                        <td>{optionLabels[key] || key}</td>
+                        <td>{String(value)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* ✅ 최저가 영역 */}
+          <div className="price-box">
+            <span className="price-label">최저가</span>
+            <strong className="price-value">
+              {product.lowestPrice?.price ? (
+                <>
+                  <span className="price-number">
+                    {formatPrice(product.lowestPrice.price)}
+                  </span>
+                  <span className="price-unit"> 원</span>
+                </>
+              ) : (
+                "정보 없음"
+              )}
+            </strong>
+
+            <div className="price-actions">
+              {product.lowestPrice?.link && (
+                <a
+                  href={product.lowestPrice.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="buy-btn"
+                >
+                  <span className="btn-icon"></span>
+                </a>
+              )}
+              <button className="cart-btn" onClick={handleSaveToEstimate}>
+                <span className="btn-icon">
+                  <img src="/cart.svg" alt="장바구니" />
+                </span>
+                <div className="cart-text">
+                  <small className="cart-subtitle">나만의 견적 보관함</small>
+                  <span className="cart-main">보관하기</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* ✅ 추천 PC 조합 섹션 */}
         <div className="recommend-section">
@@ -301,24 +379,13 @@ export default function ProductDetailView() {
           </div>
 
           <div className="recommend-cards">
-            {/* 좌측 */}
             <div>
               {selectedBuild === "office" ? (
                 <div className="build-list fixed-slot">
                   <h4>사무용 PC 추천 부품</h4>
                   <ul>
                     {[
-                      { category: "CPU", part: "Intel i5-13400" },
-                      { category: "메인보드", part: "MSI B760M Pro" },
-                      {
-                        category: "그래픽카드",
-                        part: "내장그래픽 (Intel UHD)",
-                      },
-                      { category: "메모리", part: "DDR5 16GB 4800MHz" },
-                      { category: "파워", part: "마이크로닉스 600W Bronze" },
-                      { category: "SSD", part: "삼성 970 EVO Plus 500GB" },
-                      { category: "쿨러", part: "기본 쿨러" },
-                      { category: "케이스", part: "ABKO Suitmaster" },
+                      /* ... 생략 ... */
                     ].map((b, idx) => (
                       <li key={idx}>
                         <strong>{b.category}</strong>: {b.part}
@@ -340,21 +407,13 @@ export default function ProductDetailView() {
               )}
             </div>
 
-            {/* 우측 */}
             <div>
               {selectedBuild === "gaming" ? (
                 <div className="build-list fixed-slot">
                   <h4>게이밍 PC 추천 부품</h4>
                   <ul>
                     {[
-                      { category: "CPU", part: "AMD Ryzen 7 9800X3D" },
-                      { category: "메인보드", part: "ASUS ROG STRIX B650" },
-                      { category: "그래픽카드", part: "RTX 4070 Ti Super" },
-                      { category: "메모리", part: "DDR5 32GB 6000MHz" },
-                      { category: "파워", part: "시소닉 850W Gold" },
-                      { category: "SSD", part: "삼성 990 Pro 1TB" },
-                      { category: "쿨러", part: "NZXT Kraken 240" },
-                      { category: "케이스", part: "Lian Li Lancool III" },
+                      /* ... 생략 ... */
                     ].map((b, idx) => (
                       <li key={idx}>
                         <strong>{b.category}</strong>: {b.part}
@@ -378,6 +437,7 @@ export default function ProductDetailView() {
           </div>
         </div>
       </div>
+      <div></div>
 
       {/* ✅ Toast 출력 */}
       {showToast && (

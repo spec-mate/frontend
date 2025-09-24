@@ -116,7 +116,6 @@ body {
 .pc-left {
   top: 40px;
   left: 0;
-  transform: rotate(-12deg);
   z-index: 2;
 }
 
