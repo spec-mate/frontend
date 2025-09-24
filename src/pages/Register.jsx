@@ -48,7 +48,7 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 전송 (body로 전송, /api 제거)
+  // ✅ 인증번호 전송 (body로 전송)
   const handleSendCode = async () => {
     if (!email.includes("@")) {
       setEmailError("이메일을 정확히 입력해주세요.");
@@ -77,7 +77,7 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 확인 (body로 전송, /api 제거)
+  // ✅ 인증번호 확인 (body로 전송)
   const handleVerifyCode = async () => {
     try {
       await api.post("/auth/verify-code", {
@@ -119,7 +119,7 @@ export default function Register() {
     }
   };
 
-  // 최종 회원가입
+  // ✅ 최종 회원가입
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -268,7 +268,6 @@ export default function Register() {
             회원가입
           </button>
 
-          {/* ✅ 회원가입 버튼 밑으로 이동 */}
           <p className="login-text">
             이미 회원이신가요?{" "}
             <Link to="/login" className="login-link">
