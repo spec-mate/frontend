@@ -1,0 +1,186 @@
+.login-container {
+  display: flex;
+  flex-direction: column; /* 로고 + 폼 세로 배치 */
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.login-logo {
+  width: 500px;
+  height: 100px;
+  object-fit: contain;
+  display: block;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 460px;
+  padding: 40px 30px;
+  border-radius: 12px; /* ✅ register-form 과 통일 */
+  background-color: #fff;
+}
+
+.input-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.input-group input {
+  height: 64px;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input-group input:focus {
+  border-color: #1e5cde;
+  box-shadow: 0 0 8px rgba(30, 92, 222, 0.3);
+  outline: none;
+}
+
+.login-button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px; /* ✅ 입력 필드와 간격 확보 */
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  font-size: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+}
+
+.login-button:hover {
+  animation: gradientMove 1s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.signup-text {
+  margin: 10px 0 20px 0; /* 로고와 폼 사이 여백 */
+  font-size: 20px;
+  font-weight: 500;
+  color: #616161;
+  text-align: center; /* 가운데 정렬 */
+}
+
+.signup-link {
+  font-weight: bold;
+  text-decoration: none;
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  transition: background 0.3s ease;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+  animation: gradientMove 1s ease infinite;
+}
+
+.forgot-password {
+  margin-top: 10px;
+}
+
+.forgot-link {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================= */
+/* ✅ 반응형 스타일 */
+/* ============================= */
+
+/* 태블릿 (max-width: 768px) */
+@media (max-width: 768px) {
+  .login-form {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  .login-logo {
+    width: 300px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  .login-button {
+    font-size: 20px;
+    padding: 12px;
+    margin-top: 8px; /* ✅ 버튼과 인풋 간격 축소 */
+  }
+}
+
+/* 모바일 (max-width: 480px) */
+@media (max-width: 480px) {
+  .login-form {
+    width: 100%;
+    padding: 20px 15px;
+    gap: 15px;
+  }
+
+  .login-logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+
+  .input-group input {
+    font-size: 14px;
+    padding: 10px 12px; /* ✅ 모바일에서는 패딩만 줄이기 */
+  }
+
+  .login-button {
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 6px; /* ✅ 모바일에서 최소 여백 */
+  }
+
+  .signup-text {
+    font-size: 12px;
+  }
+
+  .forgot-link {
+    font-size: 12px;
+  }
+}

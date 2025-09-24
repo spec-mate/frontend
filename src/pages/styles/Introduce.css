@@ -1,0 +1,158 @@
+.introduce-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+/* ✅ 이미지 컨테이너 */
+.image-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: url("/pcimage.svg") center/cover no-repeat;
+  overflow: hidden;
+}
+
+/* ✅ gradient 효과 */
+.image-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(140, 140, 140, 0.6) 49.52%,
+    #fff 100%
+  );
+  z-index: 1;
+}
+
+/* ✅ 메시지 오버레이 */
+.message-overlay {
+  position: absolute;
+  top: 40%; /* ✅ 중앙보다 위쪽으로 */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  background: transparent;
+  z-index: 3;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.quote-mark {
+  font-size: 48px;
+  font-weight: 400;
+  color: white;
+  margin-bottom: 4px;
+  font-family: "ABeeZee", sans-serif;
+}
+
+.introduce-message {
+  font-size: 56px;
+  font-weight: 400;
+  margin: 8px 0 40px;
+  white-space: nowrap;
+  color: #fff;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.dots {
+  margin-top: 109px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  transition: background-color 0.3s;
+}
+
+.dot.active {
+  background-color: #000;
+}
+
+/* ✅ 하단 텍스트 */
+.bottom-section {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 100%;
+  z-index: 2;
+  padding: 20px;
+  color: #000;
+  background: transparent;
+}
+
+.subtitle {
+  font-size: 40px;
+  color: #333;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  text-align: center;
+  font-weight: 500;
+}
+
+.title {
+  font-size: 56px;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+}
+
+.title .highlight {
+  font-weight: 600;
+  color: #1e5cde;
+}
+
+/* ✅ 이미지 밖 밑부분 텍스트 */
+.feature-section {
+  text-align: center;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.feature-title {
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #000;
+  margin-top: 254px; /* ✅ bottom-section과의 간격 */
+}
+
+.feature-desc {
+  font-size: 25px;
+  color: #555;
+  font-weight: 500;
+}
+
+.service-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.service-image {
+  display: block;
+  margin: 0 auto 20vh auto;
+  max-width: 80%;
+  height: auto;
+}

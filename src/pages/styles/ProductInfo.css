@@ -1,0 +1,164 @@
+.product-page {
+  display: grid;
+  grid-template-columns: 1fr 1000px 1fr; /* 좌-중앙-우 */
+  gap: 20px;
+  padding: 169px 20px 40px;
+  text-align: center;
+}
+
+/* 헤더 */
+.product-header {
+  grid-column: 2;
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.product-title {
+  font-size: 56px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.product-subtitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: #555;
+  border-bottom: 0.5px solid #404040;
+  padding-bottom: 40px;
+  margin-top: 0;
+}
+
+/* 제품 그리드 */
+.product-grid {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 44px;
+}
+
+/* 카드 */
+.product-card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  text-decoration: none;
+  transition: transform 1s ease; /* ✅ 카드 애니메이션 느리게 */
+  width: 300px;
+  height: 150px;
+  margin: 0 auto;
+}
+
+.product-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  transition: background 1s ease; /* ✅ 배경 전환 느리게 */
+  z-index: 1;
+}
+
+.product-card:hover::after {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.product-card img {
+  width: 300px;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+/* 오버레이 */
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 1s ease; /* ✅ 오버레이 애니메이션 느리게 */
+  z-index: 2;
+  color: #fff;
+  padding: 15px;
+  box-sizing: border-box;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.overlay-content h3 {
+  font-size: 32px;
+  font-weight: 400;
+  margin: 0 0 12px 0; /* 설명과 간격 */
+  color: #fff !important;
+  white-space: pre-line;
+  transition: opacity 1s ease, transform 1s ease; /* ✅ 제목도 부드럽게 */
+}
+
+.overlay-content p {
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 1s ease, max-height 1s ease; /* ✅ 설명 텍스트 부드럽게 */
+  margin: 0;
+  color: #fff !important;
+}
+
+/* 기본 제목 / hover 제목 전환 */
+.title-default {
+  display: block;
+  transition: opacity 1s ease;
+}
+
+.title-hover {
+  display: none;
+  transition: opacity 1s ease;
+}
+
+.product-card:hover .title-default {
+  display: none;
+}
+.product-card:hover .title-hover {
+  display: inline;
+}
+
+/* hover 시 설명 보이기 */
+.product-card:hover .overlay-content p {
+  opacity: 1;
+  max-height: 200px;
+}
+
+/* =========================== */
+/* ✅ 개별 텍스트 스타일 추가 */
+/* =========================== */
+.memory-text {
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.ram-text {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.gpu-text {
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.vga-text {
+  font-size: 24px;
+  font-weight: 500;
+}

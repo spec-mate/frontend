@@ -1,37 +1,43 @@
-// src/pages/Home.jsx
 import React from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
-import "./Home.css";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Introduce from "./pages/Introduce";
+import Usage from "./pages/Usage";
+import ProductInfo from "./pages/ProductInfo";
+import ProductDetail from "./pages/ProductDetail";
+import ProductDetailView from "./pages/ProductDetailView";
+import MyPage from "./pages/Mypage";
+import EstimateDetail from "./pages/EstimateDetail";
+import ProgressBar from "./components/ProgressBar";
 
-export default function Home() {
+function App() {
+  const location = useLocation();
+  const hideHeaderRoutes = ["/login", "/register", "/usage"];
+
   return (
-    <div className="home">
-      {/* 어두운 오버레이 */}
-      <div className="overlay"></div>
-
-      {/* 헤더 */}
-      <Header />
-
-      {/* 메인 콘텐츠 */}
-      <main className="main">
-        <div className="main-text">
-          <h1>
-            컴알못도 전문가처럼,
-            <span>쉽고 빠르게</span>
-          </h1>
-          <h6>
-            복잡한 PC 부품과 설명 때문에 난감하셨나요? <br />
-            이제는 스펙메이트로 한번에 해결하세요!
-          </h6>
-        </div>
-
-        {/* 푸터 */}
-        <footer className="footer">
-          <a href="/" className="footer-link">
-            Footer Link
-          </a>
-        </footer>
-      </main>
-    </div>
+    <>
+      <ProgressBar />
+      {!hideHeaderRoutes.includes(location.pathname) && <Header />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/introduce" element={<Introduce />} />
+        <Route path="/usage" element={<Usage />} />
+        <Route path="/info" element={<ProductInfo />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/product/:productName" element={<ProductDetail />} />
+        <Route path="/estimate/:id" element={<EstimateDetail />} />
+        <Route
+          path="/product/:productName/:id"
+          element={<ProductDetailView />}
+        />
+      </Routes>
+    </>
   );
 }
+
+export default App;
