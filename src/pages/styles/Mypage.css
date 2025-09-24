@@ -18,8 +18,14 @@
 
 .user-role {
   font-size: 14px;
-  color: #1e5cde;
+  color: #1e5cde; /* 기본 파란색 */
   margin-left: 4px;
+}
+
+/* 회원 글자만 초록색 + 굵게 */
+.user-role .highlight-member {
+  color: #00a442;
+  font-weight: 600;
 }
 
 /* 섹션 */

@@ -18,7 +18,7 @@ export default function Register() {
   const [nicknameError, setNicknameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [codeError, setCodeError] = useState("");
-  const [passwordError, setPasswordError] = useState(""); // ✅ 초기값을 빈 문자열로 수정
+  const [passwordError, setPasswordError] = useState("");
 
   // ✅ 토스트 상태
   const [showToast, setShowToast] = useState(false);
@@ -38,7 +38,6 @@ export default function Register() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // 닉네임 중복 체크 (예시)
   const handleNicknameChange = (e) => {
     const value = e.target.value;
     setNickname(value);
@@ -67,6 +66,7 @@ export default function Register() {
         setToastType("success");
         setShowToast(true);
 
+        setTimer(0);
         setTimer(300); // 5분 타이머 시작
       }
     } catch (err) {
@@ -79,7 +79,7 @@ export default function Register() {
     }
   };
 
-  // 인증번호 확인
+  // ✅ 인증번호 확인
   const handleVerifyCode = async () => {
     try {
       await api.post("/auth/verify-code", null, {
@@ -90,6 +90,8 @@ export default function Register() {
       setToastType("success");
       setShowToast(true);
       setCodeError("");
+
+      setTimer(0);
     } catch (err) {
       console.error(err);
       setCodeError("인증번호가 올바르지 않거나 만료되었습니다.");
@@ -100,7 +102,7 @@ export default function Register() {
     }
   };
 
-  // ✅ 비밀번호 유효성 검사 (실시간)
+  // ✅ 비밀번호 유효성 검사
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
@@ -108,13 +110,13 @@ export default function Register() {
     const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,16}$/;
 
     if (value.length === 0) {
-      setPasswordError(""); // 입력 없으면 숨김
+      setPasswordError("");
     } else if (!regex.test(value)) {
       setPasswordError(
         "영문, 숫자, 특수문자를 조합해서 입력해주세요. (8~16자)"
       );
     } else {
-      setPasswordError(""); // 조건 충족 시 숨김
+      setPasswordError("");
     }
   };
 
@@ -160,7 +162,6 @@ export default function Register() {
     }
   };
 
-  // ✅ mm:ss 형식 변환
   const formatTime = (seconds) => {
     const m = String(Math.floor(seconds / 60)).padStart(2, "0");
     const s = String(seconds % 60).padStart(2, "0");
@@ -173,14 +174,6 @@ export default function Register() {
         <Link to="/">
           <img src={binglogo} alt="로고" className="register-logo" />
         </Link>
-
-        {/* ✅ 로고 밑에 로그인 안내 */}
-        <p className="login-text">
-          이미 회원이신가요?{" "}
-          <Link to="/login" className="login-link">
-            로그인하기
-          </Link>
-        </p>
 
         <form className="register-form" onSubmit={handleSubmit}>
           {/* 닉네임 */}
@@ -256,8 +249,7 @@ export default function Register() {
               placeholder="비밀번호"
               required
             />
-            {passwordError && <ErrorMessage message={passwordError} />}{" "}
-            {/* ✅ 조건부 표시 */}
+            {passwordError && <ErrorMessage message={passwordError} />}
           </div>
 
           {/* 비밀번호 확인 */}
@@ -276,10 +268,17 @@ export default function Register() {
           <button type="submit" className="register-button">
             회원가입
           </button>
+
+          {/* ✅ 회원가입 버튼 밑으로 이동 */}
+          <p className="login-text">
+            이미 회원이신가요?{" "}
+            <Link to="/login" className="login-link">
+              로그인하기
+            </Link>
+          </p>
         </form>
       </div>
 
-      {/* ✅ 토스트 메시지 */}
       {showToast && (
         <Toast
           message={toastMessage}

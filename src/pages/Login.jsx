@@ -49,14 +49,6 @@ export default function Login() {
         <img src={binglogo} alt="로고" className="login-logo" />
       </Link>
 
-      {/* ✅ 로고 바로 아래 회원가입 문구 */}
-      <p className="signup-text">
-        회원이 아니신가요?{" "}
-        <Link to="/register" className="signup-link">
-          회원가입하기
-        </Link>
-      </p>
-
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="input-group">
           <input
@@ -83,6 +75,14 @@ export default function Login() {
         <button type="submit" className="login-button">
           로그인
         </button>
+
+        {/* ✅ 로그인 버튼 밑으로 이동 */}
+        <p className="signup-text">
+          회원이 아니신가요?{" "}
+          <Link to="/register" className="signup-link">
+            회원가입하기
+          </Link>
+        </p>
 
         <div className="forgot-password">
           <Link to="/forgot-password" className="forgot-link">

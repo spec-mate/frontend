@@ -79,7 +79,9 @@ export default function MyPage() {
           {/* 🔹 유저 정보 블록 */}
           <div className="mypage-header">
             <h2>{localStorage.getItem("nickname") || "유저"}</h2>
-            <span className="user-role">스펙메이트 회원</span>
+            <span className="user-role">
+              스펙메이트 <span className="highlight-member">회원</span>
+            </span>
           </div>
 
           {/* 🔹 견적 목록 */}
