@@ -1,7 +1,7 @@
 {
     "rewrites": [
         { 
-            "source": "/api/:path*", 
+            "source": "/:path*", 
             "destination": "${process.env.VITE_API_BASE_URL}/:path*"
     }
     ]
