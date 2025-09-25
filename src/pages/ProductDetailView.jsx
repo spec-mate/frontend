@@ -362,7 +362,6 @@ export default function ProductDetailView() {
           </div>
         </div>
 
-        {/* ✅ 추천 카드 (위치 바꿈) */}
         <div className="recommend-section">
           <div className="recommend-overlay-text">
             <h3>스펙메이트의 용도별 조합 추천!</h3>
@@ -370,39 +369,6 @@ export default function ProductDetailView() {
           </div>
 
           <div className="recommend-cards">
-            {/* 왼쪽: 게이밍 */}
-            <div>
-              {selectedBuild === "gaming" ? (
-                <div
-                  className="build-list fixed-slot"
-                  onClick={() => handleCardClick("gaming")}
-                >
-                  <h4>게이밍 PC 추천 부품</h4>
-                  <ul>
-                    {[].map((b, idx) => (
-                      <li key={idx}>
-                        <strong>{b.category}</strong>: {b.part}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <div
-                  className={`recommend-card ${
-                    selectedBuild === "office" ? "active" : ""
-                  }`}
-                  onClick={() => handleCardClick("office")}
-                >
-                  <img src="/gaming.svg" alt="게이밍 PC" />
-                  <div className="recommend-label">게이밍</div>
-                  <div className="recommend-desc">
-                    최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* 오른쪽: 사무용 */}
             <div>
               {selectedBuild === "office" ? (
                 <div
@@ -420,10 +386,37 @@ export default function ProductDetailView() {
                 </div>
               ) : (
                 <div
-                  className={`recommend-card ${
-                    selectedBuild === "gaming" ? "active" : ""
-                  }`}
+                  className="recommend-card"
                   onClick={() => handleCardClick("gaming")}
+                >
+                  <img src="/gaming.svg" alt="게이밍 PC" />
+                  <div className="recommend-label">게이밍</div>
+                  <div className="recommend-desc">
+                    최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div>
+              {selectedBuild === "gaming" ? (
+                <div
+                  className="build-list fixed-slot"
+                  onClick={() => handleCardClick("gaming")}
+                >
+                  <h4>게이밍 PC 추천 부품</h4>
+                  <ul>
+                    {[].map((b, idx) => (
+                      <li key={idx}>
+                        <strong>{b.category}</strong>: {b.part}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div
+                  className="recommend-card"
+                  onClick={() => handleCardClick("office")}
                 >
                   <img src="/affairs.svg" alt="사무용 PC" />
                   <div className="recommend-label">사무용</div>

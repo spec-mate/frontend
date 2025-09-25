@@ -136,7 +136,7 @@ body::-webkit-scrollbar {
 
 /* 두 번째 섹션 */
 .info-section {
-  padding: 120px 0; /* 높이는 padding으로만 확보 */
+  padding: 120px 0;
   display: flex;
   justify-content: center;
   background: transparent;
@@ -158,8 +158,6 @@ body::-webkit-scrollbar {
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
   color: white;
-
-  /* 높이 고정 절대 금지 */
   height: auto;
 }
 
@@ -182,4 +180,96 @@ body::-webkit-scrollbar {
 .introduce-image {
   max-width: 100%;
   height: auto;
+}
+
+/* ===================== */
+/* 반응형 추가 */
+/* ===================== */
+
+/* 태블릿 (1024px 이하) */
+@media (max-width: 1024px) {
+  .main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    text-align: center;
+    padding: 100px 20px 40px;
+  }
+
+  .main-text {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: center;
+  }
+
+  .main-text h1 {
+    font-size: 40px;
+  }
+
+  .main-text h6 {
+    font-size: 18px;
+  }
+
+  .main-images {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 20px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .pc-image {
+    position: relative;
+    max-width: 250px;
+  }
+
+  .info-box {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding: 30px;
+  }
+
+  .info-left {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .info-right {
+    width: 100%;
+  }
+
+  .introduce-image {
+    max-width: 80%;
+  }
+}
+
+/* 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  .main-text h1 {
+    font-size: 32px;
+  }
+
+  .main-text h6 {
+    font-size: 16px;
+  }
+
+  .main-button {
+    width: 180px;
+    height: 55px;
+    font-size: 16px;
+  }
+
+  .pc-image {
+    max-width: 200px;
+  }
+
+  .info-box {
+    padding: 20px;
+  }
+
+  .introduce-image {
+    max-width: 100%;
+  }
 }

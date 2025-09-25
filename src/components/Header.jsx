@@ -14,7 +14,7 @@ export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success"); // ✅ success | error
+  const [toastType, setToastType] = useState("success");
   const headerVersion = useHeaderStore((state) => state.headerVersion);
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,7 +27,6 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ✅ 로그인 상태 감지 (localStorage / sessionStorage 변경 감지)
   useEffect(() => {
     const checkLogin = () => {
       const token =
@@ -36,8 +35,8 @@ export default function Header() {
       setIsLoggedIn(!!token);
     };
 
-    checkLogin(); // 첫 실행
-    window.addEventListener("storage", checkLogin); // storage 변경 감지
+    checkLogin();
+    window.addEventListener("storage", checkLogin);
     return () => window.removeEventListener("storage", checkLogin);
   }, []);
 
@@ -45,14 +44,8 @@ export default function Header() {
     try {
       const nickname = localStorage.getItem("nickname") || "유저";
 
-      // 필요하다면 서버 로그아웃 API 호출
-      // await api.post("/auth/logout");
-
-      // ✅ 세션스토리지 클리어
       sessionStorage.removeItem("accessToken");
       sessionStorage.removeItem("email");
-
-      // ✅ 로컬스토리지 클리어
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("nickname");
@@ -69,7 +62,6 @@ export default function Header() {
       }, 2000);
     } catch (err) {
       console.error("로그아웃 실패:", err);
-
       setToastMessage("로그아웃을 실패했어요...");
       setToastType("error");
       setShowToast(true);
@@ -97,11 +89,6 @@ export default function Header() {
         <nav className="nav">
           <ul>
             <li>
-              <NavLink to="/introduce" className="nav-link">
-                서비스 소개
-              </NavLink>
-            </li>
-            <li>
               <NavLink to="/usage" className="nav-link">
                 스펙메이트 사용
               </NavLink>
@@ -114,7 +101,7 @@ export default function Header() {
           </ul>
         </nav>
 
-        {/* 로그인 / 로그아웃 + 마이페이지 */}
+        {/* 로그인/마이페이지 */}
         <div className="login-btn">
           {isLoggedIn ? (
             <>
@@ -140,21 +127,25 @@ export default function Header() {
             </Link>
           )}
         </div>
+
+        {/* 햄버거 버튼 */}
+        <button
+          className="hamburger"
+          onClick={() => setOpen((prev) => !prev)}
+          aria-label="메뉴 열기"
+        >
+          ☰
+        </button>
       </div>
 
       {/* 모바일 메뉴 */}
       <div className={`mobile-menu ${open ? "open" : ""}`}>
-        <div className="mobile-menu-container">
+        <div
+          className={`mobile-menu-container ${
+            headerVersion === "black" ? "mobile-black" : "mobile-white"
+          }`}
+        >
           <ul>
-            <li>
-              <NavLink
-                to="/introduce"
-                className="nav-link"
-                onClick={() => setOpen(false)}
-              >
-                서비스 소개
-              </NavLink>
-            </li>
             <li>
               <NavLink
                 to="/usage"
@@ -179,7 +170,7 @@ export default function Header() {
               <>
                 <Link
                   to="/mypage"
-                  className={isMainPage ? "glass-btn" : "mypage-link"}
+                  className="glass-btn"
                   onClick={() => setOpen(false)}
                 >
                   마이페이지
@@ -189,7 +180,7 @@ export default function Header() {
                     handleLogout();
                     setOpen(false);
                   }}
-                  className={isMainPage ? "glass-btn" : "logout-link"}
+                  className="glass-btn"
                 >
                   로그아웃
                 </button>
@@ -197,7 +188,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className={isMainPage ? "glass-btn" : "login-link"}
+                className="glass-btn"
                 onClick={() => setOpen(false)}
               >
                 로그인
@@ -207,7 +198,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ✅ 토스트 메시지 */}
       {showToast && (
         <Toast
           message={toastMessage}

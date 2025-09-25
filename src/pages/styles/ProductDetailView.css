@@ -48,7 +48,7 @@
 .product-title {
   font-size: 45px;
   font-weight: bold;
-  margin: 10px 0 20px;
+  margin: 10px 0;
 }
 
 .tags {
@@ -274,13 +274,11 @@
   transition: background 0.3s ease;
   z-index: 1;
 }
-
-/* ✅ 클릭했을 때만 어두워짐 */
+.recommend-card:hover::after,
 .recommend-card.active::after {
   background: rgba(0, 0, 0, 0.6);
 }
 
-/* 라벨 */
 .recommend-label {
   position: absolute;
   top: 50%;
@@ -294,7 +292,6 @@
   transition: all 0.3s ease;
 }
 
-/* 설명 */
 .recommend-desc {
   position: absolute;
   bottom: -50px;
@@ -310,12 +307,14 @@
   line-height: 1.4;
 }
 
-/* ✅ active 상태일 때만 라벨 & 설명 보이게 */
+/* hover 또는 active 상태 */
+.recommend-card:hover .recommend-label,
 .recommend-card.active .recommend-label {
   top: 20px;
   transform: translateX(-50%);
   font-size: 22px;
 }
+.recommend-card:hover .recommend-desc,
 .recommend-card.active .recommend-desc {
   bottom: 50%;
   opacity: 1;

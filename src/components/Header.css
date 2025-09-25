@@ -6,13 +6,12 @@
   top: 0;
   left: 0;
   z-index: 50;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, top 0.3s ease;
 }
 
 /* 흰색 글자 버전 */
 .header-white {
   top: 21px; /* 흰색 버전일 때만 21px 아래로 */
-
   color: white;
 }
 
@@ -68,7 +67,7 @@
   transition: color 0.3s ease;
 }
 
-/* 🔥 hover 시 그라데이션 애니메이션 */
+/* hover 애니메이션 */
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
@@ -94,7 +93,7 @@
 .login-btn {
   margin-right: 76px;
   display: none;
-  gap: 10px; /* 버튼 간격 */
+  gap: 10px;
 }
 
 /* 로그인 / 로그아웃 버튼 */
@@ -104,7 +103,7 @@
   border-radius: 20px;
   font-size: 20px;
   width: 110px;
-  height: 45px; /* ✅ 고정 */
+  height: 45px;
   font-weight: 700;
   text-decoration: none;
   color: white !important;
@@ -112,7 +111,7 @@
   cursor: pointer;
   transition: background 0.3s ease;
 
-  box-sizing: border-box; /* ✅ border 포함 */
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,7 +128,7 @@
   background: white !important;
   color: black !important;
   width: 110px;
-  height: 45px; /* ✅ 고정 */
+  height: 45px;
   border-radius: 20px;
   font-size: 20px;
   font-weight: 700;
@@ -161,7 +160,7 @@
   padding: 0.5rem;
   border-radius: 6px;
   cursor: pointer;
-  height: 45px; /* ✅ 통일 */
+  height: 45px;
 }
 
 .hamburger:hover {
@@ -199,33 +198,29 @@
   gap: 0.75rem;
 }
 
+/* ✅ 모바일 메뉴 글자색: 헤더 버전에 따라 */
+.header-white .mobile-menu-container .nav-link {
+  color: white;
+}
+.header-black .mobile-menu-container .nav-link {
+  color: black;
+}
+
 /* 모바일 로그인 */
 .mobile-login {
   margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.mobile-login a {
-  display: inline-block;
+/* ✅ 모바일 버튼은 항상 glass-btn 적용 */
+.mobile-login .glass-btn {
   width: 100%;
-  height: 45px; /* ✅ 고정 */
-  line-height: 45px;
-  text-align: center;
-  background: #303030 !important;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: white !important;
-  transition: background 0.3s ease;
-  box-sizing: border-box;
-}
-
-.mobile-login a:hover {
-  background: #404040 !important;
-  text-decoration: none;
 }
 
 /* 반응형 */
+/* 태블릿 이상 */
 @media (min-width: 768px) {
   .nav {
     display: flex;
@@ -243,6 +238,50 @@
 
   .mobile-menu {
     display: none !important;
+  }
+}
+
+/* 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  .logo-img {
+    margin-left: 20px;
+    height: 50px;
+    width: auto;
+  }
+
+  .login-btn {
+    display: none !important;
+  }
+
+  .hamburger {
+    margin-right: 10px;
+  }
+
+  .nav {
+    display: none !important;
+  }
+
+  .header-white {
+    top: 10px;
+  }
+}
+
+/* 소형 모바일 (480px 이하) */
+@media (max-width: 480px) {
+  .logo-img {
+    margin-left: 10px;
+    height: 40px;
+  }
+
+  .hamburger {
+    margin-right: 5px;
+    height: 40px;
+  }
+
+  .mobile-login .glass-btn {
+    font-size: 0.75rem;
+    height: 40px;
+    line-height: 40px;
   }
 }
 
