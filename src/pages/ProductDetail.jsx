@@ -173,13 +173,6 @@ export default function DetailPage() {
                 : !loading && <p>상품이 없습니다.</p>}
             </div>
 
-            {/* ✅ 로딩 스피너 */}
-            {loading && (
-              <div className="loader-overlay">
-                <div className="loader"></div>
-              </div>
-            )}
-
             {/* 페이지네이션 */}
             {!loading && (
               <div className="pagination">

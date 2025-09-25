@@ -1,15 +1,15 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: "/api", // ✅ 프록시 경유 → CORS 문제 해결
   headers: { "Content-Type": "application/json" },
-  withCredentials: true, // ✅ HttpOnly 쿠키 전송 허용
+  withCredentials: false, // Bearer 토큰 인증이면 false 권장
 });
 
 // ✅ 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem("accessToken"); // 👉 세션스토리지에서 읽음
+    const token = sessionStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
