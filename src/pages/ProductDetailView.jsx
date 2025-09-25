@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
-import Toast from "../components/Toast"; // ✅ Toast 불러오기
+import Toast from "../components/Toast";
 import "./styles/ProductDetailView.css";
 
 export default function ProductDetailView() {
@@ -10,12 +10,10 @@ export default function ProductDetailView() {
   const [product, setProduct] = useState(null);
   const [selectedBuild, setSelectedBuild] = useState(null);
 
-  // ✅ Toast 상태
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
   const [showToast, setShowToast] = useState(false);
 
-  // ✅ 옵션 라벨 한글 변환
   const optionLabels = {
     manufacturer: "제조회사",
     socket: "소켓 구분",
@@ -85,7 +83,6 @@ export default function ProductDetailView() {
     outputs: "출력 포트",
   };
 
-  // ✅ 타입별 주요 스펙 키
   const specKeys = {
     cpu: [
       "manufacturer",
@@ -211,7 +208,6 @@ export default function ProductDetailView() {
     ],
   };
 
-  // ✅ 가격 포맷 함수
   const formatPrice = (price) => {
     if (!price) return null;
     const numeric = Number(String(price).replace(/,/g, ""));
@@ -224,7 +220,7 @@ export default function ProductDetailView() {
         const res = await api.get(`/product/${id}`);
         setProduct(res.data);
       } catch (err) {
-        console.error("❌ 상품 불러오기 실패:", err.response || err);
+        console.error("상품 불러오기 실패:", err.response || err);
       }
     };
     fetchProduct();
@@ -232,7 +228,6 @@ export default function ProductDetailView() {
 
   if (!product) return <p>상품 불러오는 중...</p>;
 
-  // ✅ 견적 보관함 저장
   const handleSaveToEstimate = async () => {
     try {
       await api.post("/estimate/products/save", {
@@ -245,7 +240,7 @@ export default function ProductDetailView() {
       setToastType("success");
       setShowToast(true);
     } catch (err) {
-      console.error("❌ 저장 실패:", err.response || err);
+      console.error("저장 실패:", err.response || err);
       setToastMessage("저장에 실패했어요. 다시 시도해주세요.");
       setToastType("error");
       setShowToast(true);
@@ -256,7 +251,6 @@ export default function ProductDetailView() {
     setSelectedBuild((prev) => (prev === build ? null : build));
   };
 
-  // ✅ 타입 처리
   const typeKey = product.type?.toLowerCase();
   const typeLabelMap = {
     cpu: "프로세서",
@@ -272,13 +266,11 @@ export default function ProductDetailView() {
   };
   const typeLabel = typeLabelMap[typeKey] || product.type;
 
-  // ✅ 옵션 키 소문자 변환
   const optionsNormalized = {};
   Object.entries(product.options || {}).forEach(([k, v]) => {
     optionsNormalized[k.toLowerCase()] = v;
   });
 
-  // ✅ 스펙 필터링
   const entries = (specKeys[typeKey] || [])
     .map((key) => [
       key,
@@ -331,7 +323,6 @@ export default function ProductDetailView() {
             </div>
           </div>
 
-          {/* ✅ 최저가 영역 */}
           <div className="price-box">
             <span className="price-label">최저가</span>
             <strong className="price-value">
@@ -371,7 +362,7 @@ export default function ProductDetailView() {
           </div>
         </div>
 
-        {/* ✅ 추천 PC 조합 섹션 */}
+        {/* ✅ 추천 카드 (위치 바꿈) */}
         <div className="recommend-section">
           <div className="recommend-overlay-text">
             <h3>스펙메이트의 용도별 조합 추천!</h3>
@@ -379,14 +370,16 @@ export default function ProductDetailView() {
           </div>
 
           <div className="recommend-cards">
+            {/* 왼쪽: 게이밍 */}
             <div>
-              {selectedBuild === "office" ? (
-                <div className="build-list fixed-slot">
-                  <h4>사무용 PC 추천 부품</h4>
+              {selectedBuild === "gaming" ? (
+                <div
+                  className="build-list fixed-slot"
+                  onClick={() => handleCardClick("gaming")}
+                >
+                  <h4>게이밍 PC 추천 부품</h4>
                   <ul>
-                    {[
-                      /* ... 생략 ... */
-                    ].map((b, idx) => (
+                    {[].map((b, idx) => (
                       <li key={idx}>
                         <strong>{b.category}</strong>: {b.part}
                       </li>
@@ -395,8 +388,10 @@ export default function ProductDetailView() {
                 </div>
               ) : (
                 <div
-                  className="recommend-card"
-                  onClick={() => handleCardClick("gaming")}
+                  className={`recommend-card ${
+                    selectedBuild === "office" ? "active" : ""
+                  }`}
+                  onClick={() => handleCardClick("office")}
                 >
                   <img src="/gaming.svg" alt="게이밍 PC" />
                   <div className="recommend-label">게이밍</div>
@@ -407,14 +402,16 @@ export default function ProductDetailView() {
               )}
             </div>
 
+            {/* 오른쪽: 사무용 */}
             <div>
-              {selectedBuild === "gaming" ? (
-                <div className="build-list fixed-slot">
-                  <h4>게이밍 PC 추천 부품</h4>
+              {selectedBuild === "office" ? (
+                <div
+                  className="build-list fixed-slot"
+                  onClick={() => handleCardClick("office")}
+                >
+                  <h4>사무용 PC 추천 부품</h4>
                   <ul>
-                    {[
-                      /* ... 생략 ... */
-                    ].map((b, idx) => (
+                    {[].map((b, idx) => (
                       <li key={idx}>
                         <strong>{b.category}</strong>: {b.part}
                       </li>
@@ -423,8 +420,10 @@ export default function ProductDetailView() {
                 </div>
               ) : (
                 <div
-                  className="recommend-card"
-                  onClick={() => handleCardClick("office")}
+                  className={`recommend-card ${
+                    selectedBuild === "gaming" ? "active" : ""
+                  }`}
+                  onClick={() => handleCardClick("gaming")}
                 >
                   <img src="/affairs.svg" alt="사무용 PC" />
                   <div className="recommend-label">사무용</div>
@@ -439,7 +438,6 @@ export default function ProductDetailView() {
       </div>
       <div></div>
 
-      {/* ✅ Toast 출력 */}
       {showToast && (
         <Toast
           message={toastMessage}

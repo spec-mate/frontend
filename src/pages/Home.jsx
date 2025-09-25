@@ -4,6 +4,7 @@ import { useHeaderStore } from "../store/headerStore";
 import { useNavigate } from "react-router-dom";
 
 import pcImage from "/usageimage.svg";
+import introduceImage from "/introduceimage.svg"; // ✅ 추가된 이미지
 
 export default function Home() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
@@ -70,82 +71,13 @@ export default function Home() {
             </p>
           </div>
 
-          {/* 오른쪽 다이어그램 */}
+          {/* 오른쪽 이미지 */}
           <div className="info-right">
-            {/* 중앙 박스 */}
-            <div className="center-box">스펙메이트</div>
-
-            {/* 연결선 */}
-            <svg className="diagram-lines" viewBox="0 0 500 500">
-              {/* 중앙 박스 기준점 (250,250)에서 각 기능 박스로 선 */}
-              <line
-                x1="250"
-                y1="250"
-                x2="250"
-                y2="50"
-                stroke="#1e5cde"
-                strokeWidth="2"
-              />
-              <line
-                x1="250"
-                y1="250"
-                x2="420"
-                y2="120"
-                stroke="#1e5cde"
-                strokeWidth="2"
-              />
-              <line
-                x1="250"
-                y1="250"
-                x2="440"
-                y2="250"
-                stroke="#1e5cde"
-                strokeWidth="2"
-              />
-              <line
-                x1="250"
-                y1="250"
-                x2="420"
-                y2="380"
-                stroke="#1e5cde"
-                strokeWidth="2"
-              />
-              <line
-                x1="250"
-                y1="250"
-                x2="250"
-                y2="460"
-                stroke="#1e5cde"
-                strokeWidth="2"
-              />
-            </svg>
-
-            {/* 기능 아이템 */}
-            <div className="circle-item top">
-              요구사항 판단
-              <br />
-              <span>Requirements analysis</span>
-            </div>
-            <div className="circle-item upper-right">
-              부품 검색
-              <br />
-              <span>Parts search</span>
-            </div>
-            <div className="circle-item middle-right">
-              호환성 체크
-              <br />
-              <span>Compatibility check</span>
-            </div>
-            <div className="circle-item lower-right">
-              PC 조합 제공
-              <br />
-              <span>Agent PC build service</span>
-            </div>
-            <div className="circle-item bottom">
-              공유 및 다운로드
-              <br />
-              <span>Share & Download</span>
-            </div>
+            <img
+              src={introduceImage}
+              alt="Introduce Illustration"
+              className="introduce-image"
+            />
           </div>
         </div>
       </section>

@@ -1,7 +1,7 @@
 .header {
   width: 100%;
-  height: 80px;
-  background: transparent;
+  height: 65px;
+  background: rgba(0, 0, 0, 0.5);
   position: fixed;
   top: 0;
   left: 0;
@@ -11,6 +11,8 @@
 
 /* 흰색 글자 버전 */
 .header-white {
+  top: 21px; /* 흰색 버전일 때만 21px 아래로 */
+
   color: white;
 }
 

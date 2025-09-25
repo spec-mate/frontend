@@ -2,9 +2,17 @@ html,
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   overflow-x: hidden;
   background: #fff;
+
+  /* 스크롤바 숨기기 */
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 .home {
@@ -14,7 +22,7 @@ body {
   z-index: 0;
 }
 
-/* 홈 배경 고정 */
+/* 고정된 배경 */
 .home::before {
   content: "";
   position: fixed;
@@ -23,6 +31,7 @@ body {
   width: 100%;
   height: 100%;
   background: url("/main-image1.svg") center center / cover no-repeat;
+  background-attachment: fixed;
   z-index: -1;
 }
 
@@ -127,29 +136,31 @@ body {
 
 /* 두 번째 섹션 */
 .info-section {
-  min-height: 100vh;
+  padding: 120px 0; /* 높이는 padding으로만 확보 */
   display: flex;
   justify-content: center;
-  align-items: center;
   background: transparent;
 }
 
-/* 블러 카드 전체 */
+/* 블러 카드 */
 .info-box {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 40px;
   max-width: 1000px;
   width: 90%;
   padding: 40px;
   border-radius: 15px;
 
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
   color: white;
+
+  /* 높이 고정 절대 금지 */
+  height: auto;
 }
 
 /* 왼쪽 텍스트 */
@@ -160,79 +171,15 @@ body {
   line-height: 1.6;
 }
 
-/* 오른쪽 다이어그램 */
+/* 오른쪽 이미지 */
 .info-right {
   flex: 1;
-  position: relative;
-  width: 500px;
-  height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* 중앙 박스 */
-.center-box {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #1e5cde;
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  padding: 20px 40px;
-  border-radius: 12px;
-  z-index: 2;
-}
-
-/* 선 */
-.diagram-lines {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* 기능 아이템 */
-.circle-item {
-  position: absolute;
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 14px;
-  width: 160px;
-  z-index: 3;
-}
-
-.circle-item span {
-  font-size: 12px;
-  color: #ccc;
-}
-
-/* 위치 배치 (SVG 좌표랑 맞춤) */
-.circle-item.top {
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.circle-item.upper-right {
-  top: 15%;
-  right: 20px;
-}
-.circle-item.middle-right {
-  top: 40%;
-  right: 0;
-}
-.circle-item.lower-right {
-  bottom: 15%;
-  right: 20px;
-}
-.circle-item.bottom {
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+.introduce-image {
+  max-width: 100%;
+  height: auto;
 }

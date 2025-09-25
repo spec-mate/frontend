@@ -13,31 +13,28 @@
 
 .product-detail-view {
   display: grid;
-  /* 좌우 20%, 중앙 60% */
   grid-template-columns: 20% 1fr 20%;
   gap: 20px;
   width: 100%;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 159px 0 40px; /* ✅ 위쪽에 159px 패딩 */
+  padding: 159px 0 40px;
   box-sizing: border-box;
 }
 
 .product-content {
-  grid-column: 2; /* 중앙 컬럼 */
+  grid-column: 2;
   max-width: 100%;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* breadcrumb */
 .breadcrumb {
   font-size: 14px;
   color: #777;
   margin-bottom: 10px;
 }
 
-/* 🔹 breadcrumb 안의 링크 글자색을 #101010으로 */
 .breadcrumb a {
   color: #101010;
   text-decoration: none;
@@ -48,14 +45,12 @@
   text-decoration: underline;
 }
 
-/* 제목 */
 .product-title {
   font-size: 45px;
   font-weight: bold;
-  margin: 10px 0;
+  margin: 10px 0 20px;
 }
 
-/* 태그 */
 .tags {
   margin-bottom: 20px;
 }
@@ -108,7 +103,6 @@
   color: #333;
 }
 
-/* ✅ 오른쪽 price-box */
 .price-box {
   margin-top: 20px;
   text-align: left;
@@ -139,7 +133,6 @@
   margin-top: 8px;
 }
 
-/* BUY 버튼 */
 .buy-btn {
   display: flex;
   justify-content: center;
@@ -154,7 +147,6 @@
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* 아이콘 (mask 방식 적용) */
 .buy-btn .btn-icon {
   width: 24px;
   height: 24px;
@@ -169,7 +161,6 @@
   animation: gradientMove 2s ease infinite;
 }
 
-/* CART 버튼 */
 .cart-btn {
   display: flex;
   align-items: center;
@@ -250,15 +241,18 @@
   margin-top: 20px;
 }
 
+/* ✅ recommend-card */
 .recommend-card {
   position: relative;
-  width: 100%;
-  aspect-ratio: 4/3; /* ✅ 비율 고정 */
+  width: 400px;
+  height: 400px;
+  box-sizing: border-box;
   overflow: hidden;
   border-radius: 8px;
   cursor: pointer;
   border: 1px solid #ddd;
   background: #fff;
+  transition: all 0.3s ease;
 }
 
 .recommend-card img {
@@ -268,6 +262,7 @@
   display: block;
 }
 
+/* 오버레이 */
 .recommend-card::after {
   content: "";
   position: absolute;
@@ -279,10 +274,13 @@
   transition: background 0.3s ease;
   z-index: 1;
 }
-.recommend-card:hover::after {
+
+/* ✅ 클릭했을 때만 어두워짐 */
+.recommend-card.active::after {
   background: rgba(0, 0, 0, 0.6);
 }
 
+/* 라벨 */
 .recommend-label {
   position: absolute;
   top: 50%;
@@ -296,6 +294,7 @@
   transition: all 0.3s ease;
 }
 
+/* 설명 */
 .recommend-desc {
   position: absolute;
   bottom: -50px;
@@ -311,56 +310,26 @@
   line-height: 1.4;
 }
 
-.recommend-card:hover .recommend-label {
+/* ✅ active 상태일 때만 라벨 & 설명 보이게 */
+.recommend-card.active .recommend-label {
   top: 20px;
   transform: translateX(-50%);
   font-size: 22px;
 }
-.recommend-card:hover .recommend-desc {
+.recommend-card.active .recommend-desc {
   bottom: 50%;
   opacity: 1;
 }
 
 .build-list.fixed-slot {
+  width: 400px;
+  height: 400px;
+  box-sizing: border-box;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
   background: #fafafa;
-  min-height: 300px;
   overflow-y: auto;
-}
-
-.price-value {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.price-number {
-  font-size: 45px;
-  font-weight: 600;
-  color: #1e5cde;
-}
-
-.price-unit {
-  color: #555;
-  font-size: 20px;
-  margin-left: 2px;
-  font-weight: 600;
-}
-
-/* ✅ 반응형 */
-@media (max-width: 1400px) {
-  .product-detail-view {
-    grid-template-columns: 15% 1fr 15%;
-    padding: 120px 20px 40px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .product-detail-view {
-    grid-template-columns: 10% 1fr 10%;
-    padding: 100px 20px 30px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -371,6 +340,6 @@
   }
 
   .recommend-cards {
-    grid-template-columns: 1fr; /* 모바일에서는 1열 */
+    grid-template-columns: 1fr;
   }
 }
