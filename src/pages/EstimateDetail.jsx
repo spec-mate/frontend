@@ -1,19 +1,29 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import "./styles/EstimateDetail.css";
-import { useProgressStore } from "../store/progressStore"; // ✅ 진행률 스토어
-import Toast from "../components/Toast"; // ✅ 토스트 컴포넌트
+import { useProgressStore } from "../store/progressStore";
+import Toast from "../components/Toast";
 
 export default function EstimateDetail({ estimate, onClose }) {
   const [products, setProducts] = useState([]);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success"); // success | error
+  const [toastType, setToastType] = useState("success");
 
   const { progress, setProgress, increaseProgress, resetProgress } =
     useProgressStore();
 
-  // ✅ 견적 제품 불러오기
+  const categoryMap = {
+    ram: "메모리",
+    mainboard: "메인보드",
+    case: "케이스",
+    cpu: "CPU",
+    vga: "그래픽카드",
+    ssd: "SSD",
+    cooler: "쿨러",
+    psu: "파워",
+  };
+
   const fetchProducts = async () => {
     resetProgress();
     try {
@@ -46,7 +56,6 @@ export default function EstimateDetail({ estimate, onClose }) {
     fetchProducts();
   }, [estimate.id]);
 
-  // ✅ 제품 삭제 (결과만 토스트로 표시)
   const handleDeleteProduct = async (estimateProductId) => {
     try {
       await api.delete(`/estimate/products/${estimateProductId}`);
@@ -64,66 +73,59 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   };
 
-  // ✅ 모든 부품 가격 합산
-  const totalPrice = products.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
+  const totalPrice = products.reduce((sum, p) => sum + (p.unitPrice || 0), 0);
 
   return (
     <div className="estimate-detail-page">
-      <button className="back-btn" onClick={onClose}>
-        ← 목록으로
-      </button>
+      <div className="top-actions">
+        <button className="back-btn" onClick={onClose}>
+          <img src="/out.svg" alt="목록으로" className="icon" />
+        </button>
+      </div>
 
       <h2>{estimate.title}</h2>
       <p>{new Date(estimate.createdAt).toLocaleDateString()}</p>
 
-      {/* ✅ 로딩 프로그레스 바 */}
       {progress < 100 && (
         <div className="progress-bar-wrapper">
           <div className="progress-bar" style={{ width: `${progress}%` }} />
         </div>
       )}
 
-      <div className="estimate-products">
+      <div className="estimate-table">
         {products.map((p) => (
-          <div key={p.id} className="estimate-product-row">
-            {/* 카테고리 */}
-            <div className="estimate-product-category">{p.category}</div>
-
-            {/* 이미지 */}
-            <div className="estimate-product-image">
-              <img src={p.image || "/no-image.svg"} alt={p.productName} />
+          <div className="estimate-cell" key={p.id}>
+            <div className="estimate-category">
+              {categoryMap[p.category] || p.category}
             </div>
-
-            {/* 상세 정보 */}
-            <div className="estimate-product-details">
-              <p className="estimate-product-name">{p.productName}</p>
-              <p className="estimate-product-price">
-                {p.unitPrice.toLocaleString()} 원 × {p.quantity}
-              </p>
-              <p className="estimate-product-total">
-                합계: {(p.totalPrice || 0).toLocaleString()} 원
-              </p>
-            </div>
-
-            {/* 삭제 버튼 */}
-            <div className="estimate-product-actions">
-              <button
-                className="delete-product-btn"
-                onClick={() => handleDeleteProduct(p.id)}
-              >
-                삭제
-              </button>
+            <div className="product-box">
+              <div className="estimate-product-image">
+                <img src={p.image || "/no-image.svg"} alt={p.productName} />
+              </div>
+              <div className="product-info">
+                <p className="product-name">{p.productName}</p>
+                <div className="product-bottom">
+                  <p className="product-price">
+                    {p.unitPrice.toLocaleString()} 원
+                  </p>
+                  <div className="product-actions">
+                    <img
+                      src="/trash.svg"
+                      alt="삭제"
+                      className="delete-icon"
+                      onClick={() => handleDeleteProduct(p.id)}
+                    />
+                    <button className="detail-btn">상세보기</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* 총합 */}
-      <div className="total-price">
-        총 합계: {totalPrice.toLocaleString()} 원
-      </div>
+      <div className="total-price">최저가 {totalPrice.toLocaleString()} 원</div>
 
-      {/* ✅ 토스트 메시지 */}
       {showToast && (
         <Toast
           message={toastMessage}
