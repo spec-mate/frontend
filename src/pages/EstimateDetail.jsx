@@ -15,9 +15,9 @@ export default function EstimateDetail({ estimate, onClose }) {
 
   const categoryMap = {
     ram: "메모리",
+    cpu: "CPU",
     mainboard: "메인보드",
     case: "케이스",
-    cpu: "CPU",
     vga: "그래픽카드",
     ssd: "SSD",
     cooler: "쿨러",
@@ -77,14 +77,22 @@ export default function EstimateDetail({ estimate, onClose }) {
 
   return (
     <div className="estimate-detail-page">
-      <div className="top-actions">
+      {/* 제목 + 날짜/요일 + 버튼 한 줄 */}
+      <div className="estimate-header">
+        <h2>
+          <span className="estimate-date">
+            {new Date(estimate.createdAt).toLocaleDateString("ko-KR", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              weekday: "short",
+            })}
+          </span>
+        </h2>
         <button className="back-btn" onClick={onClose}>
           <img src="/out.svg" alt="목록으로" className="icon" />
         </button>
       </div>
-
-      <h2>{estimate.title}</h2>
-      <p>{new Date(estimate.createdAt).toLocaleDateString()}</p>
 
       {progress < 100 && (
         <div className="progress-bar-wrapper">
@@ -98,24 +106,38 @@ export default function EstimateDetail({ estimate, onClose }) {
             <div className="estimate-category">
               {categoryMap[p.category] || p.category}
             </div>
-            <div className="product-box">
+            <div className="product-container">
               <div className="estimate-product-image">
                 <img src={p.image || "/no-image.svg"} alt={p.productName} />
               </div>
-              <div className="product-info">
-                <p className="product-name">{p.productName}</p>
-                <div className="product-bottom">
-                  <p className="product-price">
-                    {p.unitPrice.toLocaleString()} 원
-                  </p>
-                  <div className="product-actions">
-                    <img
-                      src="/trash.svg"
-                      alt="삭제"
-                      className="delete-icon"
-                      onClick={() => handleDeleteProduct(p.id)}
-                    />
-                    <button className="detail-btn">상세보기</button>
+
+              <div className="product-details">
+                {/* 위쪽 그룹 */}
+                <div className="product-top">
+                  <p className="name-label">제품명</p>
+                  <p className="product-name">{p.productName}</p>
+                </div>
+
+                {/* 자동 여백 */}
+                <div className="spacer"></div>
+
+                {/* 아래쪽 그룹 */}
+                <div className="product-bottom-section">
+                  <p className="price-label">가격</p>
+                  <div className="product-bottom">
+                    <p className="product-price">
+                      {p.unitPrice.toLocaleString()}{" "}
+                      <span className="currency-unit">원</span>
+                    </p>
+                    <div className="product-actions">
+                      <img
+                        src="/trash.svg"
+                        alt="삭제"
+                        className="delete-icon"
+                        onClick={() => handleDeleteProduct(p.id)}
+                      />
+                      <button className="detail-btn">상세보기</button>
+                    </div>
                   </div>
                 </div>
               </div>

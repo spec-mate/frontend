@@ -11,7 +11,6 @@
 
 /* 흰색 글자 버전 */
 .header-white {
-  top: 21px; /* 흰색 버전일 때만 21px 아래로 */
   color: white;
 }
 
