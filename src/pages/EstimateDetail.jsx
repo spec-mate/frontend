@@ -6,6 +6,9 @@ import Toast from "../components/Toast";
 
 export default function EstimateDetail({ estimate, onClose }) {
   const [products, setProducts] = useState([]);
+  const [expandedProductId, setExpandedProductId] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -73,25 +76,86 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   };
 
+  const handleExpandProduct = async (category, productId) => {
+    if (expandedProductId === productId) {
+      setExpandedProductId(null);
+      setRelatedProducts([]);
+      return;
+    }
+
+    try {
+      const res = await api.get(`/product/type/${category}?size=30`);
+      setRelatedProducts(res.data.content || []);
+      setExpandedProductId(productId);
+    } catch (err) {
+      console.error("관련 제품 불러오기 실패:", err);
+    }
+  };
+
+  const handleReplaceProduct = async (estimateProductId, newProduct) => {
+    try {
+      // 백엔드에 교체 요청 (PUT/PATCH 엔드포인트 필요)
+      await api.put(`/estimate/products/${estimateProductId}`, {
+        productId: newProduct.id,
+      });
+
+      // 프론트 상태 업데이트
+      const productRes = await api.get(`/product/${newProduct.id}`);
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === estimateProductId
+            ? {
+                ...p,
+                productId: newProduct.id,
+                productName: newProduct.name,
+                unitPrice: newProduct.price,
+                image: productRes.data.image,
+              }
+            : p
+        )
+      );
+
+      setToastMessage("부품이 성공적으로 교체되었습니다.");
+      setToastType("success");
+      setShowToast(true);
+
+      // 드롭다운 닫기
+      setExpandedProductId(null);
+      setRelatedProducts([]);
+    } catch (err) {
+      console.error("부품 교체 실패:", err);
+      setToastMessage("부품 교체에 실패했습니다.");
+      setToastType("error");
+      setShowToast(true);
+    }
+  };
+
   const totalPrice = products.reduce((sum, p) => sum + (p.unitPrice || 0), 0);
 
   return (
     <div className="estimate-detail-page">
-      {/* 제목 + 날짜/요일 + 버튼 한 줄 */}
       <div className="estimate-header">
-        <h2>
-          <span className="estimate-date">
-            {new Date(estimate.createdAt).toLocaleDateString("ko-KR", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              weekday: "short",
-            })}
-          </span>
-        </h2>
-        <button className="back-btn" onClick={onClose}>
-          <img src="/out.svg" alt="목록으로" className="icon" />
-        </button>
+        <div className="header-left">
+          <h2>
+            <span className="estimate-date">
+              {new Date(estimate.createdAt).toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                weekday: "short",
+              })}
+            </span>
+          </h2>
+          <p className="estimate-subtitle">화이트계열의 사무용 PC 조합</p>
+        </div>
+        <div className="header-actions">
+          <button className="trash-btn">
+            <img src="/trash.svg" alt="삭제" className="icon" />
+          </button>
+          <button className="back-btn" onClick={onClose}>
+            <img src="/out.svg" alt="목록으로" className="icon" />
+          </button>
+        </div>
       </div>
 
       {progress < 100 && (
@@ -112,16 +176,29 @@ export default function EstimateDetail({ estimate, onClose }) {
               </div>
 
               <div className="product-details">
-                {/* 위쪽 그룹 */}
                 <div className="product-top">
-                  <p className="name-label">제품명</p>
-                  <p className="product-name">{p.productName}</p>
+                  <button
+                    className="product-name-dropdown"
+                    onClick={() => handleExpandProduct(p.category, p.id)}
+                  >
+                    {p.productName}
+                  </button>
+                  {expandedProductId === p.id && (
+                    <ul className="related-product-list">
+                      {relatedProducts.map((rp) => (
+                        <li
+                          key={rp.id}
+                          onClick={() => handleReplaceProduct(p.id, rp)}
+                        >
+                          {rp.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
-                {/* 자동 여백 */}
                 <div className="spacer"></div>
 
-                {/* 아래쪽 그룹 */}
                 <div className="product-bottom-section">
                   <p className="price-label">가격</p>
                   <div className="product-bottom">
