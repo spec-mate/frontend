@@ -3,8 +3,9 @@ import "./styles/Home.css";
 import { useHeaderStore } from "../store/headerStore";
 import { useNavigate } from "react-router-dom";
 
-import pcImage from "/usageimage.svg";
-import introduceImage from "/introduceimage.svg"; // ✅ 추가된 이미지
+import pcImage1 from "/pcimage1.svg"; // 첫 번째 이미지
+import pcImage2 from "/pcimage2.svg"; // 두 번째 이미지
+import introduceImage from "/introduceimage.svg";
 
 export default function Home() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
@@ -42,8 +43,14 @@ export default function Home() {
             </button>
           </div>
 
+          {/* PC 이미지 두 개 */}
           <div className="main-images">
-            <img src={pcImage} alt="PC Image 1" className="pc-image pc-left" />
+            <img src={pcImage1} alt="PC Image 1" className="pc-image pc-left" />
+            <img
+              src={pcImage2}
+              alt="PC Image 2"
+              className="pc-image pc-right"
+            />
           </div>
         </main>
       </section>

@@ -15,7 +15,7 @@ export default function DetailPage() {
 
   const setProgress = useProgressStore((state) => state.setProgress);
 
-  // ✅ 스크롤 이동할 대상 ref (페이지 상단)
+  // 스크롤 이동할 대상 ref (페이지 상단)
   const topRef = useRef(null);
 
   // 제목 매핑
@@ -49,7 +49,7 @@ export default function DetailPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      setProgress(30); // ✅ 시작할 때 progress 30%
+      setProgress(30); // 시작할 때 progress 30%
 
       try {
         const res = await api.get(`/product/type/${apiType}`, {
@@ -58,13 +58,13 @@ export default function DetailPage() {
         setProducts(res.data.content || []);
         setTotalPages(res.data.totalPages || 1);
 
-        setProgress(70); // ✅ 데이터 세팅 중간 단계
+        setProgress(70); //데이터 세팅 중간 단계
       } catch (err) {
-        console.error("❌ 상품 불러오기 실패:", err.response || err);
+        console.error("상품 불러오기 실패:", err.response || err);
         setProducts([]);
       } finally {
         setTimeout(() => {
-          setProgress(100); // ✅ 완료 시 100%
+          setProgress(100); // 완료 시 100%
           setLoading(false);
         }, 300); // 살짝 딜레이 후 완료
       }
@@ -73,7 +73,7 @@ export default function DetailPage() {
     fetchProducts();
   }, [productName, page, apiType, setProgress]);
 
-  // ✅ page가 바뀔 때마다 맨 위로 이동
+  // page가 바뀔 때마다 맨 위로 이동
   useEffect(() => {
     if (topRef.current) {
       topRef.current.scrollIntoView({ behavior: "auto" }); // 바로 이동
@@ -107,6 +107,14 @@ export default function DetailPage() {
         <div></div>
 
         <div className="main-inner" ref={topRef}>
+          {/* breadcrumb */}
+          <div className="breadcrumb">
+            <Link to="/info" className="breadcrumb-link">
+              PC 부품 정보
+            </Link>
+            &gt; <span>{pageTitle}</span>
+          </div>
+
           <h2>{pageTitle}</h2>
 
           {/* 필터 + 검색 */}
@@ -176,7 +184,7 @@ export default function DetailPage() {
             {/* 페이지네이션 */}
             {!loading && (
               <div className="pagination">
-                {/* ✅ 첫 번째 구간(0~9페이지)에서는 < 버튼 숨김 */}
+                {/* 첫 번째 구간(0~9페이지)에서는 < 버튼 숨김 */}
                 {page >= 10 && (
                   <button
                     onClick={() => {

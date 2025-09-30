@@ -20,24 +20,28 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
 
+      // ✅ sessionStorage 에 저장 (브라우저 닫으면 삭제)
       sessionStorage.setItem("accessToken", res.data.accessToken);
+      sessionStorage.setItem("refreshToken", res.data.refreshToken);
       localStorage.setItem("nickname", res.data.nickname || "유저");
-      localStorage.setItem("email", email);
+      sessionStorage.setItem("email", res.data.email);
 
       const userNickname = res.data.nickname || "유저";
       setNickname(userNickname);
-      localStorage.setItem("nickname", userNickname);
 
       setToastMessage(`반가워요 ${userNickname}님!`);
       setToastType("success");
       setShowToast(true);
 
+      // 2초 후 홈으로 이동
       setTimeout(() => {
         navigate("/");
       }, 2000);
     } catch (err) {
       console.error("로그인 실패:", err);
-      setToastMessage("이메일 또는 비밀번호를 확인해주세요.");
+      const message =
+        err.response?.data?.message || "이메일 또는 비밀번호를 확인해주세요.";
+      setToastMessage(message);
       setToastType("error");
       setShowToast(true);
     }
@@ -76,7 +80,6 @@ export default function Login() {
           로그인
         </button>
 
-        {/* ✅ 로그인 버튼 밑으로 이동 */}
         <p className="signup-text">
           회원이 아니신가요?{" "}
           <Link to="/register" className="signup-link">

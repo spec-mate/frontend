@@ -1,3 +1,4 @@
+// src/pages/EstimateDetail.jsx
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import "./styles/EstimateDetail.css";
@@ -94,12 +95,10 @@ export default function EstimateDetail({ estimate, onClose }) {
 
   const handleReplaceProduct = async (estimateProductId, newProduct) => {
     try {
-      // 백엔드에 교체 요청 (PUT/PATCH 엔드포인트 필요)
       await api.put(`/estimate/products/${estimateProductId}`, {
         productId: newProduct.id,
       });
 
-      // 프론트 상태 업데이트
       const productRes = await api.get(`/product/${newProduct.id}`);
       setProducts((prev) =>
         prev.map((p) =>
@@ -119,7 +118,6 @@ export default function EstimateDetail({ estimate, onClose }) {
       setToastType("success");
       setShowToast(true);
 
-      // 드롭다운 닫기
       setExpandedProductId(null);
       setRelatedProducts([]);
     } catch (err) {
@@ -200,7 +198,7 @@ export default function EstimateDetail({ estimate, onClose }) {
                 <div className="spacer"></div>
 
                 <div className="product-bottom-section">
-                  <p className="price-label">가격</p>
+                  <p className="price-title">가격</p>
                   <div className="product-bottom">
                     <p className="product-price">
                       {p.unitPrice.toLocaleString()}{" "}

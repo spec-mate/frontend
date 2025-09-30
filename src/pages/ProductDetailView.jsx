@@ -284,10 +284,17 @@ export default function ProductDetailView() {
       <div></div>
       <div className="product-content">
         <div className="breadcrumb">
-          <Link to="/info">PC 부품 정보</Link> &gt;{" "}
-          <Link to={`/product/${encodeURIComponent(product.type)}`}>
+          <Link to="/info" className="breadcrumb-link">
+            PC 부품 정보
+          </Link>{" "}
+          &gt;{" "}
+          <Link
+            to={`/product/${encodeURIComponent(product.type)}`}
+            className="breadcrumb-link"
+          >
             {typeLabel}
-          </Link>
+          </Link>{" "}
+          &gt; <span>{product.name}</span>
         </div>
 
         <h2 className="product-title">{product.name}</h2>

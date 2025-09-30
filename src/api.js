@@ -60,3 +60,18 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// ✅ WebSocket URL 생성 헬퍼 추가
+export const getWebSocketUrl = (path = "/ws/chat") => {
+  const token = sessionStorage.getItem("accessToken");
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+  let wsBaseUrl = apiBaseUrl.replace(/^http/, "ws").replace(/\/api\/?$/, "");
+
+  // localhost 외부 환경에서는 wss 강제
+  if (wsBaseUrl.startsWith("ws://") && !wsBaseUrl.includes("localhost")) {
+    wsBaseUrl = wsBaseUrl.replace("ws://", "wss://");
+  }
+
+  return `${wsBaseUrl}${path}?token=${token}`;
+};

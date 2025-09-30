@@ -1,6 +1,6 @@
 .detail-page {
   display: grid;
-  grid-template-columns: 25% 1fr 25%; /* 왼쪽 20%, 가운데 자동, 오른쪽 25% */
+  grid-template-columns: 25% 1fr 25%; /* 왼쪽 25%, 가운데, 오른쪽 25% */
   grid-template-rows: auto 1fr;
   gap: 20px;
   padding: 80px 40px 20px 40px;
@@ -73,24 +73,31 @@
   color: #000;
 }
 
+/* 메인 콘텐츠 */
 .main-content {
   grid-column: 2;
-  display: grid;
-  grid-template-rows: 72px auto 1fr;
-  width: 100%;
-}
-
-.main-inner {
-  grid-row: 2 / span 2;
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
+.main-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #000;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
 .main-inner h2 {
   font-size: 56px;
-  font-weight: 500;
-  margin: 0 0 20px;
+  font-weight: 00;
+  margin: 0;
 }
 
 .main-content .filter-table {
@@ -115,7 +122,6 @@
   align-items: center;
 }
 
-/* ✅ product-item 비율 고정 */
 .product-item {
   display: flex;
   align-items: center;
@@ -136,7 +142,7 @@
 }
 
 .product-item img {
-  flex: 0 0 150px; /* 항상 150px */
+  flex: 0 0 150px;
   height: 150px;
   object-fit: contain;
   border: 1px solid #ddd;
@@ -144,7 +150,7 @@
 }
 
 .product-item .info {
-  flex: 1; /* 남는 공간 */
+  flex: 1;
 }
 
 .product-item h4 {
@@ -159,7 +165,7 @@
 }
 
 .product-item .price {
-  flex: 0 0 160px; /* 항상 160px */
+  flex: 0 0 160px;
   text-align: right;
 }
 
@@ -278,8 +284,6 @@
 }
 
 /* 반응형 */
-
-/* ✅ PC : 1025px 이상 → 1920 비율 그대로 */
 @media (min-width: 1025px) {
   .product-item img {
     flex: 0 0 150px;
@@ -290,7 +294,6 @@
   }
 }
 
-/* ✅ 태블릿 ~ 작은 PC : 768px ~ 1024px → 살짝 줄이기 */
 @media (max-width: 1024px) and (min-width: 768px) {
   .detail-page {
     grid-template-columns: 180px 1fr;
@@ -302,7 +305,7 @@
     width: 180px;
   }
 
-  .main-content h2 {
+  .main-inner h2 {
     font-size: 24px;
   }
 
@@ -317,7 +320,6 @@
   }
 }
 
-/* ✅ 모바일 : 767px 이하 → 세로 카드형 */
 @media (max-width: 767px) {
   .detail-page {
     display: flex;
@@ -363,4 +365,34 @@
   filter: blur(3px);
   pointer-events: none;
   user-select: none;
+}
+.breadcrumb-link {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-position 0.6s ease, color 0.3s ease;
+}
+
+.breadcrumb-link:hover {
+  text-decoration: none;
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 300% 300%; /* 영역 넓게 */
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradientMove 3s ease infinite; /* 색상 흐르는 애니메이션 */
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

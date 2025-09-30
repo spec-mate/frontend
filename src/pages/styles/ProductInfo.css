@@ -1,9 +1,14 @@
 .product-page {
   display: grid;
-  grid-template-columns: 1fr 1000px 1fr; /* 좌-중앙-우 */
+  /* [수정] 중앙 컬럼을 반응형 최대 너비로 변경 */
+  grid-template-columns: 1fr minmax(auto, 1000px) 1fr;
   gap: 20px;
   padding: 169px 20px 40px;
   text-align: center;
+  /* [추가] 수직 중앙 정렬을 위한 속성 */
+  min-height: 100vh;
+  box-sizing: border-box;
+  align-content: center;
 }
 
 /* 헤더 */
@@ -14,13 +19,15 @@
 }
 
 .product-title {
-  font-size: 56px;
+  /* [수정] 폰트 크기를 반응형으로 변경 */
+  font-size: clamp(32px, 4vw, 56px);
   font-weight: 500;
   margin: 0;
 }
 
 .product-subtitle {
-  font-size: 20px;
+  /* [수정] 폰트 크기를 반응형으로 변경 */
+  font-size: clamp(16px, 1.5vw, 20px);
   font-weight: 500;
   color: #555;
   border-bottom: 0.5px solid #404040;
@@ -33,7 +40,7 @@
   grid-column: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 44px;
+  gap: clamp(20px, 3vw, 44px); /* [수정] 간격도 반응형으로 */
 }
 
 /* 카드 */
@@ -44,10 +51,11 @@
   border-radius: 12px;
   border: 1px solid #ddd;
   text-decoration: none;
-  transition: transform 1s ease; /* ✅ 카드 애니메이션 느리게 */
-  width: 300px;
-  height: 150px;
+  /* [수정] 고정 크기 대신 비율과 너비 100% 사용 */
+  width: 100%;
+  aspect-ratio: 2 / 1; /* 가로:세로 비율을 2:1로 유지 */
   margin: 0 auto;
+  /* [삭제] transition 효과 제거 */
 }
 
 .product-card::after {
@@ -59,8 +67,8 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
-  transition: background 1s ease; /* ✅ 배경 전환 느리게 */
   z-index: 1;
+  /* [삭제] transition 효과 제거 */
 }
 
 .product-card:hover::after {
@@ -68,8 +76,9 @@
 }
 
 .product-card img {
-  width: 300px;
-  height: 150px;
+  /* [수정] 부모 요소(카드)를 꽉 채우도록 변경 */
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
   border-radius: 12px;
@@ -88,43 +97,45 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: all 1s ease; /* ✅ 오버레이 애니메이션 느리게 */
   z-index: 2;
   color: #fff;
   padding: 15px;
   box-sizing: border-box;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  /* [삭제] transition 효과 제거 */
 }
 
 .overlay-content h3 {
-  font-size: 32px;
+  /* [수정] 폰트 크기를 반응형으로 변경 */
+  font-size: clamp(24px, 2.5vw, 32px);
   font-weight: 400;
-  margin: 0 0 12px 0; /* 설명과 간격 */
+  margin: 0 0 12px 0;
   color: #fff !important;
   white-space: pre-line;
-  transition: opacity 1s ease, transform 1s ease; /* ✅ 제목도 부드럽게 */
+  /* [삭제] transition 효과 제거 */
 }
 
 .overlay-content p {
-  font-size: 14px;
+  /* [수정] 폰트 크기를 반응형으로 변경 */
+  font-size: clamp(12px, 1vw, 14px);
   line-height: 1.4;
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: opacity 1s ease, max-height 1s ease; /* ✅ 설명 텍스트 부드럽게 */
   margin: 0;
   color: #fff !important;
+  /* [삭제] transition 효과 제거 */
 }
 
 /* 기본 제목 / hover 제목 전환 */
 .title-default {
   display: block;
-  transition: opacity 1s ease;
+  /* [삭제] transition 효과 제거 */
 }
 
 .title-hover {
   display: none;
-  transition: opacity 1s ease;
+  /* [삭제] transition 효과 제거 */
 }
 
 .product-card:hover .title-default {
@@ -139,26 +150,27 @@
   opacity: 1;
   max-height: 200px;
 }
+.product-card p {
+  white-space: pre-line; /* 줄바꿈 문자(\n) 유지 */
+  word-break: keep-all; /* 단어 단위로 줄바꿈 */
+  line-height: 1.4; /* 줄 간격 */
+  font-size: 14px; /* 필요 시 크기 조정 */
+}
 
-/* =========================== */
-/* ✅ 개별 텍스트 스타일 추가 */
-/* =========================== */
+/* 개별 텍스트 스타일 (반응형 폰트 적용) */
 .memory-text {
-  font-size: 32px;
+  font-size: clamp(24px, 2.5vw, 32px);
   font-weight: 500;
 }
-
 .ram-text {
-  font-size: 24px;
+  font-size: clamp(18px, 2vw, 24px);
   font-weight: 500;
 }
-
 .gpu-text {
-  font-size: 32px;
+  font-size: clamp(24px, 2.5vw, 32px);
   font-weight: 500;
 }
-
 .vga-text {
-  font-size: 24px;
+  font-size: clamp(18px, 2vw, 24px);
   font-weight: 500;
 }
