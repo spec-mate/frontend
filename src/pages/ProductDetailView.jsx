@@ -281,7 +281,6 @@ export default function ProductDetailView() {
 
   return (
     <div className="product-detail-view">
-      <div></div>
       <div className="product-content">
         <div className="breadcrumb">
           <Link to="/info" className="breadcrumb-link">
@@ -436,7 +435,6 @@ export default function ProductDetailView() {
           </div>
         </div>
       </div>
-      <div></div>
 
       {showToast && (
         <Toast

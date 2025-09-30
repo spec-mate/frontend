@@ -2,8 +2,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Link, useParams } from "react-router-dom";
 import api from "../api"; // axios instance
-import { useProgressStore } from "../store/progressStore"; // ✅ zustand progress store
-import "../components/ProgressBar"; // ✅ ProgressBar 전역에서 App.jsx에 추가됨
+import { useProgressStore } from "../store/progressStore"; // zustand progress store
+import "../components/ProgressBar"; // ProgressBar 전역에서 App.jsx에 추가됨
 import "./styles/ProductDetail.css";
 
 export default function DetailPage() {
@@ -45,6 +45,11 @@ export default function DetailPage() {
   };
   const apiType = apiTypeMap[productName] || productName;
 
+  // ✅ productName이 바뀔 때 page를 0으로 초기화
+  useEffect(() => {
+    setPage(0);
+  }, [productName]);
+
   // 상품 불러오기
   useEffect(() => {
     const fetchProducts = async () => {
@@ -58,7 +63,7 @@ export default function DetailPage() {
         setProducts(res.data.content || []);
         setTotalPages(res.data.totalPages || 1);
 
-        setProgress(70); //데이터 세팅 중간 단계
+        setProgress(70); // 데이터 세팅 중간 단계
       } catch (err) {
         console.error("상품 불러오기 실패:", err.response || err);
         setProducts([]);
