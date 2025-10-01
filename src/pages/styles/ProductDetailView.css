@@ -125,7 +125,15 @@
   text-align: right;
   color: #1e5cde;
 }
-
+.price-number {
+  font-size: 45px;
+  font-weight: 600;
+}
+.price-unit {
+  font-size: 20px;
+  font-weight: 400;
+  color: #000;
+}
 .price-actions {
   display: flex;
   gap: 12px;
@@ -340,4 +348,10 @@
   .recommend-cards {
     grid-template-columns: 1fr;
   }
+}
+.price-unit-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: #000;
+  margin-left: 2px; /* 숫자와 살짝 간격 */
 }

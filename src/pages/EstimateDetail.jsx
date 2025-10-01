@@ -28,6 +28,14 @@ export default function EstimateDetail({ estimate, onClose }) {
     psu: "파워",
   };
 
+  // ✅ 문자열 가격을 숫자로 변환하는 유틸
+  const parsePrice = (price) => {
+    if (!price) return 0;
+    if (typeof price === "number") return price;
+    return parseInt(String(price).replace(/,/g, ""), 10) || 0;
+  };
+
+  // ✅ 견적 제품 불러오기
   const fetchProducts = async () => {
     resetProgress();
     try {
@@ -39,11 +47,15 @@ export default function EstimateDetail({ estimate, onClose }) {
           try {
             const productRes = await api.get(`/product/${p.productId}`);
             increaseProgress(Math.floor(70 / res.data.length));
-            return { ...p, image: productRes.data.image };
+            return {
+              ...p,
+              image: productRes.data.image,
+              unitPrice: parsePrice(productRes.data.lowestPrice?.price), // ✅ 변환 적용
+            };
           } catch (innerErr) {
             console.error(`제품(${p.productId}) 상세 불러오기 실패:`, innerErr);
             increaseProgress(Math.floor(70 / res.data.length));
-            return { ...p, image: null };
+            return { ...p, image: null, unitPrice: 0 };
           }
         })
       );
@@ -60,6 +72,7 @@ export default function EstimateDetail({ estimate, onClose }) {
     fetchProducts();
   }, [estimate.id]);
 
+  // ✅ 부품 삭제
   const handleDeleteProduct = async (estimateProductId) => {
     try {
       await api.delete(`/estimate/products/${estimateProductId}`);
@@ -77,26 +90,47 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   };
 
-  const handleExpandProduct = async (category, productId) => {
-    if (expandedProductId === productId) {
+  // ✅ 드롭다운 열기 → 기존 상품 상세 조회 후 관련 상품 불러오기
+  const handleExpandProduct = async (
+    category,
+    estimateProductId,
+    productId
+  ) => {
+    if (expandedProductId === estimateProductId) {
       setExpandedProductId(null);
       setRelatedProducts([]);
       return;
     }
 
     try {
-      const res = await api.get(`/product/type/${category}?size=30`);
+      const productRes = await api.get(`/product/${productId}`);
+      const currentProduct = productRes.data;
+
+      const res = await api.get(`/product/type/${currentProduct.type}`, {
+        params: {
+          size: 30,
+          manufacturer: currentProduct.manufacturer || undefined,
+        },
+      });
+
       setRelatedProducts(res.data.content || []);
-      setExpandedProductId(productId);
+      setExpandedProductId(estimateProductId);
     } catch (err) {
       console.error("관련 제품 불러오기 실패:", err);
     }
   };
 
-  const handleReplaceProduct = async (estimateProductId, newProduct) => {
+  // ✅ 부품 교체
+  const handleReplaceProduct = async (
+    estimateProductId,
+    newProduct,
+    category
+  ) => {
     try {
-      await api.put(`/estimate/products/${estimateProductId}`, {
+      await api.put(`/estimate/${estimate.id}/products/${estimateProductId}`, {
         productId: newProduct.id,
+        category: category,
+        quantity: 1,
       });
 
       const productRes = await api.get(`/product/${newProduct.id}`);
@@ -107,8 +141,10 @@ export default function EstimateDetail({ estimate, onClose }) {
                 ...p,
                 productId: newProduct.id,
                 productName: newProduct.name,
-                unitPrice: newProduct.price,
+                unitPrice: parsePrice(newProduct.lowestPrice?.price), // ✅ 변환 적용
                 image: productRes.data.image,
+                category: category,
+                quantity: 1,
               }
             : p
         )
@@ -128,7 +164,11 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   };
 
-  const totalPrice = products.reduce((sum, p) => sum + (p.unitPrice || 0), 0);
+  // ✅ 총 가격 계산 (숫자 변환 보장)
+  const totalPrice = products.reduce(
+    (sum, p) => sum + parsePrice(p.unitPrice),
+    0
+  );
 
   return (
     <div className="estimate-detail-page">
@@ -177,7 +217,9 @@ export default function EstimateDetail({ estimate, onClose }) {
                 <div className="product-top">
                   <button
                     className="product-name-dropdown"
-                    onClick={() => handleExpandProduct(p.category, p.id)}
+                    onClick={() =>
+                      handleExpandProduct(p.category, p.id, p.productId)
+                    }
                   >
                     {p.productName}
                   </button>
@@ -186,7 +228,9 @@ export default function EstimateDetail({ estimate, onClose }) {
                       {relatedProducts.map((rp) => (
                         <li
                           key={rp.id}
-                          onClick={() => handleReplaceProduct(p.id, rp)}
+                          onClick={() =>
+                            handleReplaceProduct(p.id, rp, p.category)
+                          }
                         >
                           {rp.name}
                         </li>
@@ -201,9 +245,14 @@ export default function EstimateDetail({ estimate, onClose }) {
                   <p className="price-title">가격</p>
                   <div className="product-bottom">
                     <p className="product-price">
-                      {p.unitPrice.toLocaleString()}{" "}
-                      <span className="currency-unit">원</span>
+                      {p.unitPrice
+                        ? `${parsePrice(p.unitPrice).toLocaleString()}`
+                        : "가격 정보 없음"}
+                      {p.unitPrice && (
+                        <span className="price-unit-text"> 원</span>
+                      )}
                     </p>
+
                     <div className="product-actions">
                       <img
                         src="/trash.svg"
