@@ -251,7 +251,7 @@
   transform: rotate(180deg);
 }
 
-/* 필터 테이블 */
+/* ✅ 필터 테이블 */
 .filter-table {
   border: 1px solid #8692a6;
   border-radius: 15px;
@@ -266,12 +266,18 @@
   border-bottom: 1px solid #ccc;
 }
 
+/* 마지막 줄 밑줄 제거 */
+.filter-table .row:last-child {
+  border-bottom: none;
+}
+
 .filter-table .label {
   background: #f5f7fa;
   padding: 8px 12px;
   min-width: 110px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 14px; /* ✅ 두 label 모두 통일 */
   color: #333;
   border-right: 1px solid #8692a6;
   border-radius: 0;
@@ -289,6 +295,7 @@
 .filter-table .price-label {
   width: 110px;
   border-radius: 0 0 0 15px;
+  /* ✅ font-size 통일 → 위에서 이미 14px 지정 */
 }
 
 .filter-table .options {
