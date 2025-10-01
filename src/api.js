@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api", // 프록시 경유 → CORS 문제 해결
+  baseURL: "/api", // 프록시 경유
   headers: { "Content-Type": "application/json" },
-  withCredentials: false, // Bearer 토큰 인증이면 false 권장
+  withCredentials: false,
 });
 
 // 요청 인터셉터
@@ -28,17 +28,18 @@ api.interceptors.response.use(
       const refreshToken = sessionStorage.getItem("refreshToken");
       if (!refreshToken) {
         console.error("RefreshToken 없음 → 로그인 필요");
-        sessionStorage.removeItem("accessToken");
+        sessionStorage.clear();
         window.location.href = "/login";
         return Promise.reject(error);
       }
 
       try {
-        // Refresh API 호출
-        const res = await axios.post("/api/auth/refresh", null, {
-          params: { refreshToken },
-          headers: { "Content-Type": "application/json" },
-        });
+        // ✅ Refresh API (RequestBody로 전달)
+        const res = await axios.post(
+          "/api/auth/refresh",
+          { refreshToken }, // body
+          { headers: { "Content-Type": "application/json" } }
+        );
 
         const newAccessToken = res.data.accessToken;
         sessionStorage.setItem("accessToken", newAccessToken);
@@ -48,8 +49,7 @@ api.interceptors.response.use(
         return api.request(error.config);
       } catch (refreshErr) {
         console.error("토큰 재발급 실패 → 로그인 필요");
-        sessionStorage.removeItem("accessToken");
-        sessionStorage.removeItem("refreshToken");
+        sessionStorage.clear();
         window.location.href = "/login";
         return Promise.reject(refreshErr);
       }
@@ -61,17 +61,15 @@ api.interceptors.response.use(
 
 export default api;
 
-// ✅ WebSocket URL 생성 헬퍼 추가
+// ✅ WebSocket URL 생성 헬퍼 (토큰은 붙이지 않음)
 export const getWebSocketUrl = (path = "/ws/chat") => {
-  const token = sessionStorage.getItem("accessToken");
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
   let wsBaseUrl = apiBaseUrl.replace(/^http/, "ws").replace(/\/api\/?$/, "");
 
-  // localhost 외부 환경에서는 wss 강제
   if (wsBaseUrl.startsWith("ws://") && !wsBaseUrl.includes("localhost")) {
     wsBaseUrl = wsBaseUrl.replace("ws://", "wss://");
   }
 
-  return `${wsBaseUrl}${path}?token=${token}`;
+  return `${wsBaseUrl}${path}`;
 };

@@ -1,3 +1,4 @@
+// src/pages/Usage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import "./styles/Usage.css";
 import { useHeaderStore } from "../store/headerStore";
@@ -5,8 +6,8 @@ import Header from "../components/Header";
 import SendIcon from "@mui/icons-material/Send";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { getWebSocketUrl } from "../api"; // ✅ 헬퍼 함수 사용
-import api from "../api"; // ✅ 토큰 갱신 요청용
+import { getWebSocketUrl } from "../api";
+import api from "../api";
 
 export default function Usage() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
@@ -20,25 +21,21 @@ export default function Usage() {
     setHeaderVersion("black");
   }, [setHeaderVersion]);
 
-  // ✅ AccessToken이 만료되었으면 refreshToken으로 갱신
+  /** ✅ AccessToken 갱신 */
   const ensureFreshToken = async () => {
     const accessToken = sessionStorage.getItem("accessToken");
     if (!accessToken) return;
-
     try {
       const payload = JSON.parse(atob(accessToken.split(".")[1]));
       const now = Date.now() / 1000;
-
       if (payload.exp < now) {
         console.warn("🔄 AccessToken 만료 → Refresh 시도");
         const refreshToken = sessionStorage.getItem("refreshToken");
         if (!refreshToken) return;
-
         const res = await api.post("/auth/refresh", null, {
           params: { refreshToken },
           headers: { "Content-Type": "application/json" },
         });
-
         sessionStorage.setItem("accessToken", res.data.accessToken);
       }
     } catch (err) {
@@ -48,20 +45,18 @@ export default function Usage() {
     }
   };
 
+  /** ✅ WebSocket 연결 */
   useEffect(() => {
     if (showResult) {
       const connectWs = async () => {
-        await ensureFreshToken(); // ✅ WebSocket 열기 전에 토큰 갱신
-
+        await ensureFreshToken();
         const token = sessionStorage.getItem("accessToken");
         if (!token) {
           console.error("❌ AccessToken 없음. 로그인 필요");
           return;
         }
-
-        const wsUrl = getWebSocketUrl("/ws/chat"); // ✅ 헬퍼 사용
+        const wsUrl = `${getWebSocketUrl("/ws/chat")}?token=${token}`;
         console.log("🔗 WebSocket 연결 시도:", wsUrl);
-
         wsRef.current = new WebSocket(wsUrl);
 
         wsRef.current.onopen = () => console.log("✅ WebSocket 연결 성공");
@@ -69,7 +64,6 @@ export default function Usage() {
         wsRef.current.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-
             if (data.type === "thinking") {
               setMessages((prev) => [
                 ...prev,
@@ -92,27 +86,107 @@ export default function Usage() {
           }
         };
 
+        wsRef.current.onerror = (err) => {
+          console.error("❌ WebSocket 에러:", err);
+        };
+
         wsRef.current.onclose = () => console.log("❌ WebSocket 연결 종료");
       };
 
       connectWs();
-
       return () => wsRef.current?.close();
     }
   }, [showResult]);
 
-  const handleSend = () => {
+  /** ✅ 가격순 API */
+  const fetchProductsSortedByPrice = async () => {
+    try {
+      const res = await api.get("/product", {
+        params: { sort: "priceAsc" },
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+      });
+      console.log("가격순 응답:", res.data);
+      return res.data;
+    } catch (err) {
+      console.error("가격순 API 실패:", err);
+      throw err;
+    }
+  };
+
+  /** ✅ REST API fallback */
+  const sendPromptRest = async (prompt) => {
+    try {
+      const res = await api.post(
+        "/chat/send-prompt",
+        { prompt },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      console.log("REST 응답:", res.data);
+      return res.data;
+    } catch (err) {
+      console.error("REST 채팅 실패:", err);
+      throw err;
+    }
+  };
+
+  /** ✅ 메시지 전송 */
+  const handleSend = async () => {
     const inputValue = document.querySelector(".chat-input")?.value;
     const question = inputValue || "화이트 계열의 PC를 맞추고 싶어요!";
     setUserQuestion(question);
     setShowResult(true);
     setMessages((prev) => [...prev, { sender: "user", text: question }]);
 
+    // ✅ "가격순" 키워드 포함 시 가격순 API 호출
+    if (question.includes("가격순")) {
+      try {
+        const products = await fetchProductsSortedByPrice();
+        setMessages((prev) => [
+          ...prev,
+          { sender: "ai", text: "💰 가격순 정렬 결과" },
+          { sender: "ai", text: JSON.stringify(products) },
+        ]);
+        return;
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { sender: "ai", text: "❌ 가격순 데이터를 불러오지 못했습니다." },
+        ]);
+        return;
+      }
+    }
+
+    // ✅ WebSocket 우선
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(question);
+      wsRef.current.send(
+        JSON.stringify({
+          type: "message",
+          prompt: question,
+        })
+      );
+    } else {
+      try {
+        const res = await sendPromptRest(question);
+        setMessages((prev) => [
+          ...prev,
+          { sender: "ai", text: JSON.stringify(res) },
+        ]);
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { sender: "ai", text: "❌ 응답을 불러오지 못했습니다." },
+        ]);
+      }
     }
   };
 
+  /** 뒤로가기 */
   const handleBack = () => {
     setShowResult(false);
     setUserQuestion("");
@@ -136,7 +210,6 @@ export default function Usage() {
       <main className="usage-main">
         {!showResult ? (
           <>
-            {/* 초기 화면 */}
             <div className="hero-section">
               <h2 className="usage-title">
                 당신만을 위한 맞춤형 PC 견적 AI,{" "}
@@ -161,38 +234,11 @@ export default function Usage() {
                 <button
                   className="question-btn"
                   onClick={() => {
-                    setUserQuestion(
-                      "인공지능 모델을 학습시키고 사용할 수 있는 PC 견적을 작성해주세요."
-                    );
+                    setUserQuestion("가격순으로 PC 부품을 보여줘");
                     setShowResult(true);
                   }}
                 >
-                  인공지능 모델을 학습시키고 사용할 수 있는 PC 견적을
-                  작성해주세요.
-                </button>
-              </div>
-              <div className="question-row">
-                <button
-                  className="question-btn"
-                  onClick={() => {
-                    setUserQuestion(
-                      "예산 300만원 안에서 게임용 PC 5대 추천해주세요."
-                    );
-                    setShowResult(true);
-                  }}
-                >
-                  예산 300만원 안에서 게임용 PC 5대 추천해주세요.
-                </button>
-                <button
-                  className="question-btn"
-                  onClick={() => {
-                    setUserQuestion(
-                      "RTX 5060Ti가 들어간 120만원 PC 견적을 맞춰주세요."
-                    );
-                    setShowResult(true);
-                  }}
-                >
-                  RTX 5060Ti가 들어간 120만원 PC 견적을 맞춰주세요.
+                  가격순으로 PC 부품을 보여줘
                 </button>
               </div>
             </div>
@@ -210,7 +256,6 @@ export default function Usage() {
           </>
         ) : (
           <>
-            {/* 결과 화면 */}
             <div className="chat-container">
               {messages.map((msg, idx) => (
                 <div

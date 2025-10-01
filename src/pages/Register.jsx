@@ -48,7 +48,7 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 전송 (body로 전송)
+  // ✅ 인증번호 전송
   const handleSendCode = async () => {
     if (!email.includes("@")) {
       setEmailError("이메일을 정확히 입력해주세요.");
@@ -58,26 +58,24 @@ export default function Register() {
 
     try {
       const res = await api.post("/auth/send-code", { email });
-
       if (res.status === 200) {
         setToastMessage("인증번호가 이메일로 발송되었습니다.");
         setToastType("success");
         setShowToast(true);
 
-        setTimer(0);
         setTimer(300); // 5분 타이머 시작
       }
     } catch (err) {
       console.error(err);
       setEmailError("인증번호 발송 실패");
 
-      setToastMessage("인증번호 전송을 실패했어요...");
+      setToastMessage("인증번호 전송을 실패하였습니다.");
       setToastType("error");
       setShowToast(true);
     }
   };
 
-  // ✅ 인증번호 확인 (body로 전송)
+  // ✅ 인증번호 확인
   const handleVerifyCode = async () => {
     try {
       await api.post("/auth/verify-code", {
@@ -95,7 +93,7 @@ export default function Register() {
       console.error(err);
       setCodeError("인증번호가 올바르지 않거나 만료되었습니다.");
 
-      setToastMessage("인증번호 확인을 실패했어요...");
+      setToastMessage("인증번호 확인을 실패하였습니다.");
       setToastType("error");
       setShowToast(true);
     }
@@ -137,14 +135,14 @@ export default function Register() {
     }
 
     try {
-      const res = await api.post("/auth/signup", {
+      await api.post("/auth/signup", {
         nickname,
         email,
         password,
       });
-      console.log("회원가입 성공:", res.data);
 
-      setToastMessage("회원가입이 완료되었습니다!");
+      // ✅ 회원가입 성공 시 체크 아이콘 + 고정 메시지
+      setToastMessage("회원가입을 성공하였습니다.");
       setToastType("success");
       setShowToast(true);
 
@@ -153,9 +151,9 @@ export default function Register() {
       }, 2000);
     } catch (err) {
       console.error(err);
-      setToastMessage(
-        "회원가입 실패: " + (err.response?.data?.message || "알 수 없는 오류")
-      );
+
+      // ✅ 회원가입 실패 시 경고 아이콘 + 고정 메시지
+      setToastMessage("회원가입을 실패하였습니다.");
       setToastType("error");
       setShowToast(true);
     }
@@ -277,6 +275,7 @@ export default function Register() {
         </form>
       </div>
 
+      {/* ✅ Toast 알림 */}
       {showToast && (
         <Toast
           message={toastMessage}

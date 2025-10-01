@@ -1,9 +1,8 @@
-// src/pages/DetailPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, Link, useParams } from "react-router-dom";
-import api from "../api"; // axios instance
-import { useProgressStore } from "../store/progressStore"; // zustand progress store
-import "../components/ProgressBar"; // ProgressBar 전역에서 App.jsx에 추가됨
+import api from "../api";
+import { useProgressStore } from "../store/progressStore";
+import "../components/ProgressBar";
 import "./styles/ProductDetail.css";
 
 export default function DetailPage() {
@@ -13,12 +12,13 @@ export default function DetailPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const setProgress = useProgressStore((state) => state.setProgress);
+  const [manufacturers, setManufacturers] = useState([]);
+  const [selectedManufacturer, setSelectedManufacturer] = useState("");
+  const [selectedSort, setSelectedSort] = useState(""); // ✅ 정렬 상태 추가
 
-  // 스크롤 이동할 대상 ref (페이지 상단)
+  const setProgress = useProgressStore((state) => state.setProgress);
   const topRef = useRef(null);
 
-  // 제목 매핑
   const titleMap = {
     mainboard: "메인보드",
     cpu: "CPU",
@@ -36,7 +36,7 @@ export default function DetailPage() {
     mainboard: "mainboard",
     cpu: "cpu",
     gpu: "vga",
-    ram: "ram",
+    ram: "RAM",
     ssd: "ssd",
     hdd: "hdd",
     cooler: "cooler",
@@ -45,43 +45,91 @@ export default function DetailPage() {
   };
   const apiType = apiTypeMap[productName] || productName;
 
-  // ✅ productName이 바뀔 때 page를 0으로 초기화
+  // ✅ productName 변경 시 초기화
   useEffect(() => {
     setPage(0);
+    setSelectedManufacturer("");
+    setSelectedSort("");
   }, [productName]);
 
-  // 상품 불러오기
+  // ✅ 제조사 목록 가져오기
+  useEffect(() => {
+    const fetchManufacturers = async () => {
+      try {
+        const res = await api.get(`/product/type/${apiType}`, {
+          params: { page: 0, size: 1000 },
+        });
+        const items = res.data.content || [];
+        const manuList = [
+          ...new Set(items.map((p) => p.manufacturer).filter(Boolean)),
+        ];
+        setManufacturers(manuList);
+      } catch (err) {
+        console.error("제조사 목록 가져오기 실패:", err.response || err);
+      }
+    };
+    fetchManufacturers();
+  }, [apiType]);
+
+  // ✅ 상품 불러오기
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      setProgress(30); // 시작할 때 progress 30%
+      setProgress(30);
 
       try {
         const res = await api.get(`/product/type/${apiType}`, {
-          params: { page, size: 10 },
+          params: {
+            page,
+            size: 20,
+            manufacturer: selectedManufacturer || null,
+          },
         });
-        setProducts(res.data.content || []);
+        let items = res.data.content || [];
+
+        // ✅ 프론트에서 가격 정렬 적용
+        if (selectedSort === "asc") {
+          items.sort((a, b) => {
+            const priceA = parseInt(
+              a.lowestPrice?.price ?? Number.MAX_SAFE_INTEGER,
+              10
+            );
+            const priceB = parseInt(
+              b.lowestPrice?.price ?? Number.MAX_SAFE_INTEGER,
+              10
+            );
+            return priceA - priceB;
+          });
+        } else if (selectedSort === "desc") {
+          items.sort((a, b) => {
+            const priceA = parseInt(a.lowestPrice?.price ?? 0, 10);
+            const priceB = parseInt(b.lowestPrice?.price ?? 0, 10);
+            return priceB - priceA;
+          });
+        }
+
+        setProducts(items);
         setTotalPages(res.data.totalPages || 1);
 
-        setProgress(70); // 데이터 세팅 중간 단계
+        setProgress(70);
       } catch (err) {
         console.error("상품 불러오기 실패:", err.response || err);
         setProducts([]);
       } finally {
         setTimeout(() => {
-          setProgress(100); // 완료 시 100%
+          setProgress(100);
           setLoading(false);
-        }, 300); // 살짝 딜레이 후 완료
+        }, 300);
       }
     };
 
     fetchProducts();
-  }, [productName, page, apiType, setProgress]);
+  }, [apiType, page, selectedManufacturer, selectedSort, setProgress]);
 
-  // page가 바뀔 때마다 맨 위로 이동
+  // ✅ 페이지 변경 시 스크롤 맨 위로
   useEffect(() => {
     if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: "auto" }); // 바로 이동
+      topRef.current.scrollIntoView({ behavior: "auto" });
     }
   }, [page]);
 
@@ -89,7 +137,6 @@ export default function DetailPage() {
     <div className="detail-page">
       {/* 왼쪽 열 */}
       <div className="left-column">
-        <div></div>
         <aside className="sidebar">
           <h3>부품종류</h3>
           <ul>
@@ -109,10 +156,7 @@ export default function DetailPage() {
 
       {/* 메인 콘텐츠 */}
       <div className="main-content">
-        <div></div>
-
         <div className="main-inner" ref={topRef}>
-          {/* breadcrumb */}
           <div className="breadcrumb">
             <Link to="/info" className="breadcrumb-link">
               PC 부품 정보
@@ -125,31 +169,74 @@ export default function DetailPage() {
           {/* 필터 + 검색 */}
           <div className="filter-bar">
             <div className="filter-table">
+              {/* 제조사 */}
               <div className="row">
-                <div className="label">제조사</div>
+                <div className="label manufacturer-label">제조사 선택</div>
                 <div className="options">
                   <label>
-                    <input type="checkbox" /> AMD
+                    <input
+                      type="radio"
+                      name="manufacturer"
+                      value=""
+                      checked={selectedManufacturer === ""}
+                      onChange={() => setSelectedManufacturer("")}
+                    />
+                    전체
                   </label>
-                  <label>
-                    <input type="checkbox" /> 인텔
-                  </label>
+                  {manufacturers.map((m) => (
+                    <label key={m}>
+                      <input
+                        type="radio"
+                        name="manufacturer"
+                        value={m}
+                        checked={selectedManufacturer === m}
+                        onChange={() => setSelectedManufacturer(m)}
+                      />
+                      {m}
+                    </label>
+                  ))}
                 </div>
               </div>
 
+              {/* 가격 정렬 */}
               <div className="row">
-                <div className="label">가격</div>
+                <div className="label price-label">가격 정렬</div>
                 <div className="options">
                   <label>
-                    <input type="checkbox" name="price" /> 낮은 가격순
+                    <input
+                      type="radio"
+                      name="priceSort"
+                      value="asc"
+                      checked={selectedSort === "asc"}
+                      onChange={() => setSelectedSort("asc")}
+                    />
+                    낮은 가격순
                   </label>
                   <label>
-                    <input type="checkbox" name="price" /> 높은 가격순
+                    <input
+                      type="radio"
+                      name="priceSort"
+                      value="desc"
+                      checked={selectedSort === "desc"}
+                      onChange={() => setSelectedSort("desc")}
+                    />
+                    높은 가격순
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="priceSort"
+                      value=""
+                      checked={selectedSort === ""}
+                      onChange={() => setSelectedSort("")}
+                    />
+                    인기순
                   </label>
                 </div>
               </div>
             </div>
 
+            {/* 검색 */}
             <div className="search-box">
               <input type="text" placeholder="검색어를 입력하세요" />
               <button className="search-btn">
@@ -189,7 +276,6 @@ export default function DetailPage() {
             {/* 페이지네이션 */}
             {!loading && (
               <div className="pagination">
-                {/* 첫 번째 구간(0~9페이지)에서는 < 버튼 숨김 */}
                 {page >= 10 && (
                   <button
                     onClick={() => {
