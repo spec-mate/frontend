@@ -19,13 +19,11 @@
   padding: 0;
   position: fixed;
   top: 236px;
-  /* left 속성을 사용해 위치를 직접 지정 */
-  left: calc(
-    25% - 200px - 20px
-  ); /* (전체 왼쪽 공간 25%) - (사이드바 너비) - (오른쪽 여백) */
+  left: calc(12.5% - 100px);
   z-index: 10;
   background: #fff;
 }
+
 .sidebar h3 {
   font-size: 14px;
   font-weight: bold;
@@ -92,15 +90,41 @@
   margin-bottom: 8px;
 }
 
-.main-inner h2 {
-  font-size: 56px;
-  font-weight: 00;
-  margin: 0;
+.breadcrumb-link {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-position 0.6s ease, color 0.3s ease;
 }
 
-.main-content .filter-table {
-  margin-left: 0;
-  margin-right: auto;
+.breadcrumb-link:hover {
+  text-decoration: none;
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 300% 300%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradientMove 3s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.main-inner h2 {
+  font-size: 56px;
+  font-weight: 600;
+  margin: 0;
 }
 
 .detail-content {
@@ -171,12 +195,13 @@
   color: #666;
 }
 
-.product-item .price strong {
-  display: block;
-  font-size: 16px;
-  color: #1e5cde;
+.product-item .price-number {
+  font-size: 20px;
+  font-weight: 500;
+  color: #000;
 }
 
+/* ✅ 페이지네이션 */
 .pagination {
   display: flex;
   justify-content: center;
@@ -184,20 +209,49 @@
   margin-top: 20px;
 }
 
-.pagination button {
-  border: 1px solid #ddd;
+/* 숫자 버튼 */
+.page-btn {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #8692a6;
   background: #fff;
-  padding: 6px 10px;
+  color: #8692a6;
   cursor: pointer;
   border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.pagination button.active {
-  background: #1e5cde;
+.page-btn.active {
+  background: #000; /* 클릭 시 검정색 배경 */
   color: #fff;
-  border-color: #1e5cde;
+  border-color: #000;
 }
 
+/* 화살표 버튼 */
+.arrow-btn {
+  background: transparent;
+  border: none; /* ✅ 외곽선 없음 */
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-icon {
+  width: 35px;
+  height: 35px;
+}
+
+.arrow-icon.left {
+  transform: rotate(180deg);
+}
+
+/* 필터 테이블 */
 .filter-table {
   border: 1px solid #8692a6;
   border-radius: 15px;
@@ -296,6 +350,7 @@
   height: 18px;
 }
 
+/* 반응형 */
 @media (min-width: 1025px) {
   .product-item img {
     flex: 0 0 150px;
@@ -351,6 +406,7 @@
     margin-top: 0;
     position: relative;
     top: auto;
+    left: auto;
   }
 
   .product-item {
@@ -378,35 +434,4 @@
   filter: blur(3px);
   pointer-events: none;
   user-select: none;
-}
-
-.breadcrumb-link {
-  color: #333;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-position 0.6s ease, color 0.3s ease;
-}
-
-.breadcrumb-link:hover {
-  text-decoration: none;
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 300% 300%;
-  background-position: 0% 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: gradientMove 3s ease infinite;
-}
-
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }

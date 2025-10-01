@@ -14,7 +14,7 @@ export default function DetailPage() {
 
   const [manufacturers, setManufacturers] = useState([]);
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
-  const [selectedSort, setSelectedSort] = useState(""); // ✅ 정렬 상태 추가
+  const [selectedSort, setSelectedSort] = useState("");
 
   const setProgress = useProgressStore((state) => state.setProgress);
   const topRef = useRef(null);
@@ -45,14 +45,12 @@ export default function DetailPage() {
   };
   const apiType = apiTypeMap[productName] || productName;
 
-  // ✅ productName 변경 시 초기화
   useEffect(() => {
     setPage(0);
     setSelectedManufacturer("");
     setSelectedSort("");
   }, [productName]);
 
-  // ✅ 제조사 목록 가져오기
   useEffect(() => {
     const fetchManufacturers = async () => {
       try {
@@ -71,7 +69,6 @@ export default function DetailPage() {
     fetchManufacturers();
   }, [apiType]);
 
-  // ✅ 상품 불러오기
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -87,7 +84,6 @@ export default function DetailPage() {
         });
         let items = res.data.content || [];
 
-        // ✅ 프론트에서 가격 정렬 적용
         if (selectedSort === "asc") {
           items.sort((a, b) => {
             const priceA = parseInt(
@@ -126,7 +122,6 @@ export default function DetailPage() {
     fetchProducts();
   }, [apiType, page, selectedManufacturer, selectedSort, setProgress]);
 
-  // ✅ 페이지 변경 시 스크롤 맨 위로
   useEffect(() => {
     if (topRef.current) {
       topRef.current.scrollIntoView({ behavior: "auto" });
@@ -135,7 +130,6 @@ export default function DetailPage() {
 
   return (
     <div className="detail-page">
-      {/* 왼쪽 열 */}
       <div className="left-column">
         <aside className="sidebar">
           <h3>부품종류</h3>
@@ -154,7 +148,6 @@ export default function DetailPage() {
         </aside>
       </div>
 
-      {/* 메인 콘텐츠 */}
       <div className="main-content">
         <div className="main-inner" ref={topRef}>
           <div className="breadcrumb">
@@ -166,10 +159,9 @@ export default function DetailPage() {
 
           <h2>{pageTitle}</h2>
 
-          {/* 필터 + 검색 */}
+          {/* 필터 바 */}
           <div className="filter-bar">
             <div className="filter-table">
-              {/* 제조사 */}
               <div className="row">
                 <div className="label manufacturer-label">제조사 선택</div>
                 <div className="options">
@@ -198,7 +190,6 @@ export default function DetailPage() {
                 </div>
               </div>
 
-              {/* 가격 정렬 */}
               <div className="row">
                 <div className="label price-label">가격 정렬</div>
                 <div className="options">
@@ -236,7 +227,6 @@ export default function DetailPage() {
               </div>
             </div>
 
-            {/* 검색 */}
             <div className="search-box">
               <input type="text" placeholder="검색어를 입력하세요" />
               <button className="search-btn">
@@ -278,12 +268,17 @@ export default function DetailPage() {
               <div className="pagination">
                 {page >= 10 && (
                   <button
+                    className="arrow-btn"
                     onClick={() => {
                       const startPage = Math.floor(page / 10) * 10;
                       setPage(Math.max(startPage - 10, 0));
                     }}
                   >
-                    &lt;
+                    <img
+                      src="/arrow-right.svg"
+                      alt="이전"
+                      className="arrow-icon left"
+                    />
                   </button>
                 )}
 
@@ -301,7 +296,9 @@ export default function DetailPage() {
                       pageNumber < totalPages && (
                         <button
                           key={pageNumber}
-                          className={pageNumber === page ? "active" : ""}
+                          className={`page-btn ${
+                            pageNumber === page ? "active" : ""
+                          }`}
                           onClick={() => setPage(pageNumber)}
                         >
                           {pageNumber + 1}
@@ -313,12 +310,17 @@ export default function DetailPage() {
 
                 {page < totalPages - 1 && (
                   <button
+                    className="arrow-btn"
                     onClick={() => {
                       const startPage = Math.floor(page / 10) * 10;
                       setPage(Math.min(startPage + 10, totalPages - 1));
                     }}
                   >
-                    &gt;
+                    <img
+                      src="/arrow-right.svg"
+                      alt="다음"
+                      className="arrow-icon"
+                    />
                   </button>
                 )}
               </div>
