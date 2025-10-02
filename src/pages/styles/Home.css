@@ -39,20 +39,19 @@ body::-webkit-scrollbar {
 .main {
   position: relative;
   width: 100%;
-  min-height: 100vh; /* 헤더 높이 계산 대신 100vh로 꽉 채움 */
+  min-height: 100vh;
   display: grid;
-  /* [핵심] fr 단위를 사용해 콘텐츠를 중앙 정렬 */
-  grid-template-columns: 1fr 26vw 26vw 1fr; /* 좌우에 신축성 있는 공간 추가 */
-  grid-template-rows: 1fr 37vh 1fr; /* 상하에 신축성 있는 공간 추가 */
+  grid-template-columns: 1fr 26vw 26vw 1fr;
+  grid-template-rows: 1fr 37vh 1fr;
   align-items: center;
   justify-items: center;
   box-sizing: border-box;
-  padding-top: 65px; /* 헤더 공간 확보 */
+  padding-top: 65px;
 }
 
 .main-text {
-  grid-column: 2; /* 중앙 콘텐츠 영역의 첫 번째 컬럼 */
-  grid-row: 2; /* 중앙 콘텐츠 영역의 로우 */
+  grid-column: 2;
+  grid-row: 2;
   color: white;
   font-weight: bold;
   line-height: 1.3;
@@ -86,8 +85,6 @@ body::-webkit-scrollbar {
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   transition: all 0.3s ease;
-
-  /* [핵심 수정] Flexbox를 이용해 텍스트를 정중앙으로 정렬 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,8 +107,8 @@ body::-webkit-scrollbar {
 }
 
 .main-images {
-  grid-column: 3; /* 중앙 콘텐츠 영역의 두 번째 컬럼 */
-  grid-row: 2; /* 중앙 콘텐츠 영역의 로우 */
+  grid-column: 3;
+  grid-row: 2;
   position: relative;
   width: 26vw;
   height: 37vh;
@@ -183,30 +180,41 @@ body::-webkit-scrollbar {
 /* 반응형 */
 @media (max-width: 1024px) {
   .main {
-    /* 모바일에서는 중앙 정렬 그리드 대신 단순하게 변경 */
     grid-template-columns: 1fr;
     grid-template-rows: auto;
-    display: block; /* grid 대신 block으로 변경하여 단순화 */
+    display: block;
     text-align: center;
     padding: 100px 20px 40px;
   }
   .main-text {
-    /* grid 속성 제거 */
     text-align: center;
   }
   .main-images {
-    /* grid 속성 제거 */
-    margin: 40px auto 0; /* 상단 여백 추가 및 중앙 정렬 */
+    margin: 40px auto 0;
     width: 100%;
-    max-width: 500px;
+    max-width: 350px;
     height: auto;
+    position: relative;
     display: flex;
     justify-content: center;
-    position: relative; /* position static으로 초기화 */
+    align-items: center;
   }
   .pc-image {
-    position: relative;
-    max-width: 250px;
+    position: absolute;
+    max-width: 220px;
+    height: auto;
+  }
+  .pc-left {
+    top: 0;
+    left: 50%;
+    transform: translateX(-80%); /* ⬅️ 더 왼쪽으로 이동 */
+    z-index: 2;
+  }
+  .pc-right {
+    top: 5%;
+    left: 50%;
+    transform: translateX(-30%); /* 살짝 겹치도록 */
+    z-index: 1;
   }
   .info-box {
     flex-direction: column;
