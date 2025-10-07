@@ -22,8 +22,8 @@ export default function DetailPage() {
   const titleMap = {
     mainboard: "메인보드",
     cpu: "CPU",
-    gpu: "그래픽카드",
-    ram: "메모리",
+    gpu: "그래픽카드(VGA)",
+    ram: "메모리(RAM)",
     ssd: "SSD",
     hdd: "HDD",
     cooler: "쿨러",
@@ -78,7 +78,7 @@ export default function DetailPage() {
         const res = await api.get(`/product/type/${apiType}`, {
           params: {
             page,
-            size: 20,
+            size: 15, // ✅ 한 페이지에 15개로 제한
             manufacturer: selectedManufacturer || null,
           },
         });
@@ -228,7 +228,7 @@ export default function DetailPage() {
             </div>
 
             <div className="search-box">
-              <input type="text" placeholder="검색어를 입력하세요" />
+              <input type="text" placeholder="부품 리스트 내 검색" />
               <button className="search-btn">
                 <img src="/search-normal.svg" alt="검색" />
               </button>
@@ -252,11 +252,22 @@ export default function DetailPage() {
                       </div>
                       <div className="price">
                         <span>최저가</span>
-                        <strong>
-                          {p.lowestPrice?.price
-                            ? `₩${p.lowestPrice.price.toLocaleString()}`
-                            : "정보 없음"}
-                        </strong>
+                        {p.lowestPrice?.price ? (
+                          <div>
+                            <strong className="price-number">
+                              {parseInt(
+                                String(p.lowestPrice.price).replace(
+                                  /[^0-9]/g,
+                                  ""
+                                ),
+                                10
+                              ).toLocaleString()}
+                            </strong>
+                            <span className="price-unit">원</span>
+                          </div>
+                        ) : (
+                          <strong className="price-number">정보 없음</strong>
+                        )}
                       </div>
                     </Link>
                   ))

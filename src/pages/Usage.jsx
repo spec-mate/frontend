@@ -1,4 +1,3 @@
-// src/pages/Usage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import "./styles/Usage.css";
 import { useHeaderStore } from "../store/headerStore";
@@ -21,7 +20,7 @@ export default function Usage() {
     setHeaderVersion("black");
   }, [setHeaderVersion]);
 
-  /** ✅ AccessToken 갱신 */
+  /** AccessToken 갱신 */
   const ensureFreshToken = async () => {
     const accessToken = sessionStorage.getItem("accessToken");
     if (!accessToken) return;
@@ -29,7 +28,6 @@ export default function Usage() {
       const payload = JSON.parse(atob(accessToken.split(".")[1]));
       const now = Date.now() / 1000;
       if (payload.exp < now) {
-        console.warn("🔄 AccessToken 만료 → Refresh 시도");
         const refreshToken = sessionStorage.getItem("refreshToken");
         if (!refreshToken) return;
         const res = await api.post("/auth/refresh", null, {
@@ -45,18 +43,14 @@ export default function Usage() {
     }
   };
 
-  /** ✅ WebSocket 연결 */
+  /** WebSocket 연결 */
   useEffect(() => {
     if (showResult) {
       const connectWs = async () => {
         await ensureFreshToken();
         const token = sessionStorage.getItem("accessToken");
-        if (!token) {
-          console.error("❌ AccessToken 없음. 로그인 필요");
-          return;
-        }
+        if (!token) return;
         const wsUrl = `${getWebSocketUrl("/ws/chat")}?token=${token}`;
-        console.log("🔗 WebSocket 연결 시도:", wsUrl);
         wsRef.current = new WebSocket(wsUrl);
 
         wsRef.current.onopen = () => console.log("✅ WebSocket 연결 성공");
@@ -67,7 +61,7 @@ export default function Usage() {
             if (data.type === "thinking") {
               setMessages((prev) => [
                 ...prev,
-                { sender: "ai", text: "🤔 스펙메이트가 생각 중..." },
+                { sender: "ai", text: "스펙메이트가 생각 중..." },
               ]);
             } else {
               if (Array.isArray(data.status)) {
@@ -87,10 +81,10 @@ export default function Usage() {
         };
 
         wsRef.current.onerror = (err) => {
-          console.error("❌ WebSocket 에러:", err);
+          console.error("WebSocket 에러:", err);
         };
 
-        wsRef.current.onclose = () => console.log("❌ WebSocket 연결 종료");
+        wsRef.current.onclose = () => console.log("WebSocket 연결 종료");
       };
 
       connectWs();
@@ -98,95 +92,41 @@ export default function Usage() {
     }
   }, [showResult]);
 
-  /** ✅ 가격순 API */
-  const fetchProductsSortedByPrice = async () => {
-    try {
-      const res = await api.get("/product", {
-        params: { sort: "priceAsc" },
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-        },
-      });
-      console.log("가격순 응답:", res.data);
-      return res.data;
-    } catch (err) {
-      console.error("가격순 API 실패:", err);
-      throw err;
-    }
-  };
-
-  /** ✅ REST API fallback */
-  const sendPromptRest = async (prompt) => {
-    try {
-      const res = await api.post(
-        "/chat/send-prompt",
-        { prompt },
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-      console.log("REST 응답:", res.data);
-      return res.data;
-    } catch (err) {
-      console.error("REST 채팅 실패:", err);
-      throw err;
-    }
-  };
-
-  /** ✅ 메시지 전송 */
+  /** 메시지 전송 */
   const handleSend = async () => {
-    const inputValue = document.querySelector(".chat-input")?.value;
-    const question = inputValue || "화이트 계열의 PC를 맞추고 싶어요!";
+    const inputValue = document.querySelector(".chat-input")?.value.trim();
+    if (!inputValue) return;
+    const question = inputValue;
     setUserQuestion(question);
     setShowResult(true);
     setMessages((prev) => [...prev, { sender: "user", text: question }]);
 
-    // ✅ "가격순" 키워드 포함 시 가격순 API 호출
-    if (question.includes("가격순")) {
-      try {
-        const products = await fetchProductsSortedByPrice();
-        setMessages((prev) => [
-          ...prev,
-          { sender: "ai", text: "💰 가격순 정렬 결과" },
-          { sender: "ai", text: JSON.stringify(products) },
-        ]);
-        return;
-      } catch {
-        setMessages((prev) => [
-          ...prev,
-          { sender: "ai", text: "❌ 가격순 데이터를 불러오지 못했습니다." },
-        ]);
-        return;
-      }
-    }
-
-    // ✅ WebSocket 우선
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(
-        JSON.stringify({
-          type: "message",
-          prompt: question,
-        })
-      );
+      wsRef.current.send(JSON.stringify({ type: "message", prompt: question }));
     } else {
       try {
-        const res = await sendPromptRest(question);
+        const res = await api.post(
+          "/chat/send-prompt",
+          { prompt: question },
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+            },
+          }
+        );
         setMessages((prev) => [
           ...prev,
-          { sender: "ai", text: JSON.stringify(res) },
+          { sender: "ai", text: JSON.stringify(res.data) },
         ]);
       } catch {
         setMessages((prev) => [
           ...prev,
-          { sender: "ai", text: "❌ 응답을 불러오지 못했습니다." },
+          { sender: "ai", text: "응답을 불러오지 못했습니다." },
         ]);
       }
     }
   };
 
-  /** 뒤로가기 */
   const handleBack = () => {
     setShowResult(false);
     setUserQuestion("");
@@ -196,20 +136,12 @@ export default function Usage() {
 
   return (
     <div className="usage-page">
-      {!showResult ? (
-        <Header />
-      ) : (
-        <div className="result-header">
-          <IconButton onClick={handleBack} className="back-btn">
-            <ArrowBackIcon />
-          </IconButton>
-          <h3>{userQuestion}</h3>
-        </div>
-      )}
+      {!showResult ? <Header /> : null}
 
       <main className="usage-main">
         {!showResult ? (
           <>
+            {/* 상단 히어로 영역 */}
             <div className="hero-section">
               <h2 className="usage-title">
                 당신만을 위한 맞춤형 PC 견적 AI,{" "}
@@ -220,29 +152,29 @@ export default function Usage() {
               </div>
             </div>
 
+            {/* 버튼 영역 */}
             <div className="question-list">
               <div className="question-row">
-                <button
-                  className="question-btn"
-                  onClick={() => {
-                    setUserQuestion("화이트 계열의 PC를 맞추고 싶어요!");
-                    setShowResult(true);
-                  }}
-                >
+                <button className="question-btn">
                   화이트 계열의 PC를 맞추고 싶어요!
                 </button>
-                <button
-                  className="question-btn"
-                  onClick={() => {
-                    setUserQuestion("가격순으로 PC 부품을 보여줘");
-                    setShowResult(true);
-                  }}
-                >
-                  가격순으로 PC 부품을 보여줘
+                <button className="question-btn">
+                  인공지능 모델을 원활하게 학습시키고 사용할 수 있는 PC 견적을
+                  작성해주세요.
+                </button>
+              </div>
+              <div className="question-row">
+                <button className="question-btn">
+                  예산 상관없이 게임이 잘 돌아가는 게이밍 PC를 5대 정도 맞춰서
+                  추천해주세요.
+                </button>
+                <button className="question-btn">
+                  RTX 5060TI가 들어간 120만원 정도의 PC를 맞춰주세요.{" "}
                 </button>
               </div>
             </div>
 
+            {/* 입력창 */}
             <div className="input-section">
               <input
                 type="text"
@@ -256,6 +188,14 @@ export default function Usage() {
           </>
         ) : (
           <>
+            {/* 결과 화면 */}
+            <div className="result-header">
+              <IconButton onClick={handleBack} className="back-btn">
+                <ArrowBackIcon />
+              </IconButton>
+              <h3>{userQuestion}</h3>
+            </div>
+
             <div className="chat-container">
               {messages.map((msg, idx) => (
                 <div
