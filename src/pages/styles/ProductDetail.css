@@ -419,3 +419,16 @@
   pointer-events: none;
   user-select: none;
 }
+.specs {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.product-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #000;
+}

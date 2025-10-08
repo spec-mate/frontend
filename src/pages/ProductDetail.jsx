@@ -78,7 +78,7 @@ export default function DetailPage() {
         const res = await api.get(`/product/type/${apiType}`, {
           params: {
             page,
-            size: 15, // ✅ 한 페이지에 15개로 제한
+            size: 15,
             manufacturer: selectedManufacturer || null,
           },
         });
@@ -106,7 +106,6 @@ export default function DetailPage() {
 
         setProducts(items);
         setTotalPages(res.data.totalPages || 1);
-
         setProgress(70);
       } catch (err) {
         console.error("상품 불러오기 실패:", err.response || err);
@@ -127,6 +126,196 @@ export default function DetailPage() {
       topRef.current.scrollIntoView({ behavior: "auto" });
     }
   }, [page]);
+
+  // ✅ 불리언 값 변환 함수
+  const formatValue = (val) => {
+    if (typeof val === "boolean") return val ? "O" : "X";
+    if (val === "true") return "O";
+    if (val === "false") return "X";
+    return val;
+  };
+
+  // ✅ 스펙 매핑 함수 (모든 상품 최소 3줄)
+  const renderSpecs = (type, options) => {
+    if (!options) return null;
+
+    const filteredOptions = Object.fromEntries(
+      Object.entries(options).filter(
+        ([key]) => key.toLowerCase() !== "manufacturer"
+      )
+    );
+
+    let lines = [];
+
+    const o = filteredOptions;
+
+    switch (type) {
+      case "cpu":
+        lines = [
+          [
+            o.core && `${o.core}`,
+            o.thread && `${o.thread}스레드`,
+            o.memory_type,
+            o.integrated_graphics && "내장그래픽 O",
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.base_clock && `기본 클럭: ${o.base_clock}`,
+            o.boost_clock && `최대 클럭: ${o.boost_clock}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.l2_cache && `L2 캐시: ${o.l2_cache}`,
+            o.l3_cache && `L3 캐시: ${o.l3_cache}`,
+            o.tdp && `TDP: ${o.tdp}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [o.pcie && `PCIe ${o.pcie}`, o.speed && `${o.speed}`, o.architecture]
+            .filter(Boolean)
+            .join(" / "),
+        ];
+        break;
+
+      case "ssd":
+        lines = [
+          [o.capacity, o.interface, o.protocol, o.form_factor]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.memory_type,
+            o.nand_structure,
+            o.ram_included && `DRAM: ${formatValue(o.ram_included)}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.seq_read && `읽기속도: ${o.seq_read}`,
+            o.seq_write && `쓰기속도: ${o.seq_write}`,
+            o.controller,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.endurance && `내구성: ${o.endurance}`,
+            o.warranty && `보증: ${o.warranty}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+        ];
+        break;
+
+      case "gpu":
+        lines = [
+          [o.graphics_chipset, o.memory_type, o.capacity]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.base_clock && `기본 클럭: ${o.base_clock}`,
+            o.boost_clock && `최대 클럭: ${o.boost_clock}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [o.interface, o.cooling, o.fan, o.length && `길이: ${o.length}`]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.power && `TDP: ${o.power}`,
+            o.power_connector && `전원핀: ${o.power_connector}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+        ];
+        break;
+
+      case "ram":
+        lines = [
+          [o.capacity, o.memory_type, o.speed].filter(Boolean).join(" / "),
+          [o.timing, o.voltage, o.module_type].filter(Boolean).join(" / "),
+          [o.channel, o.heatsink, o.rgb && `RGB: ${formatValue(o.rgb)}`]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.height && `높이: ${o.height}`,
+            o.ecc && `ECC: ${formatValue(o.ecc)}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+        ];
+        break;
+
+      case "mainboard":
+        lines = [
+          [
+            o.socket,
+            o.chipset,
+            o.form_factor,
+            o.power_phase && `전원부 ${o.power_phase}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.memory_type,
+            o.max_memory && `최대 ${o.max_memory}`,
+            o.memory_slot && `슬롯 ${o.memory_slot}개`,
+            o.dual_channel && `듀얼채널: ${formatValue(o.dual_channel)}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.pcie && `PCIe ${o.pcie}`,
+            o.m2_slot && `M.2 ${o.m2_slot}`,
+            o.sata_port && `SATA ${o.sata_port}`,
+            o.usb_port && `USB ${o.usb_port}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+          [
+            o.lan && `LAN: ${o.lan}`,
+            o.wifi && `WiFi: ${formatValue(o.wifi)}`,
+            o.bluetooth && `Bluetooth: ${formatValue(o.bluetooth)}`,
+            o.audio_chip && `오디오: ${o.audio_chip}`,
+            o.bios && `BIOS: ${o.bios}`,
+          ]
+            .filter(Boolean)
+            .join(" / "),
+        ];
+        break;
+
+      default:
+        // 기본형: 4줄 중 최소 3줄
+        lines = Object.entries(o)
+          .filter(([k]) => k.toLowerCase() !== "manufacturer")
+          .slice(0, 4)
+          .map(([k, v]) => `${k}: ${formatValue(v)}`);
+        break;
+    }
+
+    // ✅ 항상 최소 3줄 보장
+    const allEntries = Object.entries(o)
+      .filter(([k]) => k.toLowerCase() !== "manufacturer")
+      .map(([k, v]) => `${k}: ${formatValue(v)}`);
+
+    while (
+      lines.filter(Boolean).length < 3 &&
+      allEntries.length > lines.length
+    ) {
+      lines.push(allEntries[lines.length]);
+    }
+
+    return (
+      <div className="specs">
+        {lines
+          .filter(Boolean)
+          .slice(0, 4)
+          .map((line, i) => (
+            <p key={i}>{line}</p>
+          ))}
+      </div>
+    );
+  };
 
   return (
     <div className="detail-page">
@@ -159,83 +348,6 @@ export default function DetailPage() {
 
           <h2>{pageTitle}</h2>
 
-          {/* 필터 바 */}
-          <div className="filter-bar">
-            <div className="filter-table">
-              <div className="row">
-                <div className="label manufacturer-label">제조사 선택</div>
-                <div className="options">
-                  <label>
-                    <input
-                      type="radio"
-                      name="manufacturer"
-                      value=""
-                      checked={selectedManufacturer === ""}
-                      onChange={() => setSelectedManufacturer("")}
-                    />
-                    전체
-                  </label>
-                  {manufacturers.map((m) => (
-                    <label key={m}>
-                      <input
-                        type="radio"
-                        name="manufacturer"
-                        value={m}
-                        checked={selectedManufacturer === m}
-                        onChange={() => setSelectedManufacturer(m)}
-                      />
-                      {m}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="label price-label">가격 정렬</div>
-                <div className="options">
-                  <label>
-                    <input
-                      type="radio"
-                      name="priceSort"
-                      value="asc"
-                      checked={selectedSort === "asc"}
-                      onChange={() => setSelectedSort("asc")}
-                    />
-                    낮은 가격순
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="priceSort"
-                      value="desc"
-                      checked={selectedSort === "desc"}
-                      onChange={() => setSelectedSort("desc")}
-                    />
-                    높은 가격순
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="priceSort"
-                      value=""
-                      checked={selectedSort === ""}
-                      onChange={() => setSelectedSort("")}
-                    />
-                    인기순
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="search-box">
-              <input type="text" placeholder="부품 리스트 내 검색" />
-              <button className="search-btn">
-                <img src="/search-normal.svg" alt="검색" />
-              </button>
-            </div>
-          </div>
-
-          {/* 상품 리스트 */}
           <section className="detail-content">
             <div className="product-list">
               {products.length > 0
@@ -248,8 +360,9 @@ export default function DetailPage() {
                       <img src={p.image || "/no-image.svg"} alt={p.name} />
                       <div className="info">
                         <h4>{p.name}</h4>
-                        <p>{p.manufacturer}</p>
+                        {renderSpecs(productName, p.options)}
                       </div>
+
                       <div className="price">
                         <span>최저가</span>
                         {p.lowestPrice?.price ? (
@@ -273,69 +386,6 @@ export default function DetailPage() {
                   ))
                 : !loading && <p>상품이 없습니다.</p>}
             </div>
-
-            {/* 페이지네이션 */}
-            {!loading && (
-              <div className="pagination">
-                {page >= 10 && (
-                  <button
-                    className="arrow-btn"
-                    onClick={() => {
-                      const startPage = Math.floor(page / 10) * 10;
-                      setPage(Math.max(startPage - 10, 0));
-                    }}
-                  >
-                    <img
-                      src="/arrow-right.svg"
-                      alt="이전"
-                      className="arrow-icon left"
-                    />
-                  </button>
-                )}
-
-                {Array.from(
-                  {
-                    length: Math.min(
-                      10,
-                      totalPages - Math.floor(page / 10) * 10
-                    ),
-                  },
-                  (_, i) => {
-                    const startPage = Math.floor(page / 10) * 10;
-                    const pageNumber = startPage + i;
-                    return (
-                      pageNumber < totalPages && (
-                        <button
-                          key={pageNumber}
-                          className={`page-btn ${
-                            pageNumber === page ? "active" : ""
-                          }`}
-                          onClick={() => setPage(pageNumber)}
-                        >
-                          {pageNumber + 1}
-                        </button>
-                      )
-                    );
-                  }
-                )}
-
-                {page < totalPages - 1 && (
-                  <button
-                    className="arrow-btn"
-                    onClick={() => {
-                      const startPage = Math.floor(page / 10) * 10;
-                      setPage(Math.min(startPage + 10, totalPages - 1));
-                    }}
-                  >
-                    <img
-                      src="/arrow-right.svg"
-                      alt="다음"
-                      className="arrow-icon"
-                    />
-                  </button>
-                )}
-              </div>
-            )}
           </section>
         </div>
       </div>
