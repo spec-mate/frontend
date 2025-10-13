@@ -264,7 +264,7 @@
 
 .filter-table {
   border: 1px solid #8692a6;
-  border-radius: 15px;
+  border-radius: 5px;
   font-size: 14px;
   display: inline-block;
   width: 500px;
@@ -296,11 +296,11 @@
 }
 
 .filter-table .manufacturer-label {
-  border-radius: 15px 0 0 0;
+  border-radius: 5px 0 0 0;
 }
 
 .filter-table .price-label {
-  border-radius: 0 0 0 15px;
+  border-radius: 0 0 0 5px;
 }
 
 .filter-table .options {

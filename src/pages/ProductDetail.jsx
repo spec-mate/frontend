@@ -15,6 +15,7 @@ export default function DetailPage() {
   const [manufacturers, setManufacturers] = useState([]);
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [selectedSort, setSelectedSort] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const setProgress = useProgressStore((state) => state.setProgress);
   const topRef = useRef(null);
@@ -49,6 +50,7 @@ export default function DetailPage() {
     setPage(0);
     setSelectedManufacturer("");
     setSelectedSort("");
+    setSearchQuery("");
   }, [productName]);
 
   useEffect(() => {
@@ -82,7 +84,14 @@ export default function DetailPage() {
             manufacturer: selectedManufacturer || null,
           },
         });
+
         let items = res.data.content || [];
+
+        if (searchQuery.trim()) {
+          items = items.filter((p) =>
+            p.name.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }
 
         if (selectedSort === "asc") {
           items.sort((a, b) => {
@@ -119,7 +128,14 @@ export default function DetailPage() {
     };
 
     fetchProducts();
-  }, [apiType, page, selectedManufacturer, selectedSort, setProgress]);
+  }, [
+    apiType,
+    page,
+    selectedManufacturer,
+    selectedSort,
+    searchQuery,
+    setProgress,
+  ]);
 
   useEffect(() => {
     if (topRef.current) {
@@ -127,7 +143,6 @@ export default function DetailPage() {
     }
   }, [page]);
 
-  // ✅ 불리언 값 변환 함수
   const formatValue = (val) => {
     if (typeof val === "boolean") return val ? "O" : "X";
     if (val === "true") return "O";
@@ -135,19 +150,10 @@ export default function DetailPage() {
     return val;
   };
 
-  // ✅ 스펙 매핑 함수 (모든 상품 최소 3줄)
   const renderSpecs = (type, options) => {
     if (!options) return null;
-
-    const filteredOptions = Object.fromEntries(
-      Object.entries(options).filter(
-        ([key]) => key.toLowerCase() !== "manufacturer"
-      )
-    );
-
+    const o = options;
     let lines = [];
-
-    const o = filteredOptions;
 
     switch (type) {
       case "cpu":
@@ -156,169 +162,71 @@ export default function DetailPage() {
             o.core && `${o.core}`,
             o.thread && `${o.thread}스레드`,
             o.memory_type,
-            o.integrated_graphics && "내장그래픽 O",
           ]
             .filter(Boolean)
             .join(" / "),
           [
-            o.base_clock && `기본 클럭: ${o.base_clock}`,
-            o.boost_clock && `최대 클럭: ${o.boost_clock}`,
+            o.base_clock && `기본 ${o.base_clock}`,
+            o.boost_clock && `최대 ${o.boost_clock}`,
           ]
             .filter(Boolean)
             .join(" / "),
-          [
-            o.l2_cache && `L2 캐시: ${o.l2_cache}`,
-            o.l3_cache && `L3 캐시: ${o.l3_cache}`,
-            o.tdp && `TDP: ${o.tdp}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [o.pcie && `PCIe ${o.pcie}`, o.speed && `${o.speed}`, o.architecture]
+          [o.l3_cache && `L3 캐시 ${o.l3_cache}`, o.tdp && `TDP ${o.tdp}`]
             .filter(Boolean)
             .join(" / "),
         ];
         break;
-
       case "ssd":
         lines = [
-          [o.capacity, o.interface, o.protocol, o.form_factor]
-            .filter(Boolean)
-            .join(" / "),
+          [o.capacity, o.interface, o.form_factor].filter(Boolean).join(" / "),
           [
-            o.memory_type,
-            o.nand_structure,
-            o.ram_included && `DRAM: ${formatValue(o.ram_included)}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.seq_read && `읽기속도: ${o.seq_read}`,
-            o.seq_write && `쓰기속도: ${o.seq_write}`,
-            o.controller,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.endurance && `내구성: ${o.endurance}`,
-            o.warranty && `보증: ${o.warranty}`,
+            o.seq_read && `읽기 ${o.seq_read}`,
+            o.seq_write && `쓰기 ${o.seq_write}`,
           ]
             .filter(Boolean)
             .join(" / "),
         ];
         break;
-
       case "gpu":
         lines = [
           [o.graphics_chipset, o.memory_type, o.capacity]
             .filter(Boolean)
             .join(" / "),
           [
-            o.base_clock && `기본 클럭: ${o.base_clock}`,
-            o.boost_clock && `최대 클럭: ${o.boost_clock}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [o.interface, o.cooling, o.fan, o.length && `길이: ${o.length}`]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.power && `TDP: ${o.power}`,
-            o.power_connector && `전원핀: ${o.power_connector}`,
+            o.boost_clock && `클럭 ${o.boost_clock}`,
+            o.length && `길이 ${o.length}`,
           ]
             .filter(Boolean)
             .join(" / "),
         ];
         break;
-
       case "ram":
         lines = [
           [o.capacity, o.memory_type, o.speed].filter(Boolean).join(" / "),
-          [o.timing, o.voltage, o.module_type].filter(Boolean).join(" / "),
-          [o.channel, o.heatsink, o.rgb && `RGB: ${formatValue(o.rgb)}`]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.height && `높이: ${o.height}`,
-            o.ecc && `ECC: ${formatValue(o.ecc)}`,
-          ]
+          [o.channel, o.heatsink, o.rgb && `RGB ${formatValue(o.rgb)}`]
             .filter(Boolean)
             .join(" / "),
         ];
         break;
-
-      case "mainboard":
-        lines = [
-          [
-            o.socket,
-            o.chipset,
-            o.form_factor,
-            o.power_phase && `전원부 ${o.power_phase}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.memory_type,
-            o.max_memory && `최대 ${o.max_memory}`,
-            o.memory_slot && `슬롯 ${o.memory_slot}개`,
-            o.dual_channel && `듀얼채널: ${formatValue(o.dual_channel)}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.pcie && `PCIe ${o.pcie}`,
-            o.m2_slot && `M.2 ${o.m2_slot}`,
-            o.sata_port && `SATA ${o.sata_port}`,
-            o.usb_port && `USB ${o.usb_port}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.lan && `LAN: ${o.lan}`,
-            o.wifi && `WiFi: ${formatValue(o.wifi)}`,
-            o.bluetooth && `Bluetooth: ${formatValue(o.bluetooth)}`,
-            o.audio_chip && `오디오: ${o.audio_chip}`,
-            o.bios && `BIOS: ${o.bios}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
       default:
-        // 기본형: 4줄 중 최소 3줄
         lines = Object.entries(o)
-          .filter(([k]) => k.toLowerCase() !== "manufacturer")
-          .slice(0, 4)
+          .slice(0, 3)
           .map(([k, v]) => `${k}: ${formatValue(v)}`);
         break;
     }
 
-    // ✅ 항상 최소 3줄 보장
-    const allEntries = Object.entries(o)
-      .filter(([k]) => k.toLowerCase() !== "manufacturer")
-      .map(([k, v]) => `${k}: ${formatValue(v)}`);
-
-    while (
-      lines.filter(Boolean).length < 3 &&
-      allEntries.length > lines.length
-    ) {
-      lines.push(allEntries[lines.length]);
-    }
-
     return (
       <div className="specs">
-        {lines
-          .filter(Boolean)
-          .slice(0, 4)
-          .map((line, i) => (
-            <p key={i}>{line}</p>
-          ))}
+        {lines.filter(Boolean).map((line, i) => (
+          <p key={i}>{line}</p>
+        ))}
       </div>
     );
   };
 
   return (
     <div className="detail-page">
+      {/* 왼쪽 사이드바 */}
       <div className="left-column">
         <aside className="sidebar">
           <h3>부품종류</h3>
@@ -337,6 +245,7 @@ export default function DetailPage() {
         </aside>
       </div>
 
+      {/* 메인 콘텐츠 */}
       <div className="main-content">
         <div className="main-inner" ref={topRef}>
           <div className="breadcrumb">
@@ -348,6 +257,91 @@ export default function DetailPage() {
 
           <h2>{pageTitle}</h2>
 
+          {/* 필터 테이블 + 검색창 */}
+          <div className="filter-bar">
+            <div className="filter-table">
+              {/* 제조사 */}
+              <div className="row">
+                <div className="label manufacturer-label">제조사</div>
+                <div className="options">
+                  {manufacturers.map((m) => (
+                    <label key={m}>
+                      <input
+                        type="radio"
+                        name="manufacturer"
+                        value={m}
+                        checked={selectedManufacturer === m}
+                        onChange={() => setSelectedManufacturer(m)}
+                      />
+                      {m}
+                    </label>
+                  ))}
+                  <label>
+                    <input
+                      type="radio"
+                      name="manufacturer"
+                      value=""
+                      checked={selectedManufacturer === ""}
+                      onChange={() => setSelectedManufacturer("")}
+                    />
+                    전체
+                  </label>
+                </div>
+              </div>
+
+              {/* 정렬 */}
+              <div className="row">
+                <div className="label price-label">가격 정렬</div>
+                <div className="options">
+                  <label>
+                    <input
+                      type="radio"
+                      name="sort"
+                      value="asc"
+                      checked={selectedSort === "asc"}
+                      onChange={() => setSelectedSort("asc")}
+                    />
+                    낮은순
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="sort"
+                      value="desc"
+                      checked={selectedSort === "desc"}
+                      onChange={() => setSelectedSort("desc")}
+                    />
+                    높은순
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="sort"
+                      value=""
+                      checked={selectedSort === ""}
+                      onChange={() => setSelectedSort("")}
+                    />
+                    기본
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* 검색창 */}
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="상품명 검색"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button className="search-btn">
+                <img src="/search.svg" alt="검색" />
+              </button>
+            </div>
+          </div>
+
+          {/* 상품 목록 */}
           <section className="detail-content">
             <div className="product-list">
               {products.length > 0
@@ -359,10 +353,9 @@ export default function DetailPage() {
                     >
                       <img src={p.image || "/no-image.svg"} alt={p.name} />
                       <div className="info">
-                        <h4>{p.name}</h4>
+                        <h4 className="product-title">{p.name}</h4>
                         {renderSpecs(productName, p.options)}
                       </div>
-
                       <div className="price">
                         <span>최저가</span>
                         {p.lowestPrice?.price ? (
