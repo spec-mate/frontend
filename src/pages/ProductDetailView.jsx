@@ -1,4 +1,3 @@
-// src/pages/ProductDetailView.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
@@ -9,6 +8,7 @@ export default function ProductDetailView() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedBuild, setSelectedBuild] = useState(null);
+  const [hoveredSet, setHoveredSet] = useState({ row: null, col: null });
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -279,6 +279,17 @@ export default function ProductDetailView() {
     .filter(([, v]) => v !== undefined && v !== null)
     .slice(0, 15);
 
+  let rows = [];
+  if (entries.length > 7) {
+    const mid = Math.ceil(entries.length / 2);
+    const left = entries.slice(0, mid);
+    const right = entries.slice(mid, entries.length);
+    const maxLen = Math.max(left.length, right.length);
+    for (let i = 0; i < maxLen; i++) {
+      rows.push([left[i], right[i]]);
+    }
+  }
+
   return (
     <div className="product-detail-view">
       <div className="product-content">
@@ -295,17 +306,14 @@ export default function ProductDetailView() {
           </Link>{" "}
           &gt; <span>{product.name}</span>
         </div>
-
         <h2 className="product-title">{product.name}</h2>
-
         <div className="tags">
           <span>#{product.manufacturer}</span>
           <span>#{typeLabel}</span>
           <span>등록일: {product.regDate}</span>
         </div>
-
         <div className="product-box">
-          <div className="product-info">
+          <div className="specs-table-sync">
             <div className="left">
               <img
                 src={product.image || "/no-image.svg"}
@@ -314,21 +322,150 @@ export default function ProductDetailView() {
               />
             </div>
             <div className="right">
-              <div className="specs-tables">
-                <table>
-                  <tbody>
-                    {entries.map(([key, value]) => (
-                      <tr key={key}>
-                        <td>{optionLabels[key] || key}</td>
-                        <td>{String(value)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="specs-table-new">
+                {entries.length <= 7 ? (
+                  <table>
+                    <tbody>
+                      {entries.map(([key, value], idx) => (
+                        <tr key={key}>
+                          <td
+                            className={`spec-label set-hoverable${
+                              hoveredSet.row === idx && hoveredSet.col === 0
+                                ? " hovered"
+                                : ""
+                            }`}
+                            onMouseEnter={() =>
+                              setHoveredSet({ row: idx, col: 0 })
+                            }
+                            onMouseLeave={() =>
+                              setHoveredSet({ row: null, col: null })
+                            }
+                          >
+                            {optionLabels[key] || key}
+                          </td>
+                          <td
+                            className={`spec-value set-hoverable${
+                              hoveredSet.row === idx && hoveredSet.col === 0
+                                ? " hovered"
+                                : ""
+                            }`}
+                            onMouseEnter={() =>
+                              setHoveredSet({ row: idx, col: 0 })
+                            }
+                            onMouseLeave={() =>
+                              setHoveredSet({ row: null, col: null })
+                            }
+                            title={String(value)}
+                          >
+                            <span className="ellipsis">{String(value)}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <table>
+                    <tbody>
+                      {rows.map((row, rIdx) => (
+                        <tr key={rIdx}>
+                          {/* 왼쪽 세트 */}
+                          {row[0] ? (
+                            <>
+                              <td
+                                className={`spec-label set-hoverable${
+                                  hoveredSet.row === rIdx &&
+                                  hoveredSet.col === 0
+                                    ? " hovered"
+                                    : ""
+                                }`}
+                                onMouseEnter={() =>
+                                  setHoveredSet({ row: rIdx, col: 0 })
+                                }
+                                onMouseLeave={() =>
+                                  setHoveredSet({ row: null, col: null })
+                                }
+                              >
+                                {optionLabels[row[0][0]] || row[0][0]}
+                              </td>
+                              <td
+                                className={`spec-value set-hoverable${
+                                  hoveredSet.row === rIdx &&
+                                  hoveredSet.col === 0
+                                    ? " hovered"
+                                    : ""
+                                }`}
+                                onMouseEnter={() =>
+                                  setHoveredSet({ row: rIdx, col: 0 })
+                                }
+                                onMouseLeave={() =>
+                                  setHoveredSet({ row: null, col: null })
+                                }
+                                title={String(row[0][1])}
+                              >
+                                <span className="ellipsis">
+                                  {String(row[0][1])}
+                                </span>
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="spec-label"></td>
+                              <td className="spec-value"></td>
+                            </>
+                          )}
+                          {/* 오른쪽 세트 */}
+                          {row[1] ? (
+                            <>
+                              <td
+                                className={`spec-label set-hoverable${
+                                  hoveredSet.row === rIdx &&
+                                  hoveredSet.col === 1
+                                    ? " hovered"
+                                    : ""
+                                }`}
+                                onMouseEnter={() =>
+                                  setHoveredSet({ row: rIdx, col: 1 })
+                                }
+                                onMouseLeave={() =>
+                                  setHoveredSet({ row: null, col: null })
+                                }
+                              >
+                                {optionLabels[row[1][0]] || row[1][0]}
+                              </td>
+                              <td
+                                className={`spec-value set-hoverable${
+                                  hoveredSet.row === rIdx &&
+                                  hoveredSet.col === 1
+                                    ? " hovered"
+                                    : ""
+                                }`}
+                                onMouseEnter={() =>
+                                  setHoveredSet({ row: rIdx, col: 1 })
+                                }
+                                onMouseLeave={() =>
+                                  setHoveredSet({ row: null, col: null })
+                                }
+                                title={String(row[1][1])}
+                              >
+                                <span className="ellipsis">
+                                  {String(row[1][1])}
+                                </span>
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="spec-label"></td>
+                              <td className="spec-value"></td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           </div>
-
           <div className="price-box">
             <span className="price-label">최저가</span>
             <strong className="price-value">
@@ -343,7 +480,6 @@ export default function ProductDetailView() {
                 "정보 없음"
               )}
             </strong>
-
             <div className="price-actions">
               {product.lowestPrice?.link && (
                 <a
@@ -367,13 +503,11 @@ export default function ProductDetailView() {
             </div>
           </div>
         </div>
-
         <div className="recommend-section">
           <div className="recommend-overlay-text">
             <h3>스펙메이트의 용도별 조합 추천!</h3>
             <p>박스를 클릭해보세요!</p>
           </div>
-
           <div className="recommend-cards">
             <div>
               {selectedBuild === "office" ? (
@@ -382,13 +516,7 @@ export default function ProductDetailView() {
                   onClick={() => handleCardClick("office")}
                 >
                   <h4>사무용 PC 추천 부품</h4>
-                  <ul>
-                    {[].map((b, idx) => (
-                      <li key={idx}>
-                        <strong>{b.category}</strong>: {b.part}
-                      </li>
-                    ))}
-                  </ul>
+                  <ul>{/* ... */}</ul>
                 </div>
               ) : (
                 <div
@@ -403,7 +531,6 @@ export default function ProductDetailView() {
                 </div>
               )}
             </div>
-
             <div>
               {selectedBuild === "gaming" ? (
                 <div
@@ -411,13 +538,7 @@ export default function ProductDetailView() {
                   onClick={() => handleCardClick("gaming")}
                 >
                   <h4>게이밍 PC 추천 부품</h4>
-                  <ul>
-                    {[].map((b, idx) => (
-                      <li key={idx}>
-                        <strong>{b.category}</strong>: {b.part}
-                      </li>
-                    ))}
-                  </ul>
+                  <ul>{/* ... */}</ul>
                 </div>
               ) : (
                 <div
@@ -435,7 +556,6 @@ export default function ProductDetailView() {
           </div>
         </div>
       </div>
-
       {showToast && (
         <Toast
           message={toastMessage}
