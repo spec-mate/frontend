@@ -10,22 +10,23 @@
   }
 }
 
+/* 전체 레이아웃 */
 .product-detail-view {
-  display: grid;
-  grid-template-columns: 20% 1fr 20%;
-  gap: 20px;
+  display: flex;
+  justify-content: center;
   width: 100%;
   min-height: 100vh;
-  margin: 0 auto;
   padding: 72px 0 40px;
   background: #fff;
 }
 
+/* 중앙 콘텐츠 영역 */
 .product-content {
-  grid-column: 2;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1300px; /* 중앙 폭 확장 */
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 40px; /* 좌우 여백 추가 */
+  box-sizing: border-box;
 }
 
 .breadcrumb {
@@ -56,12 +57,13 @@
   font-size: 14px;
 }
 
+/* 제품 상세 박스 */
 .product-box {
   display: grid;
-  grid-template-columns: minmax(500px, 2fr) minmax(220px, 1fr);
+  grid-template-columns: minmax(500px, 2fr) minmax(280px, 1fr);
   align-items: start;
-  gap: 40px;
-  margin-bottom: 40px;
+  gap: 60px; /* 이미지-스펙 간격 확장 */
+  margin-bottom: 50px;
 }
 
 .box-flex {
@@ -124,35 +126,43 @@
 .spec-mapping-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px 36px;
+  gap: 10px 60px;
   width: 100%;
 }
 
+/* 한 줄 (label + value) */
 .spec-set {
-  display: flex;
+  display: grid;
+  grid-template-columns: 150px 1fr; /* 라벨 폭 고정, 값은 자동 확장 */
   align-items: center;
-  gap: 20px;
-  min-height: 34px;
+  min-height: 32px;
   font-size: 15px;
   font-weight: 400;
   white-space: nowrap;
 }
 
+/* 라벨 */
 .spec-label {
-  display: flex;
-  justify-content: flex-end;
-  color: #303030;
-  font-weight: 300;
-  min-width: 95px;
+  justify-self: end; /* 오른쪽 정렬 */
+  color: #333;
+  font-weight: 400;
   font-size: 15px;
+  padding-right: 19px; /* label과 value 간격 */
+  white-space: nowrap;
 }
 
+/* 값 */
 .spec-value {
+  justify-self: start;
   color: #000;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 15px;
+  line-height: 1.4;
+  word-break: keep-all;
+  white-space: nowrap;
 }
 
+/* 가격 영역 */
 .price-box {
   margin-top: 20px;
   text-align: left;
@@ -259,6 +269,8 @@
   font-weight: 600;
   color: #fff;
 }
+
+/* 추천 섹션 */
 .recommend-section {
   margin-top: 40px;
   position: relative;
@@ -364,9 +376,10 @@
   background: #fafafa;
   overflow-y: auto;
 }
+
+/* 반응형 */
 @media (max-width: 900px) {
   .product-detail-view {
-    grid-template-columns: 10px 1fr 10px;
     padding: 60px 0 20px;
   }
   .product-box {
@@ -408,6 +421,7 @@
     grid-template-columns: 1fr;
   }
 }
+
 .price-unit-text {
   font-size: 15px;
   font-weight: 500;
