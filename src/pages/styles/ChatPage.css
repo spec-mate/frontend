@@ -9,8 +9,9 @@
 
 .cp-question-header {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 12px;
+  justify-content: flex-start;
   width: 100%;
   max-width: 900px;
   margin: 76px auto 0 auto;
@@ -20,11 +21,13 @@
   box-sizing: border-box;
   z-index: 2;
   position: relative;
+  gap: 10px;
 }
 
 .cp-back-btn {
   color: #333 !important;
-  margin-right: 8px;
+  margin-right: 6px;
+  flex-shrink: 0;
 }
 
 .cp-question-title {
@@ -32,7 +35,12 @@
   font-weight: 600;
   color: #333;
   margin: 0;
-  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 중앙 정렬 방지 */
+  display: inline-block;
 }
 
 .cp-chat-container {

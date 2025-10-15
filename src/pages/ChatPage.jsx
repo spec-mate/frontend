@@ -18,6 +18,7 @@ export default function ChatPage({
         </IconButton>
         <h3 className="cp-question-title">{userQuestion}</h3>
       </div>
+
       <div className="cp-chat-container">
         {messages.map((msg, idx) => (
           <div
