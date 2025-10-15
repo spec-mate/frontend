@@ -1,5 +1,5 @@
 :root {
-  --header-height: 126px; /* ✅ 전역 헤더 높이 */
+  --header-height: 126px;
 }
 
 /* 전체 페이지 */
@@ -10,8 +10,6 @@
   width: 100%;
   background: #fff;
   min-height: 100vh;
-
-  /* ✅ 헤더 높이만큼 전체 페이지를 아래로 내림 */
   padding-top: var(--header-height);
   box-sizing: border-box;
 }
@@ -45,14 +43,14 @@
   flex-direction: column;
   width: 100%;
   max-width: 900px;
-  min-height: calc(100vh - var(--header-height) - 100px);
+  height: 500px;
   padding: 20px;
   gap: 20px;
   box-sizing: border-box;
-  overflow-y: auto; /* ✅ 스크롤 가능 */
+  overflow-y: auto;
 }
 
-/* ✅ 스펙메이트 (AI) 메시지 */
+/* 스펙메이트 (AI) 메시지 */
 .cp-message-ai {
   display: flex;
   flex-direction: column;
@@ -60,7 +58,7 @@
   gap: 6px;
 }
 
-/* ✅ 스펙메이트 프로필 (이미지 + 이름) */
+/* 스펙메이트 프로필 (이미지 + 이름) */
 .cp-ai-profile {
   display: flex;
   align-items: center;
@@ -81,7 +79,7 @@
   color: #1e5cde;
 }
 
-/* ✅ 스펙메이트 말풍선 */
+/* 스펙메이트 말풍선 */
 .cp-ai-bubble {
   background: #f5f5f5;
   border: 1px solid #eee;
@@ -95,7 +93,7 @@
   max-width: 80%;
 }
 
-/* ✅ 사용자 (User) 메시지 */
+/* 사용자 (User) 메시지 */
 .cp-message-user {
   display: flex;
   justify-content: flex-end;
@@ -157,10 +155,16 @@
   background-color: #153e9f !important;
 }
 
-/* ✅ 반응형 */
+/* 반응형 */
+@media (max-width: 1024px) {
+  .cp-chat-container {
+    height: 680px;
+  }
+}
+
 @media (max-width: 768px) {
   :root {
-    --header-height: 96px; /* 모바일 헤더 크기 */
+    --header-height: 96px;
   }
 
   .cp-question-title {
@@ -179,5 +183,24 @@
 
   .cp-chat-input {
     font-size: 14px;
+  }
+
+  .cp-chat-container {
+    height: 560px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cp-chat-container {
+    height: 480px;
+  }
+
+  .cp-chat-input {
+    padding: 10px 14px;
+  }
+
+  .cp-send-btn {
+    width: 40px !important;
+    height: 40px !important;
   }
 }
