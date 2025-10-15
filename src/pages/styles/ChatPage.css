@@ -1,125 +1,141 @@
+:root {
+  --header-height: 126px; /* ✅ 전역 헤더 높이 */
+}
+
+/* 전체 페이지 */
 .cp-chat-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
   width: 100%;
-  background-color: #fff;
+  background: #fff;
+  min-height: 100vh;
+
+  /* ✅ 헤더 높이만큼 전체 페이지를 아래로 내림 */
+  padding-top: var(--header-height);
+  box-sizing: border-box;
 }
 
+/* 상단 질문 헤더 */
 .cp-question-header {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  gap: 10px;
   width: 100%;
   max-width: 900px;
-  margin: 76px auto 0 auto;
-  padding: 18px 28px;
-  background-color: #fff;
-  border-bottom: 1px solid #e0e3e8;
-  box-sizing: border-box;
-  z-index: 2;
-  position: relative;
-  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eaeaea;
+  background: #fff;
+  z-index: 10;
+}
+
+.cp-question-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
 }
 
 .cp-back-btn {
   color: #333 !important;
-  margin-right: 6px;
-  flex-shrink: 0;
 }
 
-.cp-question-title {
-  font-size: 19px;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* 중앙 정렬 방지 */
-  display: inline-block;
-}
-
+/* 채팅 영역 */
 .cp-chat-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   width: 100%;
   max-width: 900px;
-  margin: 22px auto 12px auto;
-  padding: 0 28px;
+  min-height: calc(100vh - var(--header-height) - 100px);
+  padding: 20px;
+  gap: 20px;
   box-sizing: border-box;
-  flex: 1;
-  z-index: 1;
+  overflow-y: auto; /* ✅ 스크롤 가능 */
 }
 
-.cp-message-user,
+/* ✅ 스펙메이트 (AI) 메시지 */
 .cp-message-ai {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* ✅ 스펙메이트 프로필 (이미지 + 이름) */
+.cp-ai-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 4px;
+}
+
+.cp-ai-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cp-ai-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #1e5cde;
+}
+
+/* ✅ 스펙메이트 말풍선 */
+.cp-ai-bubble {
+  background: #f5f5f5;
+  border: 1px solid #eee;
   border-radius: 10px;
   padding: 12px 16px;
-  text-align: left;
-  max-width: 80%;
-  word-wrap: break-word;
-  box-sizing: border-box;
-}
-
-.cp-message-user {
-  background: #e8f0ff;
-  align-self: flex-end;
-  margin-left: auto;
-}
-
-.cp-message-ai {
-  background: #f5f5f5;
-  align-self: flex-start;
-  margin-right: auto;
-}
-
-.cp-message-ai strong {
-  color: #1e5cde;
-  font-weight: 600;
-}
-
-.cp-message-user strong {
-  color: #333;
-  font-weight: 600;
-}
-
-.cp-message-user p,
-.cp-message-ai p {
-  margin: 5px 0 0 0;
-  line-height: 1.4;
   font-size: 15px;
+  line-height: 1.6;
+  color: #111;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 80%;
 }
 
+/* ✅ 사용자 (User) 메시지 */
+.cp-message-user {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cp-user-bubble {
+  background: #e8f0ff;
+  color: #111;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+  max-width: 70%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* 입력창 */
 .cp-input-section {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  max-width: 900px;
   width: 100%;
-  margin: 0 auto 32px;
-  padding: 0 28px;
-  box-sizing: border-box;
+  max-width: 900px;
+  padding: 12px 20px;
+  border-top: 1px solid #eee;
+  background: #fff;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .cp-chat-input {
   flex: 1;
   border: 1px solid #c6cbd5;
   border-radius: 30px;
-  padding: 15px 22px;
+  padding: 14px 18px;
   font-size: 15px;
   outline: none;
   background: #fff;
-  box-sizing: border-box;
-}
-
-.cp-chat-input:focus {
-  border-color: #1e5cde;
 }
 
 .cp-chat-input::placeholder {
@@ -135,33 +151,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
 }
 
 .cp-send-btn:hover {
   background-color: #153e9f !important;
 }
 
-@media (max-width: 1000px) {
-  .cp-question-header,
-  .cp-chat-container,
-  .cp-input-section {
-    max-width: 98vw;
-    padding-left: 12px;
-    padding-right: 12px;
+/* ✅ 반응형 */
+@media (max-width: 768px) {
+  :root {
+    --header-height: 96px; /* 모바일 헤더 크기 */
   }
-}
 
-@media (max-width: 600px) {
   .cp-question-title {
     font-size: 16px;
   }
-  .cp-message-user,
-  .cp-message-ai {
-    padding: 8px 6px;
+
+  .cp-ai-avatar {
+    width: 34px;
+    height: 34px;
   }
-  .cp-message-user p,
-  .cp-message-ai p {
-    font-size: 13px;
+
+  .cp-ai-bubble,
+  .cp-user-bubble {
+    font-size: 14px;
+  }
+
+  .cp-chat-input {
+    font-size: 14px;
   }
 }

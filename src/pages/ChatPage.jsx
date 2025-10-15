@@ -12,6 +12,7 @@ export default function ChatPage({
 }) {
   return (
     <div className="cp-chat-page">
+      {/* 상단 질문 헤더 */}
       <div className="cp-question-header">
         <IconButton onClick={handleBack} className="cp-back-btn">
           <ArrowBackIcon />
@@ -19,19 +20,32 @@ export default function ChatPage({
         <h3 className="cp-question-title">{userQuestion}</h3>
       </div>
 
+      {/* 채팅 영역 */}
       <div className="cp-chat-container">
-        {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={
-              msg.sender === "user" ? "cp-message-user" : "cp-message-ai"
-            }
-          >
-            <strong>{msg.sender === "user" ? "나" : "스펙메이트"}</strong>
-            <p>{msg.text}</p>
-          </div>
-        ))}
+        {messages.map((msg, idx) =>
+          msg.sender === "ai" ? (
+            <div key={idx} className="cp-message-ai">
+              {/* ✅ 스펙메이트 프로필 (동그란 이미지 + 파란 이름) */}
+              <div className="cp-ai-profile">
+                <img
+                  src="/small-character.svg"
+                  alt="스펙메이트"
+                  className="cp-ai-avatar"
+                />
+                <span className="cp-ai-name">스펙메이트</span>
+              </div>
+
+              <div className="cp-ai-bubble">{msg.text}</div>
+            </div>
+          ) : (
+            <div key={idx} className="cp-message-user">
+              <div className="cp-user-bubble">{msg.text}</div>
+            </div>
+          ),
+        )}
       </div>
+
+      {/* 입력창 */}
       <div className="cp-input-section">
         <input
           type="text"
