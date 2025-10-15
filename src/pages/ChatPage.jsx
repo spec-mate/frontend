@@ -1,63 +1,45 @@
-// src/pages/ChatPage.jsx
-import React, { useState, useEffect } from "react";
-import { sendPrompt, getChatRooms } from "../api/chatApi";
+import React from "react";
+import "../pages/styles/ChatPage.css";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SendIcon from "@mui/icons-material/Send";
 
-export default function ChatPage() {
-  const [message, setMessage] = useState("");
-  const [response, setResponse] = useState(null);
-  const [rooms, setRooms] = useState([]);
-
-  // 채팅방 목록 불러오기
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const data = await getChatRooms();
-        setRooms(data);
-      } catch (err) {
-        console.error("채팅방 목록 불러오기 실패", err);
-      }
-    };
-    fetchRooms();
-  }, []);
-
-  // 프롬프트 전송
-  const handleSend = async () => {
-    if (!message.trim()) return;
-    try {
-      const res = await sendPrompt(message);
-      setResponse(res);
-    } catch (err) {
-      console.error("프롬프트 전송 실패", err);
-    }
-  };
-
+export default function ChatPage({
+  userQuestion,
+  messages,
+  handleBack,
+  handleSend,
+}) {
   return (
-    <div className="chat-page">
-      <h2>채팅</h2>
-      <div>
+    <div className="cp-chat-page">
+      <div className="cp-question-header">
+        <IconButton onClick={handleBack} className="cp-back-btn">
+          <ArrowBackIcon />
+        </IconButton>
+        <h3 className="cp-question-title">{userQuestion}</h3>
+      </div>
+      <div className="cp-chat-container">
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={
+              msg.sender === "user" ? "cp-message-user" : "cp-message-ai"
+            }
+          >
+            <strong>{msg.sender === "user" ? "나" : "스펙메이트"}</strong>
+            <p>{msg.text}</p>
+          </div>
+        ))}
+      </div>
+      <div className="cp-input-section">
         <input
           type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="메시지를 입력하세요"
+          placeholder="어떻게 PC 견적을 짜드릴까요? 스펙메이트에게 물어보세요!"
+          className="cp-chat-input"
         />
-        <button onClick={handleSend}>보내기</button>
-      </div>
-
-      {response && (
-        <div className="chat-response">
-          <h4>GPT 응답</h4>
-          <pre>{JSON.stringify(response, null, 2)}</pre>
-        </div>
-      )}
-
-      <div className="chat-rooms">
-        <h4>내 채팅방</h4>
-        <ul>
-          {rooms.map((room) => (
-            <li key={room.id}>{room.title}</li>
-          ))}
-        </ul>
+        <IconButton className="cp-send-btn" onClick={handleSend}>
+          <SendIcon style={{ transform: "rotate(-45deg)" }} />
+        </IconButton>
       </div>
     </div>
   );

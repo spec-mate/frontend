@@ -1,0 +1,159 @@
+.cp-chat-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #fff;
+}
+
+.cp-question-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 900px;
+  margin: 76px auto 0 auto;
+  padding: 18px 28px;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e3e8;
+  box-sizing: border-box;
+  z-index: 2;
+  position: relative;
+}
+
+.cp-back-btn {
+  color: #333 !important;
+  margin-right: 8px;
+}
+
+.cp-question-title {
+  font-size: 19px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.cp-chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin: 22px auto 12px auto;
+  padding: 0 28px;
+  box-sizing: border-box;
+  flex: 1;
+  z-index: 1;
+}
+
+.cp-message-user,
+.cp-message-ai {
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: left;
+  max-width: 80%;
+  word-wrap: break-word;
+  box-sizing: border-box;
+}
+
+.cp-message-user {
+  background: #e8f0ff;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.cp-message-ai {
+  background: #f5f5f5;
+  align-self: flex-start;
+  margin-right: auto;
+}
+
+.cp-message-ai strong {
+  color: #1e5cde;
+  font-weight: 600;
+}
+
+.cp-message-user strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.cp-message-user p,
+.cp-message-ai p {
+  margin: 5px 0 0 0;
+  line-height: 1.4;
+  font-size: 15px;
+}
+
+.cp-input-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto 32px;
+  padding: 0 28px;
+  box-sizing: border-box;
+}
+
+.cp-chat-input {
+  flex: 1;
+  border: 1px solid #c6cbd5;
+  border-radius: 30px;
+  padding: 15px 22px;
+  font-size: 15px;
+  outline: none;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.cp-chat-input:focus {
+  border-color: #1e5cde;
+}
+
+.cp-chat-input::placeholder {
+  color: #a0a0a0;
+}
+
+.cp-send-btn {
+  background-color: #1e5cde !important;
+  color: #fff !important;
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.cp-send-btn:hover {
+  background-color: #153e9f !important;
+}
+
+@media (max-width: 1000px) {
+  .cp-question-header,
+  .cp-chat-container,
+  .cp-input-section {
+    max-width: 98vw;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .cp-question-title {
+    font-size: 16px;
+  }
+  .cp-message-user,
+  .cp-message-ai {
+    padding: 8px 6px;
+  }
+  .cp-message-user p,
+  .cp-message-ai p {
+    font-size: 13px;
+  }
+}
