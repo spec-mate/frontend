@@ -20,7 +20,7 @@
 /* 상단 질문 헤더 -> 상단 고정 헤더로 변경 */
 .cp-question-header {
   position: fixed;
-  top: 0;
+  top: 65px; /* 요청하신 대로 상단에서 36px 떨어지도록 수정 */
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -132,6 +132,7 @@
   width: 100%;
   max-width: 900px;
   padding: 12px 20px;
+  border-top: 1px solid #eee;
   background: #fff;
   z-index: 10;
 }
