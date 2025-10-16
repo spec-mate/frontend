@@ -19,16 +19,13 @@
   padding: 72px 0 40px;
   background: #fff;
 }
-
-/* 중앙 콘텐츠 영역 */
 .product-content {
   width: 100%;
-  max-width: 1300px; /* 중앙 폭 확장 */
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 20px 40px; /* 좌우 여백 추가 */
+  padding: 20px 40px;
   box-sizing: border-box;
 }
-
 .breadcrumb {
   font-size: 14px;
   color: #000;
@@ -42,7 +39,6 @@
 .breadcrumb-link:hover {
   text-decoration: underline;
 }
-
 .product-title {
   font-size: 45px;
   font-weight: bold;
@@ -50,6 +46,8 @@
 }
 .tags {
   margin-bottom: 20px;
+  border-bottom: 0.5px solid #404040;
+  padding-bottom: 12.5px;
 }
 .tags span {
   margin-right: 10px;
@@ -62,17 +60,15 @@
   display: grid;
   grid-template-columns: minmax(500px, 2fr) minmax(280px, 1fr);
   align-items: start;
-  gap: 60px; /* 이미지-스펙 간격 확장 */
+  gap: 60px;
   margin-bottom: 50px;
 }
-
 .box-flex {
   display: flex;
   align-items: flex-start;
   gap: 40px;
   width: 100%;
 }
-
 .box-image {
   display: flex;
   align-items: center;
@@ -83,7 +79,6 @@
   height: 300px;
   box-sizing: border-box;
 }
-
 .product-detail-image {
   width: 100%;
   height: 100%;
@@ -95,63 +90,39 @@
   border-radius: 6px;
   display: block;
 }
-
-@media (max-width: 700px) {
-  .box-image {
-    width: 90vw;
-    height: 90vw;
-    min-width: 140px;
-    min-height: 140px;
-    max-width: 300px;
-    max-height: 300px;
-  }
-  .product-detail-image {
-    max-width: 90vw;
-    max-height: 90vw;
-  }
-}
-
 .box-spec {
   flex: 1;
   display: flex;
   align-items: flex-start;
 }
-
 .spec-mapping-area {
   width: 100%;
   padding: 8px 0;
   background: #fff;
 }
-
 .spec-mapping-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px 60px;
   width: 100%;
 }
-
-/* 한 줄 (label + value) */
 .spec-set {
   display: grid;
-  grid-template-columns: 150px 1fr; /* 라벨 폭 고정, 값은 자동 확장 */
+  grid-template-columns: 150px 1fr;
   align-items: center;
   min-height: 32px;
   font-size: 15px;
   font-weight: 400;
   white-space: nowrap;
 }
-
-/* 라벨 */
 .spec-label {
-  justify-self: end; /* 오른쪽 정렬 */
+  justify-self: end;
   color: #333;
   font-weight: 400;
   font-size: 15px;
-  padding-right: 19px; /* label과 value 간격 */
+  padding-right: 19px;
   white-space: nowrap;
 }
-
-/* 값 */
 .spec-value {
   justify-self: start;
   color: #000;
@@ -209,7 +180,9 @@
   background: white;
   color: black;
   border: 1px solid black;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 .buy-btn .btn-icon {
   width: 24px;
@@ -236,7 +209,9 @@
   background: #1e5cde;
   color: #fff;
   border: none;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 .cart-btn:hover {
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
@@ -279,34 +254,93 @@
   margin-bottom: 20px;
   text-align: left;
 }
-.recommend-overlay-text h3 {
-  font-size: 20px;
+.recommend-title-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+.specmate-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+  margin-right: 2px;
+  border: 1px solid #eee;
+}
+.recommend-title-vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.recommend-title-main {
+  color: #246ad2;
+  font-size: 22px;
   font-weight: bold;
-  margin: 0;
-  color: #333;
+  letter-spacing: -0.5px;
+  margin-bottom: 2px;
+  line-height: 1.2;
 }
-.recommend-overlay-text p {
-  font-size: 14px;
-  margin: 5px 0 10px;
-  color: #555;
+.recommend-title-desc {
+  color: #444;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 0;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
 }
+
+/* ▼▼▼ 여기부터 수정된 부분 ▼▼▼ */
 .recommend-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
+  gap: 132px; /* 기본 간격 */
+  transition: gap 0.3s ease;
 }
-.recommend-card {
-  position: relative;
+
+.recommend-cards.is-selected {
+  gap: 0; /* 선택 시 간격 제거 */
+}
+
+.recommend-card-area {
   width: 400px;
   height: 400px;
+}
+
+/* 선택되었을 때만 붙이는 스타일 적용 */
+.recommend-cards.is-selected .recommend-card-area:first-child > * {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.recommend-cards.is-selected .recommend-card-area:last-child > * {
+  border-left-width: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+/* ▲▲▲ 여기까지 수정된 부분 ▲▲▲ */
+
+.recommend-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 15px;
   cursor: pointer;
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   background: #fff;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.recommend-card.active {
+  border-color: #1e5cde;
+  box-shadow: 0 0 15px rgba(30, 92, 222, 0.3);
 }
 .recommend-card img {
   width: 100%;
@@ -325,8 +359,7 @@
   transition: background 0.3s ease;
   z-index: 1;
 }
-.recommend-card:hover::after,
-.recommend-card.active::after {
+.recommend-card:hover::after {
   background: rgba(0, 0, 0, 0.6);
 }
 .recommend-label {
@@ -355,26 +388,120 @@
   z-index: 2;
   line-height: 1.4;
 }
-.recommend-card:hover .recommend-label,
-.recommend-card.active .recommend-label {
-  top: 20px;
-  transform: translateX(-50%);
+.recommend-card:hover .recommend-label {
+  top: 45%;
   font-size: 22px;
 }
-.recommend-card:hover .recommend-desc,
-.recommend-card.active .recommend-desc {
-  bottom: 50%;
+.recommend-card:hover .recommend-desc {
+  bottom: 35%;
   opacity: 1;
 }
-.build-list.fixed-slot {
-  width: 400px;
-  height: 400px;
+
+.recommend-detail-popup {
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  border: 2px solid #ddd;
+  border-radius: 15px;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  padding: 0;
+  position: relative;
+}
+.popup-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 28px;
+  text-align: center;
+  z-index: 15;
+  transition: background 0.2s;
+}
+.popup-close-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.popup-image-section {
+  flex-basis: 35%;
+  position: relative;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
   padding: 20px;
-  background: #fafafa;
-  overflow-y: auto;
+  box-sizing: border-box;
+}
+.popup-image-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2));
+  z-index: 1;
+}
+.recommend-detail-info {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-align: center;
+  gap: 8px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.recommend-detail-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.recommend-detail-desc {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #eee;
+}
+.recommend-detail-price {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+.recommend-detail-cart-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.recommend-detail-cart-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+.recommend-detail-cart-btn img {
+  width: 16px;
+  height: 16px;
 }
 
 /* 반응형 */
@@ -411,14 +538,27 @@
     font-size: 15px;
   }
 }
+@media (max-width: 850px) {
+  .recommend-cards {
+    flex-direction: column;
+    width: 100%;
+    gap: 20px !important;
+  }
+  .recommend-card-area {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .recommend-cards .recommend-card-area > * {
+    border-radius: 15px !important;
+    border-left-width: 2px !important;
+  }
+}
 @media (max-width: 768px) {
   .product-detail-view {
     display: flex;
     flex-direction: column;
     padding: 80px 15px 20px;
-  }
-  .recommend-cards {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -427,4 +567,50 @@
   font-weight: 500;
   color: #000;
   margin-left: 2px;
+}
+.recommend-table {
+  flex-basis: 65%;
+  height: auto;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.recommend-table tr {
+  transition: background 0.18s;
+}
+.recommend-table tr:hover {
+  background: #f7fbff;
+}
+.recommend-table td {
+  padding: 12px 10px;
+  font-size: 14.5px;
+  border-bottom: 1px solid #f1f1f1;
+  color: #212121;
+  line-height: 1.6;
+  vertical-align: middle;
+  word-break: keep-all;
+}
+.recommend-table td:first-child {
+  width: 65px;
+  padding-right: 10px;
+  font-weight: 600;
+  text-align: right;
+  color: #246ad2;
+  background: none;
+}
+.recommend-table td:last-child {
+  text-align: left;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #333;
+}
+.recommend-table tr:last-child td {
+  border-bottom: none;
+}
+.recommend-highlight {
+  color: #c02525;
+  font-weight: bold;
 }

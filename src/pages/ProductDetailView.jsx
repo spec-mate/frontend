@@ -12,9 +12,7 @@ export default function ProductDetailView() {
   const [toastType, setToastType] = useState("success");
   const [showToast, setShowToast] = useState(false);
 
-  /* ==================== 옵션 한글명 매핑 ==================== */
   const optionLabels = {
-    // 공통
     manufacturer: "제조회사",
     socket: "소켓 구분",
     core: "코어 수",
@@ -29,8 +27,6 @@ export default function ProductDetailView() {
     memory_clock: "메모리 클럭",
     integrated_graphics: "내장 그래픽",
     pcie: "PCIe 버전",
-
-    // GPU
     chipset_vendor: "칩셋 벤더",
     chipset: "칩셋",
     process: "제조 공정",
@@ -44,8 +40,6 @@ export default function ProductDetailView() {
     length: "제품 길이",
     fan_count: "팬 수",
     backplate: "백플레이트",
-
-    // Mainboard
     vrm: "전원부(페이즈)",
     xmp_support: "XMP 지원",
     expo_support: "EXPO 지원",
@@ -68,8 +62,6 @@ export default function ProductDetailView() {
     io_headers: "I/O 헤더",
     uefi_support: "UEFI 지원",
     rgb: "RGB 지원",
-
-    // RAM
     memorytype: "메모리 규격",
     formfactor: "폼팩터",
     capacity: "용량",
@@ -86,8 +78,6 @@ export default function ProductDetailView() {
     height: "높이(mm)",
     thickness: "두께(mm)",
     ondieecc: "On-Die ECC 지원",
-
-    // SSD
     product_category: "제품분류",
     form_factor: "폼팩터",
     interface: "인터페이스",
@@ -103,8 +93,6 @@ export default function ProductDetailView() {
     tbw: "내구성(TBW)",
     mtbf: "MTBF",
     nvme_heatsink: "방열판 포함",
-
-    // HDD
     producttype: "용도/분류",
     disksize: "디스크 크기",
     rpm: "회전 속도",
@@ -117,8 +105,6 @@ export default function ProductDetailView() {
     warrantyusage: "보증/내구성 TB",
     noiselevel: "소음(dB)",
     regdate: "출시일",
-
-    // PSU (JSON 기반)
     ratedpower: "정격 출력(W)",
     cert80plus: "80PLUS 인증",
     modular: "모듈러",
@@ -132,8 +118,6 @@ export default function ProductDetailView() {
     ide4pin: "IDE 커넥터",
     railtype: "출력 레일",
     pfc: "PFC 방식",
-
-    // Cooler
     kind: "종류",
     cooling_method: "냉각 방식",
     air_type: "타워 형태",
@@ -147,8 +131,6 @@ export default function ProductDetailView() {
     static_pressure: "정압",
     pwm: "PWM 지원",
     led: "LED 지원",
-
-    // Case
     case_type: "케이스 타입",
     case_size: "케이스 크기",
     supported_power: "지원 파워 규격",
@@ -165,8 +147,6 @@ export default function ProductDetailView() {
     radiator_top: "상단 라디에이터 지원",
     radiator_rear: "후면 라디에이터 지원",
   };
-
-  /* ==================== 제품군별 스펙 키 ==================== */
   const specKeys = {
     cpu: [
       "manufacturer",
@@ -363,21 +343,16 @@ export default function ProductDetailView() {
     ],
   };
 
-  /* ==================== 가격 포맷 ==================== */
   const formatPrice = (price) => {
     if (!price) return null;
     const numeric = Number(String(price).replace(/,/g, ""));
     return isNaN(numeric) ? null : numeric.toLocaleString();
   };
-
-  /* ==================== true/false를 O/X로 변환 ==================== */
   const formatValue = (value) => {
     if (value === true || value === "true") return "O";
     if (value === false || value === "false") return "X";
     return value;
   };
-
-  /* ==================== 데이터 Fetch ==================== */
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -389,14 +364,10 @@ export default function ProductDetailView() {
     };
     fetchProduct();
   }, [id]);
-
   if (!product) return <p>상품 불러오는 중...</p>;
-
-  /* ==================== 옵션 정규화 ==================== */
   const optionsNormalized = {};
   Object.entries(product.options || {}).forEach(([key, value]) => {
     const keyTrimmed = key.trim();
-
     const koreanToEnglish = {
       정격출력: "wattage",
       효율: "efficiency",
@@ -416,20 +387,15 @@ export default function ProductDetailView() {
       xmp: "xmp",
       방열판: "heatspreader",
     };
-
     const mappedKey = koreanToEnglish[keyTrimmed] || keyTrimmed;
-
     const normalizedKey = mappedKey
       .toLowerCase()
       .trim()
       .replace(/\s+/g, "_")
       .replace(/[\(\)\/]/g, "_")
       .replace(/[^a-z0-9가-힣_]/gi, "_");
-
     optionsNormalized[normalizedKey] = value;
   });
-
-  /* ==================== 스펙 매핑 ==================== */
   const typeKey = product.type?.toLowerCase();
   const typeLabelMap = {
     cpu: "프로세서",
@@ -443,7 +409,6 @@ export default function ProductDetailView() {
     case: "케이스",
   };
   const typeLabel = typeLabelMap[typeKey] || product.type;
-
   const entries = (specKeys[typeKey] || [])
     .map((key) => [
       key,
@@ -453,13 +418,10 @@ export default function ProductDetailView() {
     ])
     .filter(([, v]) => v !== undefined && v !== null)
     .slice(0, 16);
-
   const gridPairs = [];
   for (let i = 0; i < entries.length; i += 2) {
     gridPairs.push([entries[i], entries[i + 1]]);
   }
-
-  /* ==================== 견적 저장 ==================== */
   const handleSaveToEstimate = async () => {
     try {
       await api.post("/estimate/products/save", {
@@ -479,11 +441,119 @@ export default function ProductDetailView() {
     }
   };
 
-  const handleCardClick = (build) => {
-    setSelectedBuild((prev) => (prev === build ? null : build));
+  const handleCardClick = (buildId) => {
+    setSelectedBuild((prev) => (prev === buildId ? null : buildId));
   };
 
-  /* ==================== 렌더링 ==================== */
+  const builds = {
+    gaming: {
+      cpu: "AMD 라이젠7-6세대 9800X3D (그래네트 핏치)",
+      mainboard: "ASUS PRIME B550M-A WIFI 대역CTS",
+      gpu: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
+      memory: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
+      power: "SuperFlower Leadex III Gold 750W",
+      ssd: "WD Black SN850X NVMe (1TB)",
+      cooler: "Noctua NH-U12S redux (저소음 공랭)",
+      case: "Fractal Design Define 7 Compact",
+      price: "￦1,900,000",
+    },
+    office: {
+      cpu: "AMD 라이젠7-6세대 9800X3D (그래네트 핏치)",
+      mainboard: "ASUS PRIME B550M-A WIFI 대역CTS",
+      gpu: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
+      memory: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
+      power: "SuperFlower Leadex III Gold 750W",
+      ssd: "WD Black SN850X NVMe (1TB)",
+      cooler: "Noctua NH-U12S redux (저소음 공랭)",
+      case: "Fractal Design Define 7 Compact",
+      price: "￦1,900,000",
+    },
+  };
+
+  const gamingBuild = {
+    id: "gaming",
+    title: "게이밍",
+    image: "/gaming.svg",
+    desc: "최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC",
+    details: builds.gaming,
+    caseImage: "/gaming-case.png",
+  };
+  const officeBuild = {
+    id: "office",
+    title: "사무용",
+    image: "/affairs.svg",
+    desc: "업무와 멀티태스킹에 최적화된 안정적이고 조용한 사무용 PC",
+    details: builds.office,
+    caseImage: "/office-case.png",
+  };
+
+  const RecommendCard = ({ build, onClick, isActive }) => (
+    <div
+      className={`recommend-card ${isActive ? "active" : ""}`}
+      onClick={onClick}
+    >
+      <img src={build.image} alt={`${build.title} PC`} />
+      <div className="recommend-label">{build.title}</div>
+      <div className="recommend-desc">{build.desc}</div>
+    </div>
+  );
+  const RecommendDetail = ({ build, onClose }) => (
+    <div className="recommend-detail-popup">
+      <button className="popup-close-btn" onClick={onClose}>
+        &times;
+      </button>
+      <table className="recommend-table">
+        <tbody>
+          <tr>
+            <td>CPU</td>
+            <td className="recommend-highlight">{build.details.cpu}</td>
+          </tr>
+          <tr>
+            <td>메인보드</td>
+            <td>{build.details.mainboard}</td>
+          </tr>
+          <tr>
+            <td>그래픽카드</td>
+            <td>{build.details.gpu}</td>
+          </tr>
+          <tr>
+            <td>메모리</td>
+            <td>{build.details.memory}</td>
+          </tr>
+          <tr>
+            <td>파워</td>
+            <td>{build.details.power}</td>
+          </tr>
+          <tr>
+            <td>SSD</td>
+            <td>{build.details.ssd}</td>
+          </tr>
+          <tr>
+            <td>쿨러</td>
+            <td>{build.details.cooler}</td>
+          </tr>
+          <tr>
+            <td>케이스</td>
+            <td>{build.details.case}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div
+        className="popup-image-section"
+        style={{ backgroundImage: `url(${build.caseImage})` }}
+      >
+        <div className="recommend-detail-info">
+          <div className="recommend-detail-title">{build.title}</div>
+          <div className="recommend-detail-desc">{build.desc}</div>
+          <div className="recommend-detail-price">{build.details.price}</div>
+          <button className="recommend-detail-cart-btn">
+            <img src="/cart-white.svg" alt="cart icon" /> 견적 보관하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="product-detail-view">
       <div className="product-content">
@@ -506,8 +576,6 @@ export default function ProductDetailView() {
           <span>#{typeLabel}</span>
           <span>등록일: {product.regDate || product.reg_date}</span>
         </div>
-
-        {/* 상세 박스 */}
         <div className="product-box">
           <div className="box-flex">
             <div className="box-image">
@@ -552,8 +620,6 @@ export default function ProductDetailView() {
               </div>
             </div>
           </div>
-
-          {/* 가격 */}
           <div className="price-box">
             <span className="price-label">최저가</span>
             <strong className="price-value">
@@ -576,7 +642,7 @@ export default function ProductDetailView() {
                   rel="noopener noreferrer"
                   className="buy-btn"
                 >
-                  <span className="btn-icon"></span>
+                  <span className="btn-icon" />
                 </a>
               )}
               <button className="cart-btn" onClick={handleSaveToEstimate}>
@@ -591,38 +657,59 @@ export default function ProductDetailView() {
             </div>
           </div>
         </div>
-
-        {/* 용도별 추천 */}
         <div className="recommend-section">
           <div className="recommend-overlay-text">
-            <h3>스펙메이트의 용도별 조합 추천!</h3>
-            <p>박스를 클릭해보세요!</p>
-          </div>
-          <div className="recommend-cards">
-            <div
-              className="recommend-card"
-              onClick={() => handleCardClick("gaming")}
-            >
-              <img src="/gaming.svg" alt="게이밍 PC" />
-              <div className="recommend-label">게이밍</div>
-              <div className="recommend-desc">
-                최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC
+            <div className="recommend-title-block">
+              <img
+                src="/small-character.svg"
+                alt="specmate icon"
+                className="specmate-icon"
+              />
+              <div className="recommend-title-vertical">
+                <div className="recommend-title-main">
+                  스펙메이트의 용도별 조합 추천!
+                </div>
+                <div className="recommend-title-desc">박스를 클릭해보세요!</div>
               </div>
             </div>
-            <div
-              className="recommend-card"
-              onClick={() => handleCardClick("office")}
-            >
-              <img src="/affairs.svg" alt="사무용 PC" />
-              <div className="recommend-label">사무용</div>
-              <div className="recommend-desc">
-                업무와 멀티태스킹에 최적화된 안정적이고 조용한 사무용 PC
-              </div>
+          </div>
+
+          <div
+            className={`recommend-cards ${selectedBuild ? "is-selected" : ""}`}
+          >
+            {/* 왼쪽 슬롯 */}
+            <div className="recommend-card-area">
+              {selectedBuild === "office" ? (
+                <RecommendDetail
+                  build={officeBuild}
+                  onClose={() => handleCardClick(null)}
+                />
+              ) : (
+                <RecommendCard
+                  build={gamingBuild}
+                  onClick={() => handleCardClick("gaming")}
+                  isActive={selectedBuild === "gaming"}
+                />
+              )}
+            </div>
+            {/* 오른쪽 슬롯 */}
+            <div className="recommend-card-area">
+              {selectedBuild === "gaming" ? (
+                <RecommendDetail
+                  build={gamingBuild}
+                  onClose={() => handleCardClick(null)}
+                />
+              ) : (
+                <RecommendCard
+                  build={officeBuild}
+                  onClick={() => handleCardClick("office")}
+                  isActive={selectedBuild === "office"}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
-
       {showToast && (
         <Toast
           message={toastMessage}
