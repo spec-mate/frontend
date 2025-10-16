@@ -10,12 +10,21 @@
   width: 100%;
   background: #fff;
   min-height: 100vh;
+  /* 상단 헤더가 있다고 가정하고, 그만큼 패딩을 다시 추가 */
   padding-top: var(--header-height);
+  /* 하단 입력창에 내용이 가려지지 않도록 패딩 추가 */
+  padding-bottom: 80px; /* 입력창 높이를 고려한 값 */
   box-sizing: border-box;
 }
 
-/* 상단 질문 헤더 */
+/* 상단 질문 헤더 -> 상단 고정 헤더로 변경 */
 .cp-question-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -24,7 +33,6 @@
   padding: 16px 20px;
   border-bottom: 1px solid #eaeaea;
   background: #fff;
-  z-index: 10;
 }
 
 .cp-question-title {
@@ -43,7 +51,7 @@
   flex-direction: column;
   width: 100%;
   max-width: 900px;
-  height: 500px;
+  flex-grow: 1; /* 남은 공간을 모두 채우도록 변경 */
   padding: 20px;
   gap: 20px;
   box-sizing: border-box;
@@ -112,17 +120,19 @@
 
 /* 입력창 */
 .cp-input-section {
+  /* 하단에 고정되도록 bottom: 0 으로 수정 */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   width: 100%;
   max-width: 900px;
   padding: 12px 20px;
-  border-top: 1px solid #eee;
   background: #fff;
-  position: sticky;
-  bottom: 0;
   z-index: 10;
 }
 
@@ -157,9 +167,7 @@
 
 /* 반응형 */
 @media (max-width: 1024px) {
-  .cp-chat-container {
-    height: 680px;
-  }
+  /* .cp-chat-container의 height는 flex-grow로 대체되어 불필요 */
 }
 
 @media (max-width: 768px) {
@@ -184,17 +192,9 @@
   .cp-chat-input {
     font-size: 14px;
   }
-
-  .cp-chat-container {
-    height: 560px;
-  }
 }
 
 @media (max-width: 480px) {
-  .cp-chat-container {
-    height: 480px;
-  }
-
   .cp-chat-input {
     padding: 10px 14px;
   }

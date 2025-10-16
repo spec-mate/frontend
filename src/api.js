@@ -15,7 +15,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // 응답 인터셉터
@@ -38,7 +38,7 @@ api.interceptors.response.use(
         const res = await axios.post(
           "/api/auth/refresh",
           { refreshToken }, // body
-          { headers: { "Content-Type": "application/json" } }
+          { headers: { "Content-Type": "application/json" } },
         );
 
         const newAccessToken = res.data.accessToken;
@@ -56,7 +56,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

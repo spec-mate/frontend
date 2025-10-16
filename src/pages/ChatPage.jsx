@@ -1,31 +1,49 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "../pages/styles/ChatPage.css";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
+import EstimateTable from "../components/EstimateTable.jsx"; // 새로 만들 컴포넌트 임포트
 
 export default function ChatPage({
-  userQuestion,
   messages,
   handleBack,
   handleSend,
+  isLoading,
 }) {
+  const chatInputRef = useRef(null);
+  const chatContainerRef = useRef(null);
+
+  // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const onSendClick = () => {
+    if (chatInputRef.current) {
+      handleSend(chatInputRef.current.value);
+      chatInputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="cp-chat-page">
-      {/* 상단 질문 헤더 */}
       <div className="cp-question-header">
         <IconButton onClick={handleBack} className="cp-back-btn">
           <ArrowBackIcon />
         </IconButton>
-        <h3 className="cp-question-title">{userQuestion}</h3>
+        <h3 className="cp-question-title">
+          {messages.length > 0 ? messages[0].text : "AI 견적"}
+        </h3>
       </div>
 
-      {/* 채팅 영역 */}
-      <div className="cp-chat-container">
+      <div className="cp-chat-container" ref={chatContainerRef}>
         {messages.map((msg, idx) =>
           msg.sender === "ai" ? (
             <div key={idx} className="cp-message-ai">
-              {/* ✅ 스펙메이트 프로필 (동그란 이미지 + 파란 이름) */}
               <div className="cp-ai-profile">
                 <img
                   src="/small-character.svg"
@@ -34,8 +52,10 @@ export default function ChatPage({
                 />
                 <span className="cp-ai-name">스펙메이트</span>
               </div>
-
-              <div className="cp-ai-bubble">{msg.text}</div>
+              <div className="cp-ai-bubble">
+                {/* AI 응답이 견적 데이터(data)인지 일반 텍스트(text)인지에 따라 렌더링 분기 */}
+                {msg.data ? <EstimateTable estimate={msg.data} /> : msg.text}
+              </div>
             </div>
           ) : (
             <div key={idx} className="cp-message-user">
@@ -43,16 +63,40 @@ export default function ChatPage({
             </div>
           ),
         )}
+        {/* 로딩 중일 때 로딩 인디케이터 표시 */}
+        {isLoading && (
+          <div className="cp-message-ai">
+            <div className="cp-ai-profile">
+              <img
+                src="/small-character.svg"
+                alt="스펙메이트"
+                className="cp-ai-avatar"
+              />
+              <span className="cp-ai-name">스펙메이트</span>
+            </div>
+            <div className="cp-ai-bubble loading">
+              <span>.</span>
+              <span>.</span>
+              <span>.</span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* 입력창 */}
       <div className="cp-input-section">
         <input
+          ref={chatInputRef}
           type="text"
-          placeholder="어떻게 PC 견적을 짜드릴까요? 스펙메이트에게 물어보세요!"
+          placeholder="추가 질문을 입력하세요..."
           className="cp-chat-input"
+          onKeyUp={(e) => e.key === "Enter" && onSendClick()}
+          disabled={isLoading}
         />
-        <IconButton className="cp-send-btn" onClick={handleSend}>
+        <IconButton
+          className="cp-send-btn"
+          onClick={onSendClick}
+          disabled={isLoading}
+        >
           <SendIcon style={{ transform: "rotate(-45deg)" }} />
         </IconButton>
       </div>
