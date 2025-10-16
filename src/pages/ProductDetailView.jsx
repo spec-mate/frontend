@@ -70,7 +70,6 @@ export default function ProductDetailView() {
     rgb: "RGB 지원",
 
     // RAM
-    manufacturer: "제조회사",
     memorytype: "메모리 규격",
     formfactor: "폼팩터",
     capacity: "용량",
@@ -89,13 +88,10 @@ export default function ProductDetailView() {
     ondieecc: "On-Die ECC 지원",
 
     // SSD
-    manufacturer: "제조회사",
     product_category: "제품분류",
     form_factor: "폼팩터",
     interface: "인터페이스",
     protocol: "프로토콜",
-    capacity: "용량",
-    memory_type: "낸드타입",
     nand_structure: "낸드 구조",
     ram_included: "DRAM 포함여부",
     ram_type: "DRAM 타입/용량",
@@ -107,34 +103,28 @@ export default function ProductDetailView() {
     tbw: "내구성(TBW)",
     mtbf: "MTBF",
     nvme_heatsink: "방열판 포함",
-    // / HDD
-    manufacturer: "제조회사",
+
+    // HDD
     producttype: "용도/분류",
     disksize: "디스크 크기",
-    capacity: "용량",
-    interface: "인터페이스",
     rpm: "회전 속도",
     buffersize: "캐시 메모리(버퍼)",
     transferspeed: "전송 속도",
     recordingmethod: "기록 방식",
     diskcount: "디스크 수",
-    thickness: "두께(mm)",
     heliumfilled: "헬륨 충전여부",
     workload: "내구성(TBW)",
     warrantyusage: "보증/내구성 TB",
     noiselevel: "소음(dB)",
     regdate: "출시일",
 
-    // ✅ PSU (JSON 기반)
-    manufacturer: "제조회사",
-    kind: "폼팩터/규격",
+    // PSU (JSON 기반)
     ratedpower: "정격 출력(W)",
     cert80plus: "80PLUS 인증",
     modular: "모듈러",
     fansize: "팬 크기(mm)",
     fancount: "팬 수",
     bearing: "베어링 종류",
-    depth: "길이(mm)",
     warranty: "보증기간",
     mainconnector: "메인커넥터",
     pcie8pin: "PCIe 8핀",
@@ -151,7 +141,6 @@ export default function ProductDetailView() {
     amd_socket: "AMD 소켓",
     width: "가로(mm)",
     depth: "세로(mm)",
-    height: "높이(mm)",
     weight: "무게(kg)",
     connector: "커넥터",
     max_airflow: "최대 풍량",
@@ -264,7 +253,7 @@ export default function ProductDetailView() {
       "formfactor",
       "capacity",
       "speed",
-      "timing", // CL 값
+      "timing",
       "voltage",
       "modules",
       "expo",
@@ -286,10 +275,10 @@ export default function ProductDetailView() {
       "interface",
       "protocol",
       "capacity",
-      "memory_type", // TLC/MLC/SLC
-      "nand_structure", // 3D낸드, 2D낸드 등
-      "ram_included", // Dram_included, Dramless 등
-      "ram_type", // DDR3/DDR4
+      "memory_type",
+      "nand_structure",
+      "ram_included",
+      "ram_type",
       "controller",
       "sequential_read",
       "sequential_write",
@@ -297,7 +286,7 @@ export default function ProductDetailView() {
       "write_iops",
       "tbw",
       "mtbf",
-      "nvme_heatsink", // 히트싱크 포함/미포함
+      "nvme_heatsink",
     ],
     hdd: [
       "manufacturer",
@@ -318,22 +307,7 @@ export default function ProductDetailView() {
       "regdate",
     ],
     power: [
-      "manufacturer", // 제조회사
-      "kind", // 폼팩터/규격
-      "ratedpower", // 정격 출력(W)
-      "cert80plus", // 80PLUS 인증
-      "modular", // 모듈러
-      "fansize", // 팬 크기(mm)
-      "fancount", // 팬 수
-      "bearing", // 베어링 종류
-      "depth", // 파워 길이(mm)
-      "warranty", // 보증기간
-      "railtype", // 출력 레일
-      "pfc", // 액티브 PFC
-      "mainconnector", // 메인 커넥터(24/20핀)
-      "pcie8pin", // PCIe 8핀 수
-      "sata", // SATA 커넥터 수
-      "ide4pin", // IDE 4핀 수"manufacturer",
+      "manufacturer",
       "kind",
       "ratedpower",
       "cert80plus",
@@ -343,12 +317,12 @@ export default function ProductDetailView() {
       "bearing",
       "depth",
       "warranty",
+      "railtype",
+      "pfc",
       "mainconnector",
       "pcie8pin",
       "sata",
       "ide4pin",
-      "railtype",
-      "pfc",
     ],
     cooler: [
       "manufacturer",
@@ -396,6 +370,13 @@ export default function ProductDetailView() {
     return isNaN(numeric) ? null : numeric.toLocaleString();
   };
 
+  /* ==================== true/false를 O/X로 변환 ==================== */
+  const formatValue = (value) => {
+    if (value === true || value === "true") return "O";
+    if (value === false || value === "false") return "X";
+    return value;
+  };
+
   /* ==================== 데이터 Fetch ==================== */
   useEffect(() => {
     const fetchProduct = async () => {
@@ -411,13 +392,12 @@ export default function ProductDetailView() {
 
   if (!product) return <p>상품 불러오는 중...</p>;
 
-  /* ==================== 옵션 정규화 (한글→영문 변환 포함) ==================== */
+  /* ==================== 옵션 정규화 ==================== */
   const optionsNormalized = {};
   Object.entries(product.options || {}).forEach(([key, value]) => {
     const keyTrimmed = key.trim();
 
     const koreanToEnglish = {
-      // PSU
       정격출력: "wattage",
       효율: "efficiency",
       인증: "certification",
@@ -428,7 +408,6 @@ export default function ProductDetailView() {
       길이: "length",
       무게: "weight",
       보증기간: "warranty",
-      // RAM
       용량: "capacity",
       타입: "type",
       속도: "speed",
@@ -550,8 +529,8 @@ export default function ProductDetailView() {
                           </span>
                           <span className="spec-value">
                             {Array.isArray(pair[0][1])
-                              ? pair[0][1].join(", ")
-                              : String(pair[0][1])}
+                              ? pair[0][1].map(formatValue).join(", ")
+                              : formatValue(String(pair[0][1]))}
                           </span>
                         </div>
                       )}
@@ -562,8 +541,8 @@ export default function ProductDetailView() {
                           </span>
                           <span className="spec-value">
                             {Array.isArray(pair[1][1])
-                              ? pair[1][1].join(", ")
-                              : String(pair[1][1])}
+                              ? pair[1][1].map(formatValue).join(", ")
+                              : formatValue(String(pair[1][1]))}
                           </span>
                         </div>
                       )}
