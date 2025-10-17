@@ -9,7 +9,7 @@ export default defineConfig({
         target:
           "http://specmate-backend-alb-736149231.ap-northeast-2.elb.amazonaws.com",
         changeOrigin: true,
-        secure: true,
+        secure: false,
       },
     },
   },

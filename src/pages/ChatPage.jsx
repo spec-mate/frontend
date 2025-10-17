@@ -1,5 +1,6 @@
+// src/pages/ChatPage.jsx
 import React, { useEffect, useRef } from "react";
-import "./styles/ChatPage.css"; // CSS 파일 임포트
+import "./styles/ChatPage.css";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
@@ -31,6 +32,36 @@ export default function ChatPage({
   const lastUserMessage =
     messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
 
+  // ✅ AI 견적 로컬 보관 함수
+  const handleSaveEstimate = (estimateData) => {
+    if (!estimateData || !estimateData.components) {
+      alert("저장할 견적 데이터가 없습니다.");
+      return;
+    }
+
+    const payload = {
+      title: estimateData.build_name || estimateData.title || "AI 추천 견적",
+      description: estimateData.build_description || "",
+      notes: estimateData.notes || "",
+      total: estimateData.total || 0,
+      isAi: true,
+      components: estimateData.components.map((c) => ({
+        type: c.type,
+        name: c.name,
+        price: Number(c.price) || 0,
+        description: c.description || "",
+      })),
+      createdAt: new Date().toISOString(),
+    };
+
+    console.log("로컬 저장 payload:", payload);
+
+    // ✅ localStorage 저장
+    localStorage.setItem("aiEstimateDetail", JSON.stringify(payload));
+
+    alert("AI 추천 견적이 마이페이지 보관함에 저장되었습니다!");
+  };
+
   return (
     <div className="cp-chat-page">
       <div className="cp-question-header">
@@ -54,8 +85,28 @@ export default function ChatPage({
                 />
                 <span className="cp-ai-name">스펙메이트</span>
               </div>
+
               <div className="cp-ai-bubble">
-                {msg.data ? <EstimateTable estimate={msg.data} /> : msg.text}
+                {msg.data ? (
+                  <>
+                    <EstimateTable estimate={msg.data} />
+
+                    {/* ✅ 보관함 버튼 */}
+                    <div className="cp-bubble-actions">
+                      <button
+                        onClick={() => {
+                          console.log("AI 견적 저장 직전:", msg.data);
+                          handleSaveEstimate(msg.data);
+                        }}
+                        className="cp-save-estimate-btn"
+                      >
+                        보관함으로 이동
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  msg.text
+                )}
               </div>
             </div>
           ) : (
@@ -65,7 +116,6 @@ export default function ChatPage({
           ),
         )}
 
-        {/* ▼▼▼ 여기가 수정된 로딩 블록입니다 ▼▼▼ */}
         {isLoading && (
           <div className="cp-message-ai">
             <div className="cp-ai-profile">
@@ -78,7 +128,6 @@ export default function ChatPage({
             </div>
             <div className="cp-ai-bubble">
               <div className="loading-indicator">
-                {/* SVG 스피너를 JSX로 직접 작성합니다. */}
                 <div className="svg-spinner">
                   <svg viewBox="25 25 50 50">
                     <circle r="20" cy="50" cx="50" />
@@ -89,7 +138,6 @@ export default function ChatPage({
             </div>
           </div>
         )}
-        {/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */}
       </div>
 
       <div className="cp-input-section">

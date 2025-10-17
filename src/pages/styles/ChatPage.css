@@ -254,3 +254,30 @@
     stroke-dashoffset: -125px;
   }
 }
+/* src/pages/styles/ChatPage.css */
+
+/* ... 기존 CSS ... */
+
+.cp-bubble-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.cp-save-estimate-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.cp-save-estimate-btn:hover {
+  background-color: #f0f0f0;
+}

@@ -7,10 +7,12 @@ import Header from "../components/Header";
 import { useHeaderStore } from "../store/headerStore";
 
 export default function MyPage() {
-  const [estimates, setEstimates] = useState([]);
+  // 1. AI 견적과 사용자 견적을 나누어 저장할 상태
+  const [userEstimates, setUserEstimates] = useState([]);
+  const [aiEstimates, setAiEstimates] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [selectedEstimate, setSelectedEstimate] = useState(null);
-
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
 
   useEffect(() => {
@@ -21,8 +23,29 @@ export default function MyPage() {
     const fetchMyEstimates = async () => {
       try {
         const res = await api.get("/estimate/me");
-        setEstimates(res.data);
-        console.log("견적 불러오기 성공:", res.data);
+        const allEstimates = res.data;
+
+        // ✅ isAi 값이 boolean 또는 문자열일 수 있으므로 확실히 분리
+        const aiEstimatesList = allEstimates.filter(
+          (e) => e.isAi === true || e.isAi === "true",
+        );
+        const userEstimatesList = allEstimates.filter(
+          (e) => !e.isAi || e.isAi === false || e.isAi === "false",
+        );
+
+        // ✅ 로컬에 저장된 AI 견적 불러오기 (ChatPage에서 저장한 데이터)
+        const localAi = localStorage.getItem("aiEstimateDetail");
+        if (localAi) {
+          const parsed = JSON.parse(localAi);
+          parsed.id = "local-ai"; // 가짜 ID (중복 방지용)
+          aiEstimatesList.push(parsed);
+        }
+
+        setUserEstimates(userEstimatesList);
+        setAiEstimates(aiEstimatesList);
+
+        console.log("AI 견적:", aiEstimatesList);
+        console.log("사용자 견적:", userEstimatesList);
       } catch (err) {
         console.error("견적 불러오기 실패:", err);
         if (err.response && err.response.status === 403) {
@@ -47,9 +70,21 @@ export default function MyPage() {
 
   const handleDelete = async (estimateId, e) => {
     e.stopPropagation();
+
+    // ✅ 로컬 AI 견적 삭제 처리
+    if (estimateId === "local-ai") {
+      localStorage.removeItem("aiEstimateDetail");
+      setAiEstimates((prev) => prev.filter((e) => e.id !== "local-ai"));
+      alert("AI 견적이 삭제되었습니다.");
+      return;
+    }
+
+    // ✅ 일반 견적 삭제 처리
     try {
       await api.delete(`/estimate/${estimateId}`);
-      setEstimates((prev) => prev.filter((item) => item.id !== estimateId));
+      // 두 종류의 견적에서 모두 삭제되도록 처리
+      setUserEstimates((prev) => prev.filter((item) => item.id !== estimateId));
+      setAiEstimates((prev) => prev.filter((item) => item.id !== estimateId));
       console.log(`견적 삭제 성공: ${estimateId}`);
     } catch (err) {
       console.error("견적 삭제 실패:", err);
@@ -78,21 +113,70 @@ export default function MyPage() {
               스펙메이트 보관함 확인하기
               <img src="/arrow-right.svg" alt="→" className="arrow-icon" />
             </h3>
+
+            {/* ✅ 사용자 견적 블록 */}
             <div className="estimate-block">
               <h4 className="block-title">
                 {localStorage.getItem("nickname") || "유저"}님의 견적
               </h4>
               <div className="estimate-grid">
-                {estimates.map((estimate) => (
-                  <div
-                    key={estimate.id}
-                    className="estimate-card"
-                    onClick={() => handleOpenEstimate(estimate)}
-                  >
-                    <img src="/gaming.svg" alt={estimate.title || "내 견적"} />
-                    <p>{estimate.title || "사용자 견적"}</p>
-                  </div>
-                ))}
+                {userEstimates.length > 0 ? (
+                  userEstimates.map((estimate) => (
+                    <div
+                      key={estimate.id}
+                      className="estimate-card"
+                      onClick={() => handleOpenEstimate(estimate)}
+                    >
+                      <img
+                        src="/gaming.svg"
+                        alt={estimate.title || "내 견적"}
+                        className="estimate-image"
+                      />
+                      <p>{estimate.title || "사용자 견적"}</p>
+                      <button
+                        className="delete-btn"
+                        onClick={(e) => handleDelete(estimate.id, e)}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="empty-text">
+                    아직 저장된 사용자 견적이 없습니다.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* ✅ AI 추천 견적 블록 */}
+            <div className="estimate-block">
+              <h4 className="block-title">AI 추천 견적</h4>
+              <div className="estimate-grid">
+                {aiEstimates.length > 0 ? (
+                  aiEstimates.map((estimate) => (
+                    <div
+                      key={estimate.id}
+                      className="estimate-card ai-card"
+                      onClick={() => handleOpenEstimate(estimate)}
+                    >
+                      <img
+                        src="/small-character.svg"
+                        alt={estimate.title || "AI 견적"}
+                        className="estimate-image"
+                      />
+                      <p>{estimate.title || "AI 추천 견적"}</p>
+                      <button
+                        className="delete-btn"
+                        onClick={(e) => handleDelete(estimate.id, e)}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="empty-text">아직 AI 추천 견적이 없습니다.</p>
+                )}
               </div>
             </div>
           </section>

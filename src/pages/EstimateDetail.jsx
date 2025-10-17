@@ -7,167 +7,114 @@ import Toast from "../components/Toast";
 
 export default function EstimateDetail({ estimate, onClose }) {
   const [products, setProducts] = useState([]);
-  const [expandedProductId, setExpandedProductId] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]);
-
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+  const { progress, setProgress, resetProgress } = useProgressStore();
 
-  const { progress, setProgress, increaseProgress, resetProgress } =
-    useProgressStore();
+  /** ✅ AI type → 실제 product API type 매핑 */
+  const typeMap = {
+    vga: "gpu",
+    RAM: "ram",
+    cpu: "cpu",
+    mainboard: "mainboard",
+    ssd: "ssd",
+    hdd: "hdd",
+    power: "power",
+    cooler: "cooler",
+    case: "case",
+  };
 
   const categoryMap = {
     ram: "메모리",
     cpu: "CPU",
     mainboard: "메인보드",
     case: "케이스",
-    vga: "그래픽카드",
+    gpu: "그래픽카드",
     ssd: "SSD",
     cooler: "쿨러",
-    psu: "파워",
+    power: "파워",
+    hdd: "HDD",
   };
 
-  // ✅ 문자열 가격을 숫자로 변환하는 유틸
+  const normalize = (s) =>
+    s
+      ?.toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/[^\w가-힣]/g, "");
+
   const parsePrice = (price) => {
     if (!price) return 0;
     if (typeof price === "number") return price;
     return parseInt(String(price).replace(/,/g, ""), 10) || 0;
   };
 
-  // ✅ 견적 제품 불러오기
+  /** ✅ 각 type별 product 목록 불러오기 */
+  const fetchTypeProducts = async (type) => {
+    try {
+      const res = await api.get(`/product/type/${type}`, {
+        params: { size: 1000 },
+      });
+      return res.data.content || [];
+    } catch (err) {
+      console.error(`${type} 상품 목록 로드 실패`, err);
+      return [];
+    }
+  };
+
+  /** ✅ 이름으로 이미지 매칭 (정규화 기반) */
+  const findImageByName = (name, list) => {
+    if (!name || !list) return null;
+    const target = normalize(name);
+    const matched = list.find((p) => {
+      const candidate = normalize(p.name);
+      return candidate.includes(target) || target.includes(candidate);
+    });
+    return matched?.image || null;
+  };
+
+  /** ✅ 전체 매칭 프로세스 */
   const fetchProducts = async () => {
     resetProgress();
-    try {
-      const res = await api.get(`/estimate/${estimate.id}/products`);
-      setProgress(30);
+    setProgress(25);
 
-      const productsWithImage = await Promise.all(
-        res.data.map(async (p) => {
-          try {
-            const productRes = await api.get(`/product/${p.productId}`);
-            increaseProgress(Math.floor(70 / res.data.length));
-            return {
-              ...p,
-              image: productRes.data.image,
-              unitPrice: parsePrice(productRes.data.lowestPrice?.price), // ✅ 변환 적용
-            };
-          } catch (innerErr) {
-            console.error(`제품(${p.productId}) 상세 불러오기 실패:`, innerErr);
-            increaseProgress(Math.floor(70 / res.data.length));
-            return { ...p, image: null, unitPrice: 0 };
-          }
-        })
-      );
+    if (!estimate.components) return;
 
-      setProducts(productsWithImage);
-      setProgress(100);
-    } catch (err) {
-      console.error("견적 제품 불러오기 실패:", err);
-      resetProgress();
+    // 1️⃣ 필요한 타입들 추출 후 /product/type/{type} 캐싱
+    const uniqueTypes = [
+      ...new Set(estimate.components.map((c) => typeMap[c.type] || c.type)),
+    ];
+    const productCache = {};
+    for (const t of uniqueTypes) {
+      productCache[t] = await fetchTypeProducts(t);
     }
+
+    // 2️⃣ 각 부품 이름으로 실제 상품 이미지 매칭
+    const mapped = estimate.components.map((c, i) => {
+      const actualType = typeMap[c.type] || c.type;
+      const image =
+        findImageByName(c.name, productCache[actualType]) || "/no-image.svg";
+      return {
+        id: `local-${i}`,
+        productName: c.name,
+        category: actualType,
+        image,
+        unitPrice: parsePrice(c.price),
+        description: c.description,
+      };
+    });
+
+    setProducts(mapped);
+    setProgress(100);
   };
 
   useEffect(() => {
     fetchProducts();
-  }, [estimate.id]);
+  }, [estimate]);
 
-  // ✅ 부품 삭제
-  const handleDeleteProduct = async (estimateProductId) => {
-    try {
-      await api.delete(`/estimate/products/${estimateProductId}`);
-      setProducts((prev) => prev.filter((p) => p.id !== estimateProductId));
-
-      setToastMessage("성공적으로 견적을 수정했어요!");
-      setToastType("success");
-      setShowToast(true);
-    } catch (err) {
-      console.error("제품 삭제 실패:", err);
-
-      setToastMessage("부품 삭제에 실패했습니다.");
-      setToastType("error");
-      setShowToast(true);
-    }
-  };
-
-  // ✅ 드롭다운 열기 → 기존 상품 상세 조회 후 관련 상품 불러오기
-  const handleExpandProduct = async (
-    category,
-    estimateProductId,
-    productId
-  ) => {
-    if (expandedProductId === estimateProductId) {
-      setExpandedProductId(null);
-      setRelatedProducts([]);
-      return;
-    }
-
-    try {
-      const productRes = await api.get(`/product/${productId}`);
-      const currentProduct = productRes.data;
-
-      const res = await api.get(`/product/type/${currentProduct.type}`, {
-        params: {
-          size: 30,
-          manufacturer: currentProduct.manufacturer || undefined,
-        },
-      });
-
-      setRelatedProducts(res.data.content || []);
-      setExpandedProductId(estimateProductId);
-    } catch (err) {
-      console.error("관련 제품 불러오기 실패:", err);
-    }
-  };
-
-  // ✅ 부품 교체
-  const handleReplaceProduct = async (
-    estimateProductId,
-    newProduct,
-    category
-  ) => {
-    try {
-      await api.put(`/estimate/${estimate.id}/products/${estimateProductId}`, {
-        productId: newProduct.id,
-        category: category,
-        quantity: 1,
-      });
-
-      const productRes = await api.get(`/product/${newProduct.id}`);
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === estimateProductId
-            ? {
-                ...p,
-                productId: newProduct.id,
-                productName: newProduct.name,
-                unitPrice: parsePrice(newProduct.lowestPrice?.price), // ✅ 변환 적용
-                image: productRes.data.image,
-                category: category,
-                quantity: 1,
-              }
-            : p
-        )
-      );
-
-      setToastMessage("부품이 성공적으로 교체되었습니다.");
-      setToastType("success");
-      setShowToast(true);
-
-      setExpandedProductId(null);
-      setRelatedProducts([]);
-    } catch (err) {
-      console.error("부품 교체 실패:", err);
-      setToastMessage("부품 교체에 실패했습니다.");
-      setToastType("error");
-      setShowToast(true);
-    }
-  };
-
-  // ✅ 총 가격 계산 (숫자 변환 보장)
   const totalPrice = products.reduce(
     (sum, p) => sum + parsePrice(p.unitPrice),
-    0
+    0,
   );
 
   return (
@@ -176,20 +123,22 @@ export default function EstimateDetail({ estimate, onClose }) {
         <div className="header-left">
           <h2>
             <span className="estimate-date">
-              {new Date(estimate.createdAt).toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                weekday: "short",
-              })}
+              {new Date(estimate.createdAt || Date.now()).toLocaleDateString(
+                "ko-KR",
+                {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  weekday: "short",
+                },
+              )}
             </span>
           </h2>
-          <p className="estimate-subtitle">화이트계열의 사무용 PC 조합</p>
+          <p className="estimate-subtitle">
+            {estimate.description || "AI 추천 PC 구성"}
+          </p>
         </div>
         <div className="header-actions">
-          <button className="trash-btn">
-            <img src="/trash.svg" alt="삭제" className="icon" />
-          </button>
           <button className="back-btn" onClick={onClose}>
             <img src="/out.svg" alt="목록으로" className="icon" />
           </button>
@@ -212,65 +161,23 @@ export default function EstimateDetail({ estimate, onClose }) {
               <div className="estimate-product-image">
                 <img src={p.image || "/no-image.svg"} alt={p.productName} />
               </div>
-
               <div className="product-details">
-                <div className="product-top">
-                  <button
-                    className="product-name-dropdown"
-                    onClick={() =>
-                      handleExpandProduct(p.category, p.id, p.productId)
-                    }
-                  >
-                    {p.productName}
-                  </button>
-                  {expandedProductId === p.id && (
-                    <ul className="related-product-list">
-                      {relatedProducts.map((rp) => (
-                        <li
-                          key={rp.id}
-                          onClick={() =>
-                            handleReplaceProduct(p.id, rp, p.category)
-                          }
-                        >
-                          {rp.name}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div className="spacer"></div>
-
-                <div className="product-bottom-section">
-                  <p className="price-title">가격</p>
-                  <div className="product-bottom">
-                    <p className="product-price">
-                      {p.unitPrice
-                        ? `${parsePrice(p.unitPrice).toLocaleString()}`
-                        : "가격 정보 없음"}
-                      {p.unitPrice && (
-                        <span className="price-unit-text"> 원</span>
-                      )}
-                    </p>
-
-                    <div className="product-actions">
-                      <img
-                        src="/trash.svg"
-                        alt="삭제"
-                        className="delete-icon"
-                        onClick={() => handleDeleteProduct(p.id)}
-                      />
-                      <button className="detail-btn">상세보기</button>
-                    </div>
-                  </div>
-                </div>
+                <p className="product-name">{p.productName}</p>
+                <p className="product-price">
+                  {p.unitPrice
+                    ? `${parsePrice(p.unitPrice).toLocaleString()} 원`
+                    : "가격 정보 없음"}
+                </p>
+                {p.description && (
+                  <p className="product-desc">{p.description}</p>
+                )}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="total-price">최저가 {totalPrice.toLocaleString()} 원</div>
+      <div className="total-price">총합 {totalPrice.toLocaleString()} 원</div>
 
       {showToast && (
         <Toast
