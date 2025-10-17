@@ -1,19 +1,39 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../pages/styles/Usage.css";
-import { useHeaderStore } from "../store/headerStore";
+import { useHeaderStore } from "../store/headerStore"; // Header용 store (기존)
+import { useAuthStore } from "../store/authStore"; //  ▼▼▼ 로그인 상태용 store (수정) ▼▼▼
 import Header from "../components/Header";
 import ChatPage from "./ChatPage";
 import SendIcon from "@mui/icons-material/Send";
 import IconButton from "@mui/material/IconButton";
 import api from "../api";
+import { useNavigate } from "react-router-dom";
+import Toast from "../components/Toast";
 
 export default function Usage() {
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
+
+  // ▼▼▼ 1. useAuthStore에서 로그인 상태 가져오기 (수정) ▼▼▼
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  // ▲▲▲ ▲▲▲ ▲▲▲
+
+  const navigate = useNavigate();
 
   const [inChat, setInChat] = useState(false);
   const [messages, setMessages] = useState([]);
   const [roomId, setRoomId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [toastInfo, setToastInfo] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  const handleToastClose = () => {
+    setToastInfo((prev) => ({ ...prev, show: false }));
+    navigate("/login"); // (로그인 페이지 경로)
+  };
 
   const initialInputRef = useRef(null);
 
@@ -23,7 +43,20 @@ export default function Usage() {
 
   const handleSend = async (promptText) => {
     const question = promptText.trim();
-    if (!question || isLoading) return;
+    if (!question) return;
+
+    // ▼▼▼ 2. API 호출 전 로그인 상태 확인 (핵심) ▼▼▼
+    if (!isLoggedIn) {
+      setToastInfo({
+        show: true,
+        message: "로그인이 필요합니다. 로그인 페이지로 이동합니다.",
+        type: "warning",
+      });
+      return; // 로그인 안했으면 API 호출(try) 전에 함수 종료
+    }
+    // ▲▲▲ ▲▲▲ ▲▲▲
+
+    if (isLoading) return; // 로딩 중 중복 전송 방지
 
     setIsLoading(true);
     setMessages((prev) => [...prev, { sender: "user", text: question }]);
@@ -33,11 +66,7 @@ export default function Usage() {
 
       if (!currentRoomId) {
         const roomRes = await api.post("/chat/rooms", { title: question });
-
-        // ▼▼▼ 이 부분을 수정했습니다 ▼▼▼
-        currentRoomId = roomRes.data.id; // 'roomId' -> 'id'
-        // ▲▲▲ ▲▲▲ ▲▲▲
-
+        currentRoomId = roomRes.data.id;
         setRoomId(currentRoomId);
         setInChat(true);
       }
@@ -49,13 +78,27 @@ export default function Usage() {
       setMessages((prev) => [...prev, { sender: "ai", data: msgRes.data }]);
     } catch (error) {
       console.error("API 요청 실패:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "ai",
-          text: "오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-        },
-      ]);
+
+      // ▼▼▼ 3. catch 블록 (401, 403 모두 처리) ▼▼▼
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        setToastInfo({
+          show: true,
+          message: "로그인이 필요합니다. 로그인 페이지로 이동합니다.",
+          type: "warning",
+        });
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: "ai",
+            text: "오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+          },
+        ]);
+      }
+      // ▲▲▲ ▲▲▲ ▲▲▲
     } finally {
       setIsLoading(false);
     }
@@ -80,6 +123,14 @@ export default function Usage() {
 
   return (
     <div className="usage-page-container">
+      {toastInfo.show && (
+        <Toast
+          message={toastInfo.message}
+          type={toastInfo.type}
+          onClose={handleToastClose}
+        />
+      )}
+
       <Header />
       <main className="usage-main-content">
         {!inChat ? (

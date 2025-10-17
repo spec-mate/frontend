@@ -2,8 +2,8 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import "./Toast.css";
-import checkIcon from "/check.svg"; // ✅ 성공용
-import warningIcon from "/warning.svg"; // ✅ 실패/경고용
+import checkIcon from "/check.svg"; //  성공용
+import warningIcon from "/warning.svg"; //  실패/경고용
 
 export default function Toast({ message, type = "success", onClose }) {
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function Toast({ message, type = "success", onClose }) {
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  const icon = type === "success" ? checkIcon : warningIcon; // ✅ 타입에 따라 아이콘 선택
+  const icon = type === "success" ? checkIcon : warningIcon; //  타입에 따라 아이콘 선택
 
   return createPortal(
     <div className={`toast-wrapper ${type}`}>
@@ -22,6 +22,6 @@ export default function Toast({ message, type = "success", onClose }) {
         <span>{message}</span>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

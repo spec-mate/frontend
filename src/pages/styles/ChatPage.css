@@ -20,7 +20,7 @@
 /* 상단 질문 헤더 -> 상단 고정 헤더로 변경 */
 .cp-question-header {
   position: fixed;
-  top: 65px; /* 요청하신 대로 상단에서 36px 떨어지도록 수정 */
+  top: 50px; /* 요청하신 대로 상단에서 36px 떨어지도록 수정 */
   left: 0;
   right: 0;
   margin: 0 auto;
