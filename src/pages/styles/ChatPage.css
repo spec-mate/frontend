@@ -205,3 +205,52 @@
     height: 40px !important;
   }
 }
+/* --- 로딩 인디케이터 관련 CSS --- */
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 아이콘과 텍스트 사이 간격 */
+  color: #333;
+  font-size: 1rem;
+  padding: 10px;
+}
+
+/* ▼▼▼ SVG 스피너를 위한 스타일입니다 ▼▼▼ */
+.svg-spinner svg {
+  width: 2em; /* 채팅창에 어울리는 크기 */
+  transform-origin: center;
+  animation: rotate4 2s linear infinite;
+}
+
+.svg-spinner circle {
+  fill: none;
+  stroke: hsl(214, 97%, 59%); /* 스피너 색상 */
+  stroke-width: 3; /* 스피너 두께 */
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: dash4 1.5s ease-in-out infinite;
+}
+/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
+/* --- 애니메이션 키프레임 --- */
+@keyframes rotate4 {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash4 {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% {
+    stroke-dashoffset: -125px;
+  }
+}

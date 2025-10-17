@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import "../pages/styles/ChatPage.css";
+import "./styles/ChatPage.css"; // CSS 파일 임포트
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
-import EstimateTable from "../components/EstimateTable.jsx"; // 새로 만들 컴포넌트 임포트
+import EstimateTable from "../components/EstimateTable.jsx";
 
 export default function ChatPage({
   messages,
@@ -14,13 +14,12 @@ export default function ChatPage({
   const chatInputRef = useRef(null);
   const chatContainerRef = useRef(null);
 
-  // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const onSendClick = () => {
     if (chatInputRef.current) {
@@ -28,6 +27,9 @@ export default function ChatPage({
       chatInputRef.current.value = "";
     }
   };
+
+  const lastUserMessage =
+    messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
 
   return (
     <div className="cp-chat-page">
@@ -53,7 +55,6 @@ export default function ChatPage({
                 <span className="cp-ai-name">스펙메이트</span>
               </div>
               <div className="cp-ai-bubble">
-                {/* AI 응답이 견적 데이터(data)인지 일반 텍스트(text)인지에 따라 렌더링 분기 */}
                 {msg.data ? <EstimateTable estimate={msg.data} /> : msg.text}
               </div>
             </div>
@@ -63,7 +64,8 @@ export default function ChatPage({
             </div>
           ),
         )}
-        {/* 로딩 중일 때 로딩 인디케이터 표시 */}
+
+        {/* ▼▼▼ 여기가 수정된 로딩 블록입니다 ▼▼▼ */}
         {isLoading && (
           <div className="cp-message-ai">
             <div className="cp-ai-profile">
@@ -74,13 +76,20 @@ export default function ChatPage({
               />
               <span className="cp-ai-name">스펙메이트</span>
             </div>
-            <div className="cp-ai-bubble loading">
-              <span>.</span>
-              <span>.</span>
-              <span>.</span>
+            <div className="cp-ai-bubble">
+              <div className="loading-indicator">
+                {/* SVG 스피너를 JSX로 직접 작성합니다. */}
+                <div className="svg-spinner">
+                  <svg viewBox="25 25 50 50">
+                    <circle r="20" cy="50" cx="50" />
+                  </svg>
+                </div>
+                <span>{`"${lastUserMessage}" 검색어로 찾는 중...`}</span>
+              </div>
             </div>
           </div>
         )}
+        {/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */}
       </div>
 
       <div className="cp-input-section">
