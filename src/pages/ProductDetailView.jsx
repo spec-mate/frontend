@@ -1,8 +1,10 @@
+// src/pages/ProductDetailView.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
 import Toast from "../components/Toast";
 import "./styles/ProductDetailView.css";
+import { addProductToEstimate } from "./estimateUtils"; // 1. 유틸리티 함수 불러오기
 
 export default function ProductDetailView() {
   const { id } = useParams();
@@ -12,6 +14,7 @@ export default function ProductDetailView() {
   const [toastType, setToastType] = useState("success");
   const [showToast, setShowToast] = useState(false);
 
+  // (이하 optionLabels, specKeys 등 다른 코드는 모두 동일합니다)
   const optionLabels = {
     manufacturer: "제조회사",
     socket: "소켓 구분",
@@ -364,7 +367,35 @@ export default function ProductDetailView() {
     };
     fetchProduct();
   }, [id]);
+
+  // 2. '보관하기' 버튼 클릭 시 실행될 함수 수정
+  const handleSaveToEstimate = async () => {
+    if (!product) {
+      setToastMessage("상품 정보를 불러오는 중입니다.");
+      setToastType("error");
+      setShowToast(true);
+      return;
+    }
+
+    // 유틸리티 함수가 요구하는 형식으로 제품 정보를 준비합니다.
+    const productToAdd = {
+      id: product.id,
+      category: product.type,
+      name: product.name,
+    };
+
+    // 유틸리티 함수를 호출합니다.
+    const result = await addProductToEstimate(productToAdd);
+
+    // 결과에 따라 Toast 메시지를 설정합니다.
+    setToastMessage(result.message);
+    setToastType(result.success ? "success" : "error");
+    setShowToast(true);
+  };
+
   if (!product) return <p>상품 불러오는 중...</p>;
+
+  // (이하 나머지 코드는 모두 동일합니다)
   const optionsNormalized = {};
   Object.entries(product.options || {}).forEach(([key, value]) => {
     const keyTrimmed = key.trim();
@@ -422,24 +453,6 @@ export default function ProductDetailView() {
   for (let i = 0; i < entries.length; i += 2) {
     gridPairs.push([entries[i], entries[i + 1]]);
   }
-  const handleSaveToEstimate = async () => {
-    try {
-      await api.post("/estimate/products/save", {
-        productId: product.id,
-        category: product.type,
-        quantity: 1,
-        productImage: product.image,
-      });
-      setToastMessage("견적 보관함에 저장했어요!");
-      setToastType("success");
-      setShowToast(true);
-    } catch (err) {
-      console.error("저장 실패:", err.response || err);
-      setToastMessage("저장에 실패했어요. 다시 시도해주세요.");
-      setToastType("error");
-      setShowToast(true);
-    }
-  };
 
   const handleCardClick = (buildId) => {
     setSelectedBuild((prev) => (prev === buildId ? null : buildId));
