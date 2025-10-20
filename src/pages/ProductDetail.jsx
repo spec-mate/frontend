@@ -20,100 +20,6 @@ export default function DetailPage() {
   const setProgress = useProgressStore((state) => state.setProgress);
   const topRef = useRef(null);
 
-  // 한글 라벨 매핑
-  const labelMap = {
-    cpu: {
-      core: "코어",
-      thread: "스레드",
-      memory_type: "메모리 타입",
-      base_clock: "기본 클럭",
-      boost_clock: "부스트 클럭",
-      l3_cache: "L3 캐시",
-      tdp: "TDP",
-    },
-    ssd: {
-      capacity: "용량",
-      interface: "인터페이스",
-      form_factor: "폼팩터",
-      seq_read: "순차 읽기",
-      seq_write: "순차 쓰기",
-    },
-    gpu: {
-      graphics_chipset: "칩셋",
-      memory_type: "메모리 타입",
-      capacity: "메모리 용량",
-      boost_clock: "부스트 클럭",
-      length: "길이",
-    },
-    ram: {
-      capacity: "용량",
-      memory_type: "메모리 타입",
-      speed: "속도",
-      channel: "채널",
-      heatsink: "방열판",
-      rgb: "RGB",
-    },
-    hdd: {
-      capacity: "용량",
-      rpm: "회전속도(RPM)",
-      interface: "인터페이스",
-      buffer: "버퍼",
-      form_factor: "폼팩터",
-      thickness: "두께",
-    },
-    cooler: {
-      type: "쿨러 타입",
-      height: "높이",
-      noise: "소음",
-      led: "LED",
-      tdp: "TDP 지원",
-      fan_size: "팬 크기",
-      fan_count: "팬 개수",
-    },
-    power: {
-      wattage: "정격 출력",
-      certification: "효율 인증",
-      modular: "모듈러",
-      pfc: "PFC",
-      fan_size: "팬 크기",
-    },
-    case: {
-      case_type: "케이스 타입",
-      case_size: "케이스 크기",
-      atx: "ATX 지원",
-      e_atx: "E-ATX 지원",
-      m_atx: "M-ATX 지원",
-      "m-itx": "M-ITX 지원",
-      max_vga_length: "최대 VGA 길이",
-      max_cpu_cooler_height: "최대 CPU 쿨러 높이",
-      power_included: "파워포함",
-      supported_power: "지원 파워 규격",
-      bay_8_9cm: "베이(8.9cm)",
-      bay_6_4cm: "베이(6.4cm)",
-      max_storage: "최대 저장장치 수",
-      pci_slots: "PCI 슬롯 개수",
-      front_panel_type: "전면 패널",
-      side_panel_type: "측면 패널",
-      side_opening: "측면 오픈 방식",
-      dust_filter: "먼지필터",
-      total_fans: "총 팬 개수",
-      led_fans: "LED 팬 개수",
-      led_back: "LED 팬(후면)",
-      led_side: "LED 팬(측면)",
-      usb2: "USB2.0",
-      usb3: "USB3.0",
-      "usb-c_type_5gbps": "USB-C(5Gbps)",
-      width: "너비",
-      depth: "깊이",
-      height: "높이",
-      power_length: "파워 최대 길이",
-      power_position: "파워 위치",
-      max_watercooler_support: "최대 수랭 쿨러 지원",
-      radiator_top: "수랭(top)",
-      radiator_rear: "수랭(rear)",
-    },
-  };
-
   const titleMap = {
     mainboard: "메인보드",
     cpu: "CPU",
@@ -174,7 +80,7 @@ export default function DetailPage() {
         const res = await api.get(`/product/type/${apiType}`, {
           params: {
             page,
-            size: 15,
+            size: 10, // ✅ 상품 10개씩
             manufacturer: selectedManufacturer || null,
           },
         });
@@ -188,23 +94,13 @@ export default function DetailPage() {
         }
 
         if (selectedSort === "asc") {
-          items.sort((a, b) => {
-            const priceA = parseInt(
-              a.lowestPrice?.price ?? Number.MAX_SAFE_INTEGER,
-              10,
-            );
-            const priceB = parseInt(
-              b.lowestPrice?.price ?? Number.MAX_SAFE_INTEGER,
-              10,
-            );
-            return priceA - priceB;
-          });
+          items.sort(
+            (a, b) => (a.lowestPrice?.price || 0) - (b.lowestPrice?.price || 0),
+          );
         } else if (selectedSort === "desc") {
-          items.sort((a, b) => {
-            const priceA = parseInt(a.lowestPrice?.price ?? 0, 10);
-            const priceB = parseInt(b.lowestPrice?.price ?? 0, 10);
-            return priceB - priceA;
-          });
+          items.sort(
+            (a, b) => (b.lowestPrice?.price || 0) - (a.lowestPrice?.price || 0),
+          );
         }
 
         setProducts(items);
@@ -232,9 +128,7 @@ export default function DetailPage() {
   ]);
 
   useEffect(() => {
-    if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: "auto" });
-    }
+    if (topRef.current) topRef.current.scrollIntoView({ behavior: "auto" });
   }, [page]);
 
   const formatValue = (val) => {
@@ -244,72 +138,38 @@ export default function DetailPage() {
     return val;
   };
 
-  // 한글 라벨과 /구분 3줄 출력 적용
   const renderSpecs = (type, options) => {
     if (!options) return null;
     const o = options;
     let lines = [];
-    const map = labelMap[type] || {};
 
     switch (type) {
-      case "case": {
-        // 중요 5개, 3줄에 /로 구분
-        const line1Arr = [o.case_type, o.case_size]
-          .map((v, idx) =>
-            v
-              ? `${map[["case_type", "case_size"][idx]]}: ${formatValue(v)}`
-              : null,
-          )
-          .filter(Boolean);
-        const line2Arr = [o.max_vga_length, o.max_cpu_cooler_height]
-          .map((v, idx) =>
-            v
-              ? `${map[["max_vga_length", "max_cpu_cooler_height"][idx]]}: ${formatValue(v)}`
-              : null,
-          )
-          .filter(Boolean);
-        const line3 = o.supported_power
-          ? `${map.supported_power}: ${formatValue(o.supported_power)}`
-          : "";
-
-        lines = [line1Arr.join(" / "), line2Arr.join(" / "), line3];
-        break;
-      }
       case "cpu":
         lines = [
           [
-            o.core && `${map.core}: ${o.core}`,
-            o.thread && `${map.thread}: ${o.thread}`,
-            o.memory_type && `${map.memory_type}: ${o.memory_type}`,
+            o.core && `${o.core}`,
+            o.thread && `${o.thread}스레드`,
+            o.memory_type,
           ]
             .filter(Boolean)
             .join(" / "),
           [
-            o.base_clock && `${map.base_clock}: ${o.base_clock}`,
-            o.boost_clock && `${map.boost_clock}: ${o.boost_clock}`,
+            o.base_clock && `기본 ${o.base_clock}`,
+            o.boost_clock && `최대 ${o.boost_clock}`,
           ]
             .filter(Boolean)
             .join(" / "),
-          [
-            o.l3_cache && `${map.l3_cache}: ${o.l3_cache}`,
-            o.tdp && `${map.tdp}: ${o.tdp}`,
-          ]
+          [o.l3_cache && `L3 캐시 ${o.l3_cache}`, o.tdp && `TDP ${o.tdp}`]
             .filter(Boolean)
             .join(" / "),
         ];
         break;
       case "ssd":
         lines = [
+          [o.capacity, o.interface, o.form_factor].filter(Boolean).join(" / "),
           [
-            o.capacity && `${map.capacity}: ${o.capacity}`,
-            o.interface && `${map.interface}: ${o.interface}`,
-            o.form_factor && `${map.form_factor}: ${o.form_factor}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.seq_read && `${map.seq_read}: ${o.seq_read}`,
-            o.seq_write && `${map.seq_write}: ${o.seq_write}`,
+            o.seq_read && `읽기 ${o.seq_read}`,
+            o.seq_write && `쓰기 ${o.seq_write}`,
           ]
             .filter(Boolean)
             .join(" / "),
@@ -317,17 +177,12 @@ export default function DetailPage() {
         break;
       case "gpu":
         lines = [
-          [
-            o.graphics_chipset &&
-              `${map.graphics_chipset}: ${o.graphics_chipset}`,
-            o.memory_type && `${map.memory_type}: ${o.memory_type}`,
-            o.capacity && `${map.capacity}: ${o.capacity}`,
-          ]
+          [o.graphics_chipset, o.memory_type, o.capacity]
             .filter(Boolean)
             .join(" / "),
           [
-            o.boost_clock && `${map.boost_clock}: ${o.boost_clock}`,
-            o.length && `${map.length}: ${o.length}`,
+            o.boost_clock && `클럭 ${o.boost_clock}`,
+            o.length && `길이 ${o.length}`,
           ]
             .filter(Boolean)
             .join(" / "),
@@ -335,73 +190,8 @@ export default function DetailPage() {
         break;
       case "ram":
         lines = [
-          [
-            o.capacity && `${map.capacity}: ${o.capacity}`,
-            o.memory_type && `${map.memory_type}: ${o.memory_type}`,
-            o.speed && `${map.speed}: ${o.speed}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.channel && `${map.channel}: ${o.channel}`,
-            o.heatsink && `${map.heatsink}: ${o.heatsink}`,
-            o.rgb !== undefined && `${map.rgb}: ${formatValue(o.rgb)}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-      case "hdd":
-        lines = [
-          [
-            o.capacity && `${map.capacity}: ${o.capacity}`,
-            o.rpm && `${map.rpm}: ${o.rpm}`,
-            o.interface && `${map.interface}: ${o.interface}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.buffer && `${map.buffer}: ${o.buffer}`,
-            o.form_factor && `${map.form_factor}: ${o.form_factor}`,
-            o.thickness && `${map.thickness}: ${o.thickness}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-      case "cooler":
-        lines = [
-          [
-            o.type && `${map.type}: ${o.type}`,
-            o.height && `${map.height}: ${o.height}`,
-            o.noise && `${map.noise}: ${o.noise}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.led !== undefined && `${map.led}: ${formatValue(o.led)}`,
-            o.tdp && `${map.tdp}: ${o.tdp}`,
-            o.fan_size && `${map.fan_size}: ${o.fan_size}`,
-            o.fan_count && `${map.fan_count}: ${o.fan_count}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-      case "power":
-        lines = [
-          [
-            o.wattage && `${map.wattage}: ${o.wattage}`,
-            o.certification && `${map.certification}: ${o.certification}`,
-            o.modular !== undefined &&
-              `${map.modular}: ${formatValue(o.modular)}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.pfc && `${map.pfc}: ${o.pfc}`,
-            o.fan_size && `${map.fan_size}: ${o.fan_size}`,
-          ]
+          [o.capacity, o.memory_type, o.speed].filter(Boolean).join(" / "),
+          [o.channel, o.heatsink, o.rgb && `RGB ${formatValue(o.rgb)}`]
             .filter(Boolean)
             .join(" / "),
         ];
@@ -409,9 +199,10 @@ export default function DetailPage() {
       default:
         lines = Object.entries(o)
           .slice(0, 3)
-          .map(([k, v]) => `${map[k] || k}: ${formatValue(v)}`);
+          .map(([k, v]) => `${k}: ${formatValue(v)}`);
         break;
     }
+
     return (
       <div className="specs">
         {lines.filter(Boolean).map((line, i) => (
@@ -421,9 +212,14 @@ export default function DetailPage() {
     );
   };
 
+  // ✅ 페이지네이션 10개 단위 그룹 계산
+  const pageGroup = Math.floor(page / 10);
+  const startPage = pageGroup * 10;
+  const endPage = Math.min(startPage + 10, totalPages);
+
   return (
     <div className="detail-page">
-      {/* 왼쪽 사이드바 */}
+      {/* 사이드바 */}
       <div className="left-column">
         <aside className="sidebar">
           <h3>부품종류</h3>
@@ -442,7 +238,7 @@ export default function DetailPage() {
         </aside>
       </div>
 
-      {/* 메인 콘텐츠 */}
+      {/* 메인 */}
       <div className="main-content">
         <div className="main-inner" ref={topRef}>
           <div className="breadcrumb">
@@ -454,10 +250,9 @@ export default function DetailPage() {
 
           <h2>{pageTitle}</h2>
 
-          {/* 필터 테이블 + 검색창 */}
+          {/* 필터 */}
           <div className="filter-bar">
             <div className="filter-table">
-              {/* 제조사 */}
               <div className="row">
                 <div className="label manufacturer-label">제조사</div>
                 <div className="options">
@@ -486,7 +281,6 @@ export default function DetailPage() {
                 </div>
               </div>
 
-              {/* 정렬 */}
               <div className="row">
                 <div className="label price-label">가격 정렬</div>
                 <div className="options">
@@ -524,7 +318,6 @@ export default function DetailPage() {
               </div>
             </div>
 
-            {/* 검색창 */}
             <div className="search-box">
               <input
                 type="text"
@@ -576,6 +369,52 @@ export default function DetailPage() {
                   ))
                 : !loading && <p>상품이 없습니다.</p>}
             </div>
+
+            {/* ✅ 페이지네이션 */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                {/* 왼쪽 화살표 — 첫 페이지 그룹일 때 숨김 */}
+                {pageGroup > 0 && (
+                  <button
+                    className="arrow-btn"
+                    onClick={() => setPage(startPage - 1)}
+                  >
+                    <img
+                      src="/arrow-right.svg"
+                      alt="이전"
+                      className="arrow-icon left"
+                      style={{ transform: "rotate(180deg)" }}
+                    />
+                  </button>
+                )}
+
+                {Array.from({ length: endPage - startPage }, (_, i) => (
+                  <button
+                    key={startPage + i}
+                    className={`page-btn ${
+                      page === startPage + i ? "active" : ""
+                    }`}
+                    onClick={() => setPage(startPage + i)}
+                  >
+                    {startPage + i + 1}
+                  </button>
+                ))}
+
+                {/* 오른쪽 화살표 — 마지막 페이지 그룹일 때 숨김 */}
+                {endPage < totalPages && (
+                  <button
+                    className="arrow-btn"
+                    onClick={() => setPage(endPage)}
+                  >
+                    <img
+                      src="/arrow-right.svg"
+                      alt="다음"
+                      className="arrow-icon"
+                    />
+                  </button>
+                )}
+              </div>
+            )}
           </section>
         </div>
       </div>
