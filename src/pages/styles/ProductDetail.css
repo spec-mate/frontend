@@ -117,10 +117,12 @@
   border-top: none;
 }
 
+/* ✅ 모든 라벨 폰트 크기 통일 (매뉴팩쳐 기준) */
 .filter-table .label {
   background: #f8f9fa;
   width: 90px;
   text-align: center;
+  font-size: 15px; /* 매뉴팩쳐 기준 */
   font-weight: 600;
   color: #333;
   border-right: 1px solid #ddd;
@@ -217,16 +219,14 @@
     border: none;
     background: none;
     box-shadow: none;
-    overflow-x: auto; /* 가로 스크롤 가능 */
+    overflow-x: auto;
     white-space: nowrap;
     margin-bottom: 10px;
-
-    /* ✅ 모든 브라우저에서 스크롤바 숨기기 */
-    -ms-overflow-style: none; /* IE, Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
   .sidebar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
+    display: none;
   }
 
   .sidebar h3 {
