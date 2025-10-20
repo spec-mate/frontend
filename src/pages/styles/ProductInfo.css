@@ -1,27 +1,23 @@
 /* --- 기본 스타일 --- */
 .product-page {
   display: grid;
-  /* 양쪽에 여백 컬럼을 두고, 중앙 콘텐츠는 최대 1000px을 갖도록 설정 */
   grid-template-columns: 1fr minmax(auto, 1000px) 1fr;
   gap: 20px;
-  /* 상단 헤더 영역을 고려한 충분한 패딩 */
   padding: 169px 20px 40px;
   text-align: center;
   min-height: 100vh;
   box-sizing: border-box;
-  /* 콘텐츠가 적을 때도 중앙에 오도록 align-content 추가 */
   align-content: flex-start;
 }
 
 /* --- 페이지 헤더 --- */
 .product-header {
-  grid-column: 2; /* 중앙 컬럼에 위치 */
+  grid-column: 2;
   text-align: left;
   margin-bottom: 30px;
 }
 
 .product-title {
-  /* clamp()를 사용해 유동적인 폰트 크기 설정 */
   font-size: clamp(32px, 4vw, 56px);
   font-weight: 500;
   margin: 0;
@@ -38,9 +34,8 @@
 
 /* --- 제품 그리드 --- */
 .product-grid {
-  grid-column: 2; /* 중앙 컬럼에 위치 */
+  grid-column: 2;
   display: grid;
-  /* 기본 3단 그리드 */
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(20px, 3vw, 44px);
 }
@@ -54,7 +49,7 @@
   border: 1px solid #ddd;
   text-decoration: none;
   width: 100%;
-  aspect-ratio: 2 / 1; /* 카드의 가로세로 비율 고정 */
+  aspect-ratio: 2 / 1;
   margin: 0 auto;
 }
 
@@ -104,7 +99,6 @@
   white-space: pre-line;
 }
 
-/* 설명은 기본 숨김, hover 시 표시 */
 .overlay-content p {
   font-size: clamp(12px, 1vw, 14px);
   line-height: 1.4;
@@ -120,7 +114,7 @@
 
 .product-card:hover .overlay-content p {
   opacity: 1;
-  max-height: 200px; /* 설명이 표시될 충분한 높이 */
+  max-height: 200px;
 }
 
 /* 제목 전환 효과 */
@@ -178,7 +172,6 @@
 /* --- 노트북 & 큰 태블릿 (1024px 이하) --- */
 @media (max-width: 1024px) {
   .product-grid {
-    /* 2단 그리드로 변경 */
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -186,19 +179,35 @@
 /* --- 일반 태블릿 & 큰 모바일 (768px 이하) --- */
 @media (max-width: 768px) {
   .product-page {
-    /* 페이지 그리드를 단순화하여 콘텐츠 영역을 넓힘 */
     grid-template-columns: 1fr;
     padding: 120px 20px 40px;
   }
 
   .product-header,
   .product-grid {
-    /* 그리드 컬럼 설정을 초기화 */
     grid-column: 1 / -1;
   }
 
   .product-subtitle {
     padding-bottom: 30px;
+  }
+
+  /* ✅ 모바일: hover 상태 항상 적용 */
+  .product-card::after {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .overlay-content p {
+    opacity: 1;
+    max-height: 200px;
+  }
+
+  .title-default {
+    display: none;
+  }
+
+  .title-hover {
+    display: inline;
   }
 }
 
@@ -209,21 +218,19 @@
   }
 
   .product-grid {
-    /* 1단 그리드로 변경하여 세로로 나열 */
     grid-template-columns: 1fr;
     gap: 20px;
   }
 
   .product-card {
-    /* 모바일에서 카드의 세로 길이를 조금 줄여 더 보기 좋게 조정 */
     aspect-ratio: 16 / 9;
   }
 
   .overlay-content h3 {
-    font-size: 22px; /* 모바일에서 제목이 너무 커지지 않도록 조정 */
+    font-size: 22px;
   }
 
   .overlay-content p {
-    font-size: 13px; /* 모바일 설명 텍스트 크기 조정 */
+    font-size: 13px;
   }
 }
