@@ -163,9 +163,9 @@
   }
 
   .login-logo {
-    width: 360px; /* ✅ 인풋보다 여전히 큼 */
+    width: 360px; /* 인풋보다 여전히 큼 */
     height: auto;
-    margin-bottom: 24px;
+    margin-bottom: 26px;
   }
 
   .login-button {
@@ -184,15 +184,15 @@
   }
 
   .login-logo {
-    width: 260px; /* ✅ 인풋보다 명확히 큼 */
+    width: 340px; /* ✅ 인풋 필드보다 확실히 큼 */
     height: auto;
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* 살짝 여유 */
   }
 
   .input-group input {
     font-size: 14px;
     padding: 10px 12px;
-    height: 56px; /* ✅ 인풋보다 로고가 시각적으로 작지 않게 */
+    height: 54px; /* 인풋보다 로고가 더 커보이게 유지 */
   }
 
   .login-button {
