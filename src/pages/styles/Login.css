@@ -57,7 +57,7 @@
 .login-button {
   width: 100%;
   padding: 14px;
-  margin-top: 10px; /* ✅ 입력 필드와 간격 확보 */
+  margin-top: 10px;
   color: #fff;
   border: none;
   border-radius: 15px;
@@ -69,7 +69,10 @@
 
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.3s ease;
 }
 
 .login-button:hover {

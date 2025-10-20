@@ -1,3 +1,4 @@
+/* --- 전체 페이지 컨테이너 --- */
 .usage-page-container {
   display: flex;
   flex-direction: column;
@@ -6,24 +7,27 @@
   background-color: #fff;
 }
 
+/* --- 메인 콘텐츠 (수직/수평 중앙 정렬) --- */
 .usage-main-content {
   display: flex;
   flex-direction: column;
-  align-items: center; /* 수평 중앙 */
-  justify-content: center; /* 수직 중앙 */
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  text-align: center;
   min-height: 100vh;
-  padding: 0 20px;
+  padding: 20px; /* 좌우 여백을 20px로 설정 */
   box-sizing: border-box;
+  text-align: center;
 }
 
+/* --- 상단 히어로 섹션 --- */
 .section-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 60px;
+  margin-top: 60px; /* 상단 여백 */
+  width: 100%;
 }
 
 .usage-title-text {
@@ -43,18 +47,21 @@
   margin: 10px 0 30px;
 }
 
+/* --- 추천 질문 버튼 그룹 --- */
 .question-group-list {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 18px;
+  width: 100%;
   margin: 30px auto 50px;
 }
 
 .question-group-row {
   display: flex;
+  flex-wrap: wrap; /* 화면이 좁아지면 버튼이 다음 줄로 넘어가도록 설정 */
   justify-content: center;
-  gap: 28px;
+  gap: 20px; /* 버튼 사이 간격 */
 }
 
 .question-bubble-btn {
@@ -72,7 +79,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
   text-align: center;
-  margin: 0 auto;
 }
 
 .question-bubble-btn:hover {
@@ -82,6 +88,7 @@
   box-shadow: 0 3px 8px rgba(30, 92, 222, 0.25);
 }
 
+/* --- 메인 입력창 섹션 --- */
 .main-input-section {
   display: flex;
   align-items: center;
@@ -90,7 +97,7 @@
   max-width: 900px;
   width: 100%;
   margin: 40px auto 0 auto;
-  padding: 0 28px;
+  padding: 0 20px; /* 좌우 여백을 20px로 설정 */
   box-sizing: border-box;
 }
 
@@ -103,6 +110,7 @@
   outline: none;
   background: #fff;
   box-sizing: border-box;
+  min-width: 0; /* flex item이 줄어들 수 있도록 설정 */
 }
 
 .main-chat-input:focus {
@@ -122,8 +130,79 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
 }
 
 .main-send-btn:hover {
   background-color: #153e9f !important;
+}
+
+/* ==========================================================================
+   반응형 디자인 (Responsive Design)
+   ========================================================================== */
+
+/* --- 태블릿 (768px 이하) --- */
+@media (max-width: 768px) {
+  .usage-title-text {
+    font-size: 24px; /* 제목 폰트 크기 축소 */
+  }
+
+  .character-image-box img {
+    width: 100px; /* 캐릭터 이미지 크기 축소 */
+  }
+
+  .main-chat-input {
+    font-size: 16px; /* 입력창 폰트 크기 축소 */
+    padding: 16px 20px;
+  }
+
+  .question-group-row {
+    gap: 15px; /* 버튼 사이 간격 축소 */
+  }
+}
+
+/* --- 모바일 (480px 이하) --- */
+@media (max-width: 480px) {
+  .usage-main-content {
+    padding: 15px; /* 전체 좌우 여백 축소 */
+    justify-content: flex-start; /* 콘텐츠를 상단부터 표시 */
+    padding-top: 80px; /* 상단 여백 추가 */
+  }
+
+  .usage-title-text {
+    font-size: 20px;
+  }
+
+  /* 모바일에서는 버튼 그룹이 세로로 쌓이도록 변경 */
+  .question-group-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .question-group-list {
+    gap: 12px;
+  }
+
+  .question-bubble-btn {
+    width: 100%; /* 버튼 너비를 꽉 채움 */
+    max-width: 320px; /* 최대 너비 제한 */
+    font-size: 13px;
+    padding: 12px 18px;
+  }
+
+  .main-input-section {
+    padding: 0 15px; /* 입력창 섹션 좌우 여백 축소 */
+    margin-top: 30px;
+  }
+
+  .main-chat-input {
+    font-size: 15px;
+    padding: 14px 18px;
+  }
+
+  .main-send-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
 }

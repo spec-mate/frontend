@@ -1,8 +1,9 @@
 .mypage {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 192px 20px;
+  padding: 192px 20px 40px; /* 하단 여백 추가 */
   font-family: Pretendard, sans-serif;
+  box-sizing: border-box;
 }
 
 /* 헤더 */
@@ -70,7 +71,9 @@
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: pointer;
   position: relative;
 }
@@ -79,6 +82,7 @@
   width: 100%;
   height: auto;
   border-radius: 8px;
+  display: block; /* 이미지 하단 여백 제거 */
 }
 
 .estimate-card:hover {
@@ -106,8 +110,90 @@
   padding: 4px 8px;
   cursor: pointer;
   transition: background 0.2s ease;
+  opacity: 0; /* 평소에는 숨김 */
+  pointer-events: none; /* 평소에는 클릭 안되게 */
+}
+
+.estimate-card:hover .delete-estimate-btn {
+  opacity: 1; /* 카드에 호버 시 버튼 표시 */
+  pointer-events: auto;
 }
 
 .delete-estimate-btn:hover {
   background: #e60000;
+}
+
+/* ============================= */
+/* ✅ 반응형 스타일 */
+/* ============================= */
+
+/* --- 태블릿 (max-width: 768px) --- */
+@media (max-width: 768px) {
+  .mypage {
+    /* 상단 헤더 높이를 고려하여 패딩 축소 */
+    padding: 120px 20px 40px;
+  }
+
+  .mypage-header h2 {
+    font-size: 24px; /* 헤더 폰트 크기 조정 */
+  }
+
+  .section-title {
+    font-size: 20px; /* 섹션 제목 폰트 크기 조정 */
+    margin-bottom: 20px;
+  }
+
+  .estimate-grid {
+    /* 카드의 최소 너비를 줄여 태블릿에서 더 많은 카드가 보이도록 함 */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px; /* 카드 사이 간격 축소 */
+  }
+}
+
+/* --- 모바일 (max-width: 480px) --- */
+@media (max-width: 480px) {
+  .mypage {
+    /* 모바일에 맞게 전체적인 패딩 추가 축소 */
+    padding: 100px 15px 30px;
+  }
+
+  .mypage-header h2 {
+    font-size: 22px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+  }
+
+  .block-title {
+    font-size: 16px;
+    margin: 10px 0;
+  }
+
+  .estimate-grid {
+    /* 모바일에서는 2열 그리드로 고정하여 안정적인 레이아웃 제공 */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .estimate-card {
+    padding: 8px; /* 카드 내부 패딩 축소 */
+  }
+
+  .estimate-card p {
+    font-size: 13px; /* 카드 텍스트 크기 조정 */
+  }
+
+  /* 모바일에서는 호버가 없으므로 삭제 버튼을 항상 보이게 처리 */
+  .delete-estimate-btn {
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(255, 77, 77, 0.8); /* 배경을 살짝 투명하게 */
+    top: 6px;
+    right: 6px;
+    font-size: 11px;
+    padding: 3px 6px;
+  }
 }
