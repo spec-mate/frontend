@@ -85,7 +85,67 @@
   width: 100%;
 }
 
-/* --- 필터 섹션 --- */
+/* --- [Block 2] Breadcrumb & Title --- */
+.main-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #000;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+.breadcrumb-link {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition:
+    background-position 0.6s ease,
+    color 0.3s ease;
+}
+
+.breadcrumb-link:hover {
+  text-decoration: none;
+  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+  background-size: 300% 300%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: gradientMove 3s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.main-inner h2 {
+  font-size: 56px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* --- [Block 1] 필터 섹션 --- */
 .filter-bar {
   display: flex;
   align-items: flex-start;
@@ -96,7 +156,7 @@
   padding-bottom: 20px;
 }
 
-/* --- 필터 테이블 --- */
+/* --- [Block 1] 필터 테이블 --- */
 .filter-table {
   flex: 0 0 65%;
   border: 1px solid #ccc;
@@ -139,7 +199,7 @@
   flex-grow: 1;
 }
 
-/* --- 검색창 --- */
+/* --- [Block 1] 검색창 --- */
 .search-box {
   flex: 0 0 30%;
   display: flex;
@@ -173,7 +233,7 @@
   height: 18px;
 }
 
-/* --- 제품 목록 --- */
+/* --- [Block 1] 제품 목록 --- */
 .product-list {
   display: flex;
   flex-direction: column;
@@ -189,6 +249,8 @@
   padding: 16px;
   background: #fff;
   border-radius: 12px;
+  /* Block 2의 상세 스타일을 여기에 추가하려면 할 수 있습니다. */
+  /* 예: text-decoration: none; color: #000; */
 }
 
 .product-item img {
@@ -198,8 +260,77 @@
   border-radius: 8px;
 }
 
+/* --- [Block 2] 페이지네이션 --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.page-btn {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #8692a6;
+  background: #fff;
+  color: #8692a6;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn.active {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.arrow-btn {
+  background: transparent;
+  border: none;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-icon {
+  width: 35px;
+  height: 35px;
+}
+
+.arrow-icon.left {
+  transform: rotate(180deg);
+}
+
+/* --- [Block 2] 기타 --- */
+.blurred {
+  filter: blur(3px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.specs {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.product-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #000;
+}
+
 /* ==========================================================================
-   ✅ 모바일 (768px 이하): 앱형 사이드바 + 전체 레이아웃 세로 전환
+   ✅ 모바일 (768px 이하): [Block 1] 기반 + [Block 2] 스크롤 수정
    ========================================================================== */
 @media (max-width: 768px) {
   /* ✅ 전체 레이아웃 세로형으로 전환 */
@@ -220,6 +351,9 @@
     overflow-x: auto; /* 가로 스크롤 가능 */
     white-space: nowrap;
     margin-bottom: 10px;
+    position: static; /* 1024px에서 static으로 바꿀 필요 없이 여기서 처리 */
+    overflow-y: hidden;
+    touch-action: pan-x; /* [Block 2]의 스크롤 수정 적용 */
 
     /* ✅ 모든 브라우저에서 스크롤바 숨기기 */
     -ms-overflow-style: none; /* IE, Edge */
@@ -238,10 +372,12 @@
     gap: 8px;
     padding: 0 10px;
     margin: 0;
+    width: max-content; /* [Block 2]의 수정 적용 */
   }
 
   .sidebar li {
     border: none;
+    flex-shrink: 0; /* [Block 2]의 스크롤 수정 적용 */
   }
 
   .sidebar li a {
@@ -294,5 +430,6 @@
   .product-item img {
     width: 90px;
     height: 90px;
+    flex: 0 0 90px; /* flex-shrink 방지 */
   }
 }
