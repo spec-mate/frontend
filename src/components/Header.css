@@ -7,7 +7,10 @@
   top: 0;
   left: 0;
   z-index: 50;
-  transition: color 0.3s ease, top 0.3s ease, background 0.3s ease;
+  transition:
+    color 0.3s ease,
+    top 0.3s ease,
+    background 0.3s ease;
 }
 
 /* 흰색/검은색 글자 버전 스타일은 유지 */
@@ -110,7 +113,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 /* 로그인/로그아웃 버튼 */
 .login-btn .login-link,
@@ -157,7 +162,9 @@
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
 }
 .mobile-menu.open {
   display: block;
@@ -204,7 +211,8 @@
   background: #ffffff03;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(45px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
     inset 0 0 0px 0px rgba(255, 255, 255, 0);
@@ -224,7 +232,8 @@
 }
 .glass-btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2),
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     inset 0 -1px 0 rgba(255, 255, 255, 0.2),
     inset 0 0 15px 8px rgba(255, 255, 255, 0.6);
@@ -253,9 +262,6 @@
   }
   .nav {
     display: none !important;
-  }
-  .header-white {
-    top: 10px;
   }
 }
 /* 소형 모바일은 기존 스타일 유지 가능 */
