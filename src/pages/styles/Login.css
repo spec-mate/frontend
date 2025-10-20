@@ -1,19 +1,31 @@
+/* ==========================================================
+   기본 구조
+   ========================================================== */
 .login-container {
   display: flex;
-  flex-direction: column; /* 로고 + 폼 세로 배치 */
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  background-color: #fff;
+  box-sizing: border-box;
 }
 
+/* ==============================
+   로고
+   ============================== */
 .login-logo {
   width: 500px;
   height: 100px;
   object-fit: contain;
   display: block;
+  margin: 0 auto 30px auto;
 }
 
+/* ==============================
+   로그인 폼
+   ============================== */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -21,8 +33,9 @@
   gap: 20px;
   width: 460px;
   padding: 40px 30px;
-  border-radius: 12px; /* ✅ register-form 과 통일 */
+  border-radius: 12px;
   background-color: #fff;
+  box-sizing: border-box;
 }
 
 .input-group {
@@ -54,6 +67,9 @@
   outline: none;
 }
 
+/* ==============================
+   로그인 버튼
+   ============================== */
 .login-button {
   width: 100%;
   padding: 14px;
@@ -91,12 +107,15 @@
   }
 }
 
+/* ==============================
+   회원가입 안내문
+   ============================== */
 .signup-text {
-  margin: 10px 0 20px 0; /* 로고와 폼 사이 여백 */
+  margin: 10px 0 20px 0;
   font-size: 20px;
   font-weight: 500;
   color: #616161;
-  text-align: center; /* 가운데 정렬 */
+  text-align: center;
 }
 
 .signup-link {
@@ -115,6 +134,9 @@
   animation: gradientMove 1s ease infinite;
 }
 
+/* ==============================
+   비밀번호 찾기
+   ============================== */
 .forgot-password {
   margin-top: 10px;
 }
@@ -129,9 +151,9 @@
   text-decoration: underline;
 }
 
-/* ============================= */
-/* ✅ 반응형 스타일 */
-/* ============================= */
+/* ==========================================================
+   ✅ 반응형
+   ========================================================== */
 
 /* 태블릿 (max-width: 768px) */
 @media (max-width: 768px) {
@@ -141,15 +163,15 @@
   }
 
   .login-logo {
-    width: 300px;
+    width: 360px; /* ✅ 인풋보다 여전히 큼 */
     height: auto;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .login-button {
     font-size: 20px;
     padding: 12px;
-    margin-top: 8px; /* ✅ 버튼과 인풋 간격 축소 */
+    margin-top: 8px;
   }
 }
 
@@ -162,25 +184,26 @@
   }
 
   .login-logo {
-    width: 200px;
+    width: 260px; /* ✅ 인풋보다 명확히 큼 */
     height: auto;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
 
   .input-group input {
     font-size: 14px;
-    padding: 10px 12px; /* ✅ 모바일에서는 패딩만 줄이기 */
+    padding: 10px 12px;
+    height: 56px; /* ✅ 인풋보다 로고가 시각적으로 작지 않게 */
   }
 
   .login-button {
     font-size: 18px;
     padding: 10px;
     border-radius: 10px;
-    margin-top: 6px; /* ✅ 모바일에서 최소 여백 */
+    margin-top: 6px;
   }
 
   .signup-text {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .forgot-link {
