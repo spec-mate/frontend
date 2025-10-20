@@ -421,11 +421,11 @@
     box-shadow: none;
     overflow-x: auto;
     overflow-y: hidden;
-    white-space: nowrap;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;
     scrollbar-width: none;
     margin-bottom: 12px;
+    /* 'white-space: nowrap;' 속성을 여기서 제거합니다. */
   }
 
   .sidebar::-webkit-scrollbar {
@@ -437,15 +437,16 @@
   }
 
   .sidebar ul {
-    display: inline-flex;
+    display: flex; /* 'inline-flex' 대신 'flex'로 변경 */
     flex-direction: row;
     align-items: center;
     gap: 8px;
     padding: 8px 10px;
     margin: 0;
-    width: max-content;
+    width: max-content; /* 자식(li)들의 총 너비만큼 설정 */
   }
 
+  /* .sidebar li 와 .sidebar li a 스타일은 기존 코드를 그대로 사용합니다. */
   .sidebar li {
     border: none;
   }
