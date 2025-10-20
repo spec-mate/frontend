@@ -134,7 +134,7 @@
 }
 
 .main-send-btn:hover {
-  background-color: #153e9f !important;
+  background-color: #153f9f !important;
 }
 
 /* ==========================================================================
@@ -173,10 +173,9 @@
     font-size: 20px;
   }
 
-  /* 모바일에서는 버튼 그룹이 세로로 쌓이도록 변경 */
+  /* ✅ [수정] 모바일에서 버튼들이 2열 구조를 유지하도록 flex-direction 제거 */
   .question-group-row {
-    flex-direction: column;
-    align-items: center;
+    /* flex-direction: column; 제거 */
     gap: 12px;
   }
 
@@ -184,9 +183,10 @@
     gap: 12px;
   }
 
+  /* ✅ [수정] 버튼 너비를 콘텐츠에 맞게 조절하도록 width 속성 제거 */
   .question-bubble-btn {
-    width: 100%; /* 버튼 너비를 꽉 채움 */
-    max-width: 320px; /* 최대 너비 제한 */
+    /* width: 100%; 제거 */
+    /* max-width: 320px; 제거 */
     font-size: 13px;
     padding: 12px 18px;
   }
