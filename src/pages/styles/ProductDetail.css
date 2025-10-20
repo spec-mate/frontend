@@ -383,6 +383,7 @@
     width: 100%;
     margin-bottom: 16px;
     border-radius: 8px;
+    overflow: visible;
   }
 
   .detail-page {
@@ -426,10 +427,7 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
     margin-bottom: 12px;
-
-    /* --- 💡 여기를 추가하세요 --- */
     touch-action: pan-x;
-    /* ------------------------ */
   }
 
   .sidebar::-webkit-scrollbar {
@@ -450,7 +448,6 @@
     width: max-content;
   }
 
-  /* li, a 스타일은 그대로 유지 */
   .sidebar li {
     border: none;
   }
