@@ -20,12 +20,10 @@ export default function Register() {
   const [codeError, setCodeError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  // ✅ 토스트 상태
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
 
-  // ✅ 타이머 상태
   const [timer, setTimer] = useState(0);
 
   useEffect(() => {
@@ -48,7 +46,6 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 전송
   const handleSendCode = async () => {
     if (!email.includes("@")) {
       setEmailError("이메일을 정확히 입력해주세요.");
@@ -62,8 +59,7 @@ export default function Register() {
         setToastMessage("인증번호가 이메일로 발송되었습니다.");
         setToastType("success");
         setShowToast(true);
-
-        setTimer(300); // 5분 타이머 시작
+        setTimer(300);
       }
     } catch (err) {
       console.error(err);
@@ -75,7 +71,6 @@ export default function Register() {
     }
   };
 
-  // ✅ 인증번호 확인
   const handleVerifyCode = async () => {
     try {
       await api.post("/auth/verify-code", {
@@ -87,7 +82,6 @@ export default function Register() {
       setToastType("success");
       setShowToast(true);
       setCodeError("");
-
       setTimer(0);
     } catch (err) {
       console.error(err);
@@ -99,7 +93,6 @@ export default function Register() {
     }
   };
 
-  // ✅ 비밀번호 유효성 검사
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
@@ -110,14 +103,13 @@ export default function Register() {
       setPasswordError("");
     } else if (!regex.test(value)) {
       setPasswordError(
-        "영문, 숫자, 특수문자를 조합해서 입력해주세요. (8~16자)"
+        "영문, 숫자, 특수문자를 조합해서 입력해주세요. (8~16자)",
       );
     } else {
       setPasswordError("");
     }
   };
 
-  // ✅ 최종 회원가입
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -141,7 +133,6 @@ export default function Register() {
         password,
       });
 
-      // ✅ 회원가입 성공 시 체크 아이콘 + 고정 메시지
       setToastMessage("회원가입을 성공하였습니다.");
       setToastType("success");
       setShowToast(true);
@@ -151,8 +142,6 @@ export default function Register() {
       }, 2000);
     } catch (err) {
       console.error(err);
-
-      // ✅ 회원가입 실패 시 경고 아이콘 + 고정 메시지
       setToastMessage("회원가입을 실패하였습니다.");
       setToastType("error");
       setShowToast(true);
@@ -184,7 +173,7 @@ export default function Register() {
               placeholder="스펙메이트"
               required
             />
-            <ErrorMessage message={nicknameError} />
+            <ErrorMessage message={nicknameError || ""} />
           </div>
 
           {/* 이메일 */}
@@ -209,7 +198,7 @@ export default function Register() {
               </button>
               {timer > 0 && <span className="timer">{formatTime(timer)}</span>}
             </div>
-            <ErrorMessage message={emailError} />
+            <ErrorMessage message={emailError || ""} />
           </div>
 
           {/* 인증번호 */}
@@ -233,10 +222,10 @@ export default function Register() {
                 확인
               </button>
             </div>
-            <ErrorMessage message={codeError} />
+            <ErrorMessage message={codeError || ""} />
           </div>
 
-          {/* 비밀번호 */}
+          {/* ✅ 비밀번호 */}
           <div className="input-group">
             <label htmlFor="password">비밀번호*</label>
             <input
@@ -246,10 +235,10 @@ export default function Register() {
               placeholder="비밀번호"
               required
             />
-            {passwordError && <ErrorMessage message={passwordError} />}
+            <ErrorMessage message={passwordError || ""} />
           </div>
 
-          {/* 비밀번호 확인 */}
+          {/* ✅ 비밀번호 확인 */}
           <div className="input-group">
             <label htmlFor="confirmPassword">비밀번호 확인*</label>
             <input
@@ -275,7 +264,7 @@ export default function Register() {
         </form>
       </div>
 
-      {/* ✅ Toast 알림 */}
+      {/* Toast 알림 */}
       {showToast && (
         <Toast
           message={toastMessage}
