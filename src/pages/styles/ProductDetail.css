@@ -403,7 +403,7 @@
   }
 }
 
-/* ✅ 모바일 (앱 버전) : 가로 슬라이드 사이드바 - [수정됨] */
+/* ✅ 모바일 (앱 버전) : 가로 슬라이드 사이드바 */
 @media (max-width: 768px) {
   .detail-page {
     display: flex;
@@ -422,11 +422,6 @@
     box-shadow: none;
     overflow-x: auto;
     overflow-y: hidden;
-
-    /* --- ▼▼▼ 이 속성이 다시 추가되었습니다 ▼▼▼ --- */
-    white-space: nowrap;
-    /* --- ▲▲▲ 이게 핵심입니다 ▲▲▲ --- */
-
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -443,7 +438,7 @@
   }
 
   .sidebar ul {
-    display: flex;
+    display: flex; /* 'inline-flex'에서 'flex'로 변경 */
     flex-direction: row;
     align-items: center;
     gap: 8px;
@@ -454,7 +449,7 @@
 
   .sidebar li {
     border: none;
-    flex-shrink: 0;
+    flex-shrink: 0; /* 항목이 줄어들지 않도록 보장 */
   }
 
   .sidebar li a {
@@ -467,8 +462,6 @@
     padding: 8px 16px;
     white-space: nowrap;
     transition: all 0.2s ease;
-    min-width: 80px;
-    text-align: center;
   }
 
   .sidebar li a.active {
@@ -481,7 +474,6 @@
     background: #f3f3f3;
   }
 }
-
 /* --- 기타 --- */
 .blurred {
   filter: blur(3px);

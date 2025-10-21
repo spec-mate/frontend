@@ -20,6 +20,8 @@ export default function DetailPage() {
   const setProgress = useProgressStore((state) => state.setProgress);
   const topRef = useRef(null);
 
+  // ✅ [제거] 사이드바 드래그 관련 ref 및 state 모두 제거
+
   const titleMap = {
     mainboard: "메인보드",
     cpu: "CPU",
@@ -80,10 +82,16 @@ export default function DetailPage() {
         const res = await api.get(`/product/type/${apiType}`, {
           params: {
             page,
-            size: 10, // ✅ 상품 10개씩
+            size: 10,
             manufacturer: selectedManufacturer || null,
           },
         });
+
+        // 가격 문자열을 숫자로 변환하는 헬퍼 함수
+        const getNumericPrice = (product) => {
+          const priceStr = product.lowestPrice?.price || "0";
+          return parseInt(String(priceStr).replace(/[^0-9]/g, ""), 10) || 0;
+        };
 
         let items = res.data.content || [];
 
@@ -93,14 +101,11 @@ export default function DetailPage() {
           );
         }
 
+        // 수정한 정렬 로직
         if (selectedSort === "asc") {
-          items.sort(
-            (a, b) => (a.lowestPrice?.price || 0) - (b.lowestPrice?.price || 0),
-          );
+          items.sort((a, b) => getNumericPrice(a) - getNumericPrice(b));
         } else if (selectedSort === "desc") {
-          items.sort(
-            (a, b) => (b.lowestPrice?.price || 0) - (a.lowestPrice?.price || 0),
-          );
+          items.sort((a, b) => getNumericPrice(b) - getNumericPrice(a));
         }
 
         setProducts(items);
@@ -130,6 +135,8 @@ export default function DetailPage() {
   useEffect(() => {
     if (topRef.current) topRef.current.scrollIntoView({ behavior: "auto" });
   }, [page]);
+
+  // ✅ [제거] 마우스 이벤트 핸들러 4개 (onMouseDown, onMouseLeave, onMouseUp, onMouseMove)
 
   const formatValue = (val) => {
     if (typeof val === "boolean") return val ? "O" : "X";
@@ -212,7 +219,6 @@ export default function DetailPage() {
     );
   };
 
-  // ✅ 페이지네이션 10개 단위 그룹 계산
   const pageGroup = Math.floor(page / 10);
   const startPage = pageGroup * 10;
   const endPage = Math.min(startPage + 10, totalPages);
@@ -221,7 +227,10 @@ export default function DetailPage() {
     <div className="detail-page">
       {/* 사이드바 */}
       <div className="left-column">
-        <aside className="sidebar">
+        <aside
+          className="sidebar"
+          // ✅ [제거] ref 및 마우스 이벤트 핸들러 props
+        >
           <h3>부품종류</h3>
           <ul>
             {Object.entries(titleMap).map(([key, label]) => (
@@ -370,10 +379,9 @@ export default function DetailPage() {
                 : !loading && <p>상품이 없습니다.</p>}
             </div>
 
-            {/* ✅ 페이지네이션 */}
+            {/* 페이지네이션 */}
             {totalPages > 1 && (
               <div className="pagination">
-                {/* 왼쪽 화살표 — 첫 페이지 그룹일 때 숨김 */}
                 {pageGroup > 0 && (
                   <button
                     className="arrow-btn"
@@ -400,7 +408,6 @@ export default function DetailPage() {
                   </button>
                 ))}
 
-                {/* 오른쪽 화살표 — 마지막 페이지 그룹일 때 숨김 */}
                 {endPage < totalPages && (
                   <button
                     className="arrow-btn"
