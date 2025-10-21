@@ -408,29 +408,26 @@
   .detail-page {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 100px 10px 20px;
+    padding: 80px 16px 30px;
+    background-color: #fff;
   }
-
+  /* ✅ 사이드바: 앱형 슬라이드 메뉴 (스크롤바 숨기기 포함) */
   .sidebar {
-    position: relative;
-    top: 0;
-    right: 0;
+    order: 1;
     width: 100%;
     border: none;
-    background: transparent;
+    background: none;
     box-shadow: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    margin-bottom: 12px;
-    touch-action: pan-x;
-  }
+    overflow-x: auto; /* 가로 스크롤 가능 */
+    white-space: nowrap;
+    margin-bottom: 10px;
 
+    /* ✅ 모든 브라우저에서 스크롤바 숨기기 */
+    -ms-overflow-style: none; /* IE, Edge */
+    scrollbar-width: none; /* Firefox */
+  }
   .sidebar::-webkit-scrollbar {
-    display: none;
+    display: none; /* Chrome, Safari */
   }
 
   .sidebar h3 {
@@ -438,28 +435,24 @@
   }
 
   .sidebar ul {
-    display: flex; /* 'inline-flex'에서 'flex'로 변경 */
-    flex-direction: row;
-    align-items: center;
+    display: flex;
     gap: 8px;
-    padding: 8px 10px;
+    padding: 0 10px;
     margin: 0;
-    width: max-content;
   }
 
   .sidebar li {
     border: none;
-    flex-shrink: 0; /* 항목이 줄어들지 않도록 보장 */
   }
 
   .sidebar li a {
     display: inline-block;
-    background: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     border-radius: 20px;
+    background: #fff;
+    padding: 8px 16px;
     font-size: 14px;
     color: #333;
-    padding: 8px 16px;
     white-space: nowrap;
     transition: all 0.2s ease;
   }
@@ -469,28 +462,4 @@
     color: #fff;
     border-color: #1e5cde;
   }
-
-  .sidebar li a:hover {
-    background: #f3f3f3;
-  }
-}
-/* --- 기타 --- */
-.blurred {
-  filter: blur(3px);
-  pointer-events: none;
-  user-select: none;
-}
-
-.specs {
-  font-size: 13px;
-  color: #555;
-  line-height: 1.5;
-  margin-top: 6px;
-}
-
-.product-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #000;
 }
