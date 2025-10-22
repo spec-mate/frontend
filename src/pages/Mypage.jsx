@@ -1,4 +1,3 @@
-// src/pages/MyPage.jsx
 import React, { useEffect, useState } from "react";
 import "./styles/Mypage.css";
 import api from "../api";
@@ -7,10 +6,8 @@ import Header from "../components/Header";
 import { useHeaderStore } from "../store/headerStore";
 
 export default function MyPage() {
-  // 1. AI 견적과 사용자 견적을 나누어 저장할 상태
   const [userEstimates, setUserEstimates] = useState([]);
   const [aiEstimates, setAiEstimates] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [selectedEstimate, setSelectedEstimate] = useState(null);
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
@@ -22,10 +19,21 @@ export default function MyPage() {
   useEffect(() => {
     const fetchMyEstimates = async () => {
       try {
-        const res = await api.get("/estimate/me");
-        const allEstimates = res.data;
+        const token = localStorage.getItem("accessToken");
+        const res = await api.get("/estimate/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        // ✅ isAi 값이 boolean 또는 문자열일 수 있으므로 확실히 분리
+        console.log("🚀 [MyPage] 내 견적 응답:", res.data);
+
+        // ✅ 데이터 구조 자동 판별
+        const allEstimates = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data.data)
+            ? res.data.data
+            : [];
+
+        // ✅ 분리 기준
         const aiEstimatesList = allEstimates.filter(
           (e) => e.isAi === true || e.isAi === "true",
         );
@@ -33,30 +41,39 @@ export default function MyPage() {
           (e) => !e.isAi || e.isAi === false || e.isAi === "false",
         );
 
-        // ✅ 로컬에 저장된 AI 견적 불러오기 (ChatPage에서 저장한 데이터)
+        // ✅ 로컬 저장된 AI 견적 포함
         const localAi = localStorage.getItem("aiEstimateDetail");
         if (localAi) {
           const parsed = JSON.parse(localAi);
-          parsed.id = "local-ai"; // 가짜 ID (중복 방지용)
+          parsed.id = "local-ai";
           aiEstimatesList.push(parsed);
         }
 
-        setUserEstimates(userEstimatesList);
-        setAiEstimates(aiEstimatesList);
+        // ✅ 배열 강제 보정 (핵심 부분)
+        const fixedUserEstimates = Array.isArray(userEstimatesList)
+          ? userEstimatesList
+          : Object.values(userEstimatesList || {});
+        const fixedAiEstimates = Array.isArray(aiEstimatesList)
+          ? aiEstimatesList
+          : Object.values(aiEstimatesList || {});
 
-        console.log("AI 견적:", aiEstimatesList);
-        console.log("사용자 견적:", userEstimatesList);
+        setUserEstimates(fixedUserEstimates);
+        setAiEstimates(fixedAiEstimates);
+
+        console.log("🟢 최종 사용자 견적:", fixedUserEstimates);
+        console.log("🟢 배열 여부:", Array.isArray(fixedUserEstimates));
       } catch (err) {
-        console.error("견적 불러오기 실패:", err);
-        if (err.response && err.response.status === 403) {
+        console.error("❌ 견적 불러오기 실패:", err);
+        if (err.response?.status === 403) {
           alert("접근 권한이 없습니다. 다시 로그인 해주세요.");
-          sessionStorage.removeItem("accessToken");
+          localStorage.removeItem("accessToken");
           window.location.href = "/login";
         }
       } finally {
         setLoading(false);
       }
     };
+
     fetchMyEstimates();
   }, []);
 
@@ -71,7 +88,7 @@ export default function MyPage() {
   const handleDelete = async (estimateId, e) => {
     e.stopPropagation();
 
-    // ✅ 로컬 AI 견적 삭제 처리
+    // ✅ 로컬 AI 견적 삭제
     if (estimateId === "local-ai") {
       localStorage.removeItem("aiEstimateDetail");
       setAiEstimates((prev) => prev.filter((e) => e.id !== "local-ai"));
@@ -79,18 +96,20 @@ export default function MyPage() {
       return;
     }
 
-    // ✅ 일반 견적 삭제 처리
+    // ✅ 서버 견적 삭제
     try {
-      await api.delete(`/estimate/${estimateId}`);
-      // 두 종류의 견적에서 모두 삭제되도록 처리
+      const token = localStorage.getItem("accessToken");
+      await api.delete(`/estimate/${estimateId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       setUserEstimates((prev) => prev.filter((item) => item.id !== estimateId));
       setAiEstimates((prev) => prev.filter((item) => item.id !== estimateId));
-      console.log(`견적 삭제 성공: ${estimateId}`);
     } catch (err) {
       console.error("견적 삭제 실패:", err);
-      if (err.response && err.response.status === 403) {
+      if (err.response?.status === 403) {
         alert("삭제 권한이 없습니다. 다시 로그인 해주세요.");
-        sessionStorage.removeItem("accessToken");
+        localStorage.removeItem("accessToken");
         window.location.href = "/login";
       }
     }
@@ -99,7 +118,10 @@ export default function MyPage() {
   return (
     <div className="mypage">
       <Header />
-      {!selectedEstimate ? (
+
+      {loading ? (
+        <div className="loading">불러오는 중...</div>
+      ) : !selectedEstimate ? (
         <>
           <div className="mypage-header">
             <h2>{localStorage.getItem("nickname") || "유저"}</h2>
@@ -114,13 +136,13 @@ export default function MyPage() {
               <img src="/arrow-right.svg" alt="→" className="arrow-icon" />
             </h3>
 
-            {/* ✅ 사용자 견적 블록 */}
+            {/* ✅ 사용자 견적 */}
             <div className="estimate-block">
               <h4 className="block-title">
                 {localStorage.getItem("nickname") || "유저"}님의 견적
               </h4>
               <div className="estimate-grid">
-                {userEstimates.length > 0 ? (
+                {userEstimates && userEstimates.length > 0 ? (
                   userEstimates.map((estimate) => (
                     <div
                       key={estimate.id}
@@ -149,11 +171,11 @@ export default function MyPage() {
               </div>
             </div>
 
-            {/* ✅ AI 추천 견적 블록 */}
+            {/* ✅ AI 견적 */}
             <div className="estimate-block">
               <h4 className="block-title">AI 추천 견적</h4>
               <div className="estimate-grid">
-                {aiEstimates.length > 0 ? (
+                {aiEstimates && aiEstimates.length > 0 ? (
                   aiEstimates.map((estimate) => (
                     <div
                       key={estimate.id}

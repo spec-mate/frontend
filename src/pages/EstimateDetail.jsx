@@ -1,4 +1,3 @@
-// src/pages/EstimateDetail.jsx
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import "./styles/EstimateDetail.css";
@@ -12,19 +11,6 @@ export default function EstimateDetail({ estimate, onClose }) {
   const [toastType, setToastType] = useState("success");
   const { progress, setProgress, resetProgress } = useProgressStore();
 
-  /** ✅ AI type → 실제 product API type 매핑 */
-  const typeMap = {
-    vga: "gpu",
-    RAM: "ram",
-    cpu: "cpu",
-    mainboard: "mainboard",
-    ssd: "ssd",
-    hdd: "hdd",
-    power: "power",
-    cooler: "cooler",
-    case: "case",
-  };
-
   const categoryMap = {
     ram: "메모리",
     cpu: "CPU",
@@ -37,11 +23,17 @@ export default function EstimateDetail({ estimate, onClose }) {
     hdd: "HDD",
   };
 
-  const normalize = (s) =>
-    s
-      ?.toLowerCase()
-      .replace(/\s+/g, "")
-      .replace(/[^\w가-힣]/g, "");
+  const apiTypeMap = {
+    cpu: "cpu",
+    gpu: "vga",
+    ram: "RAM",
+    mainboard: "mainboard",
+    ssd: "ssd",
+    hdd: "hdd",
+    power: "power",
+    cooler: "cooler",
+    case: "case",
+  };
 
   const parsePrice = (price) => {
     if (!price) return 0;
@@ -49,71 +41,132 @@ export default function EstimateDetail({ estimate, onClose }) {
     return parseInt(String(price).replace(/,/g, ""), 10) || 0;
   };
 
-  /** ✅ 각 type별 product 목록 불러오기 */
-  const fetchTypeProducts = async (type) => {
+  /** ✅ 이미지 찾기 (id 또는 name 기반) */
+  const fetchProductImage = async (category, identifier) => {
     try {
+      const type = apiTypeMap[category] || category;
       const res = await api.get(`/product/type/${type}`, {
-        params: { size: 1000 },
+        params: { size: 300 },
       });
-      return res.data.content || [];
+      const productList = res.data.content || [];
+
+      let found = null;
+      if (typeof identifier === "number") {
+        found = productList.find((p) => p.id === identifier);
+      } else if (typeof identifier === "string") {
+        const normalize = (s) =>
+          s
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .replace(/[^\w가-힣]/g, "");
+        const target = normalize(identifier);
+        found = productList.find((p) =>
+          normalize(p.name || "").startsWith(target.slice(0, 10)),
+        );
+      }
+
+      if (found) {
+        console.log(
+          `✅ [이미지 매칭 성공] ${category} → ${found.name} (ID: ${found.id})`,
+        );
+      } else {
+        console.warn(`⚠️ [이미지 없음] ${category} / ${identifier}`);
+      }
+
+      return found?.image || "/no-image.svg";
     } catch (err) {
-      console.error(`${type} 상품 목록 로드 실패`, err);
-      return [];
+      console.error(`❌ 이미지 조회 실패 (${category}, ${identifier})`, err);
+      return "/no-image.svg";
     }
   };
 
-  /** ✅ 이름으로 이미지 매칭 (정규화 기반) */
-  const findImageByName = (name, list) => {
-    if (!name || !list) return null;
-    const target = normalize(name);
-    const matched = list.find((p) => {
-      const candidate = normalize(p.name);
-      return candidate.includes(target) || target.includes(candidate);
-    });
-    return matched?.image || null;
+  /** ✅ 사용자 견적 (DB 저장형) */
+  const fetchUserEstimateProducts = async (estimateId) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const res = await api.get(`/estimate/${estimateId}/products`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = res.data || [];
+      console.log("📦 [사용자 견적 부품 목록]", data);
+
+      const withImages = await Promise.all(
+        data.map(async (p) => {
+          const image = await fetchProductImage(p.category, p.productId);
+          return {
+            id: p.id,
+            productId: p.productId,
+            productName: p.productName || "이름 없음",
+            category: p.category || "-",
+            image,
+            unitPrice: parsePrice(p.unitPrice),
+            totalPrice: parsePrice(p.totalPrice),
+            quantity: p.quantity || 1,
+          };
+        }),
+      );
+
+      console.log("✅ [사용자 견적 최종 매핑 결과]", withImages);
+      setProducts(withImages);
+    } catch (err) {
+      console.error("❌ 사용자 견적 제품 불러오기 실패:", err);
+    }
   };
 
-  /** ✅ 전체 매칭 프로세스 */
-  const fetchProducts = async () => {
+  /** ✅ AI 견적 (LLM 생성형) */
+  const fetchAiEstimateProducts = async () => {
+    if (!estimate.components) return;
+
+    console.log("🧠 [AI 견적 원본 데이터]", estimate.components);
+
+    try {
+      const withImages = await Promise.all(
+        estimate.components.map(async (c, i) => {
+          const identifier = c.productId ?? c.name;
+          console.log(
+            `🔍 [AI 부품 매칭] index=${i}, type=${c.type}, name=${c.name}, productId=${c.productId}, price=${c.price}`,
+          );
+
+          const image = await fetchProductImage(c.type, identifier);
+          return {
+            id: `ai-${i}`,
+            productId: c.productId,
+            productName: c.name,
+            category: c.type,
+            image,
+            unitPrice: parsePrice(c.price),
+            totalPrice: parsePrice(c.price),
+          };
+        }),
+      );
+
+      console.log("✅ [AI 견적 최종 매핑 결과]", withImages);
+      setProducts(withImages);
+    } catch (err) {
+      console.error("❌ AI 견적 이미지 매칭 실패:", err);
+    }
+  };
+
+  /** ✅ 견적 타입 분기 */
+  useEffect(() => {
     resetProgress();
     setProgress(25);
 
-    if (!estimate.components) return;
+    console.log("📄 [Estimate 객체]", estimate);
 
-    // 1️⃣ 필요한 타입들 추출 후 /product/type/{type} 캐싱
-    const uniqueTypes = [
-      ...new Set(estimate.components.map((c) => typeMap[c.type] || c.type)),
-    ];
-    const productCache = {};
-    for (const t of uniqueTypes) {
-      productCache[t] = await fetchTypeProducts(t);
+    if (estimate.id && estimate.id !== "local-ai" && !estimate.components) {
+      console.log("🔧 [모드] 사용자 견적 불러오기");
+      fetchUserEstimateProducts(estimate.id);
+    } else {
+      console.log("🤖 [모드] AI 견적 불러오기");
+      fetchAiEstimateProducts();
     }
 
-    // 2️⃣ 각 부품 이름으로 실제 상품 이미지 매칭
-    const mapped = estimate.components.map((c, i) => {
-      const actualType = typeMap[c.type] || c.type;
-      const image =
-        findImageByName(c.name, productCache[actualType]) || "/no-image.svg";
-      return {
-        id: `local-${i}`,
-        productName: c.name,
-        category: actualType,
-        image,
-        unitPrice: parsePrice(c.price),
-        description: c.description,
-      };
-    });
-
-    setProducts(mapped);
     setProgress(100);
-  };
-
-  useEffect(() => {
-    fetchProducts();
   }, [estimate]);
 
   const totalPrice = products.reduce(
-    (sum, p) => sum + parsePrice(p.unitPrice),
+    (sum, p) => sum + parsePrice(p.totalPrice ?? p.unitPrice),
     0,
   );
 
@@ -121,21 +174,9 @@ export default function EstimateDetail({ estimate, onClose }) {
     <div className="estimate-detail-page">
       <div className="estimate-header">
         <div className="header-left">
-          <h2>
-            <span className="estimate-date">
-              {new Date(estimate.createdAt || Date.now()).toLocaleDateString(
-                "ko-KR",
-                {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  weekday: "short",
-                },
-              )}
-            </span>
-          </h2>
+          <h2>{estimate.title || "견적 상세보기"}</h2>
           <p className="estimate-subtitle">
-            {estimate.description || "AI 추천 PC 구성"}
+            {estimate.description || "구성된 부품 목록"}
           </p>
         </div>
         <div className="header-actions">
@@ -152,29 +193,34 @@ export default function EstimateDetail({ estimate, onClose }) {
       )}
 
       <div className="estimate-table">
-        {products.map((p) => (
-          <div className="estimate-cell" key={p.id}>
-            <div className="estimate-category">
-              {categoryMap[p.category] || p.category}
-            </div>
-            <div className="product-container">
-              <div className="estimate-product-image">
-                <img src={p.image || "/no-image.svg"} alt={p.productName} />
+        {products.length > 0 ? (
+          products.map((p) => (
+            <div className="estimate-cell" key={p.id}>
+              <div className="estimate-category">
+                {categoryMap[p.category] || p.category}
               </div>
-              <div className="product-details">
-                <p className="product-name">{p.productName}</p>
-                <p className="product-price">
-                  {p.unitPrice
-                    ? `${parsePrice(p.unitPrice).toLocaleString()} 원`
-                    : "가격 정보 없음"}
-                </p>
-                {p.description && (
-                  <p className="product-desc">{p.description}</p>
-                )}
+              <div className="product-container">
+                <div className="estimate-product-image">
+                  <img src={p.image} alt={p.productName} />
+                </div>
+                <div className="product-details">
+                  <p className="product-name">{p.productName}</p>
+                  <p className="product-price">
+                    {p.unitPrice
+                      ? `${p.unitPrice.toLocaleString()} 원`
+                      : "가격 정보 없음"}
+                  </p>
+                  <p className="product-desc">
+                    {p.quantity ? `수량 ${p.quantity}개 / ` : ""}
+                    총액 {p.totalPrice?.toLocaleString() ?? "-"} 원
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="empty-text">구성된 부품이 없습니다.</p>
+        )}
       </div>
 
       <div className="total-price">총합 {totalPrice.toLocaleString()} 원</div>
