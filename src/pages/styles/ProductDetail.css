@@ -414,6 +414,7 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .sidebar::-webkit-scrollbar {
     display: none;
   }
@@ -530,10 +531,15 @@
   }
 
   .product-item .price {
-    align-items: flex-end;
-    text-align: right;
+    flex: 0 0 fit-content;
+    width: fit-content;
   }
 
+  /* ✅ 남은 공간을 제목/설명(info)이 채우도록 */
+  .product-item .info {
+    flex: 1;
+    min-width: 0; /* 🔹 텍스트 줄바꿈/ellipsis 정상 작동용 */
+  }
   .product-item .price-number {
     font-size: 20px;
   }
@@ -543,15 +549,18 @@
   }
 
   /* ✅ 모바일 페이지네이션 수정 */
+  /* ✅ 1. 모바일 페이지네이션 전체 영역 수정 */
   .pagination {
     display: flex;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
-    gap: 6px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
     margin: 20px 0;
-    padding: 0 6px;
-    scroll-snap-type: x mandatory;
+    padding: 0 16px; /* ← 기존 10px → 16px으로 변경 (여유 공간 확보) */
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding: 16px; /* ← 좌우 스크롤 여백 추가 */
     -webkit-overflow-scrolling: touch;
   }
 
@@ -559,22 +568,31 @@
     display: none;
   }
 
+  /* ✅ 2. 페이지 버튼 크기 유지, 화살표는 약간 키움 */
   .page-btn,
   .arrow-btn {
     flex: 0 0 auto;
     scroll-snap-align: center;
-    min-width: 32px;
-    height: 32px;
+    min-width: 30px;
+    height: 30px;
     font-size: 12px;
-    border-radius: 6px;
+    border-radius: 5px;
   }
 
+  /* ✅ 3. 화살표 버튼 강조 및 잘림 방지 여유 공간 추가 */
   .arrow-btn {
-    border: none !important;
-    background: transparent;
+    min-width: 38px; /* ← 기존 34px → 38px으로 */
+    height: 38px;
+    font-size: 14px;
+    color: #1e5cde;
+  }
+
+  .pagination::before,
+  .pagination::after {
+    content: "";
+    flex: 0 0 12px; /* ← 양끝 여백 추가로 잘림 방지 */
   }
 }
-
 .preview-specs {
   font-size: 13px;
   color: #555;
