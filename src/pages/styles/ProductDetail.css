@@ -207,12 +207,6 @@
   text-align: right;
 }
 
-.product-item .span {
-  font-size: 20px;
-  font-weight: 400;
-  color: #000000;
-}
-
 .product-item .price-number {
   font-size: 32px;
   font-weight: 400;
@@ -222,29 +216,49 @@
 .product-item .price-unit {
   font-size: 20px;
   font-weight: 400;
-  color: #000000;
+  color: #000;
 }
 
 /* --- 페이지네이션 --- */
 .pagination {
   display: flex;
+  flex-wrap: wrap; /* ✅ 줄바꿈 허용 */
   justify-content: center;
+  align-items: center;
   gap: 6px;
-  margin-top: 20px;
+  margin: 30px 0;
+  padding: 0 10px;
+  overflow-x: auto; /* ✅ 넘칠 경우 스크롤 허용 */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-.page-btn {
-  width: 35px;
-  height: 35px;
+.pagination::-webkit-scrollbar {
+  display: none; /* ✅ 크롬/사파리 스크롤바 숨김 */
+}
+
+.page-btn,
+.arrow-btn {
+  min-width: 36px;
+  height: 36px;
+  font-size: 14px;
   border: 1px solid #8692a6;
   background: #fff;
   color: #8692a6;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0; /* ✅ 축소 방지 */
+  transition: all 0.2s ease;
+}
+
+/* ✅ 화살표 버튼 테두리 제거 */
+.arrow-btn {
+  border: none !important;
+  background: transparent;
+  color: #8692a6;
 }
 
 .page-btn.active {
@@ -253,24 +267,9 @@
   border-color: #000;
 }
 
-.arrow-btn {
-  background: transparent;
-  border: none;
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .arrow-icon {
-  width: 35px;
-  height: 35px;
-}
-
-.arrow-icon.left {
-  transform: rotate(180deg);
+  width: 28px;
+  height: 28px;
 }
 
 /* --- 필터 영역 --- */
@@ -365,18 +364,6 @@
 }
 
 /* --- 반응형 --- */
-@media (max-width: 1400px) {
-  .sidebar {
-    right: calc(50% + 480px);
-  }
-}
-
-@media (max-width: 1200px) {
-  .sidebar {
-    right: calc(50% + 420px);
-  }
-}
-
 @media (max-width: 1024px) {
   .sidebar {
     position: static;
@@ -403,18 +390,16 @@
   }
 }
 
-/* --- 모바일 반응형 개선 (앱형 레이아웃) --- */
+/* --- 모바일 반응형 (앱형) --- */
 @media (max-width: 768px) {
-  /* 전체 페이지 레이아웃 */
   .detail-page {
     display: flex;
     flex-direction: column;
-    padding: 80px 16px 60px; /* 하단 여백 늘림 */
+    padding: 80px 16px 60px;
     background-color: #fff;
     gap: 16px;
   }
 
-  /* 사이드바: 상단 가로 스크롤 탭 형태 */
   .sidebar {
     order: 1;
     width: 100%;
@@ -426,8 +411,6 @@
     white-space: nowrap;
     padding-bottom: 6px;
     -webkit-overflow-scrolling: touch;
-
-    /* 스크롤바 숨기기 */
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
@@ -467,7 +450,6 @@
     border-color: #1e5cde;
   }
 
-  /* 메인 콘텐츠 */
   .main-content {
     order: 2;
     width: 100%;
@@ -485,7 +467,6 @@
     margin-bottom: 4px;
   }
 
-  /* 필터 및 검색바 */
   .filter-bar {
     flex-direction: column;
     align-items: stretch;
@@ -512,12 +493,11 @@
     font-size: 13px;
   }
 
-  /* 제품 리스트 */
   .product-list {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center; /* 중앙 정렬 */
+    align-items: center;
     gap: 12px;
     margin: 0 auto;
   }
@@ -525,7 +505,6 @@
   .product-item {
     display: flex;
     width: 100%;
-    max-width: 100%;
     justify-content: space-between;
     align-items: flex-start;
     gap: 12px;
@@ -551,7 +530,6 @@
   }
 
   .product-item .price {
-    flex: 0 0 auto;
     align-items: flex-end;
     text-align: right;
   }
@@ -564,29 +542,39 @@
     font-size: 13px;
   }
 
-  /* 페이지네이션 */
+  /* ✅ 모바일 페이지네이션 수정 */
   .pagination {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 24px; /* 여백 확보 */
-    margin-bottom: 20px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
     gap: 6px;
-    width: 100%;
+    margin: 20px 0;
+    padding: 0 6px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .page-btn {
-    width: 32px;
+  .pagination::-webkit-scrollbar {
+    display: none;
+  }
+
+  .page-btn,
+  .arrow-btn {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    min-width: 32px;
     height: 32px;
     font-size: 12px;
     border-radius: 6px;
   }
 
-  .arrow-icon {
-    width: 28px;
-    height: 28px;
+  .arrow-btn {
+    border: none !important;
+    background: transparent;
   }
 }
+
 .preview-specs {
   font-size: 13px;
   color: #555;
@@ -595,11 +583,4 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-@media (max-width: 768px) {
-  .preview-specs {
-    white-space: normal;
-    line-height: 1.5;
-  }
 }
