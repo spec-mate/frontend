@@ -5,6 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import EstimateTable from "../components/EstimateTable.jsx";
+import api from "../api"; // ✅ axios 인스턴스
 
 export default function ChatPage({
   messages,
@@ -34,15 +35,15 @@ export default function ChatPage({
   const lastUserMessage =
     messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
 
-  /** ✅ 여러 개 보관형 저장 */
-  const handleSaveEstimate = (estimateData) => {
+  /** ✅ 견적 저장 (DB + localStorage 병행) */
+  const handleSaveEstimate = async (estimateData) => {
     if (!estimateData || !estimateData.components) {
       alert("저장할 견적 데이터가 없습니다.");
       return;
     }
 
     const payload = {
-      id: `local-ai-${Date.now()}`, // ✅ 각 견적 고유 ID
+      id: `local-ai-${Date.now()}`,
       title: estimateData.build_name || estimateData.title || "AI 추천 견적",
       description: estimateData.build_description || "",
       notes: estimateData.notes || "",
@@ -57,7 +58,7 @@ export default function ChatPage({
       createdAt: new Date().toISOString(),
     };
 
-    // ✅ 기존 목록 안전하게 불러오기
+    // ✅ localStorage 병행 저장
     let existing = [];
     try {
       existing = JSON.parse(localStorage.getItem("aiEstimateList")) || [];
@@ -66,12 +67,39 @@ export default function ChatPage({
       existing = [];
     }
 
-    // ✅ 중복 방지 & 새 데이터 추가
     const updated = [payload, ...existing];
     localStorage.setItem("aiEstimateList", JSON.stringify(updated));
 
-    console.log("✅ 저장된 전체 목록:", updated);
-    alert("AI 추천 견적이 보관함에 추가되었습니다!");
+    // ✅ DB 저장 (로그인 상태일 경우만)
+    const token =
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken");
+    if (token) {
+      try {
+        const dbPayload = {
+          title: payload.title,
+          totalPrice: Number(payload.total),
+          products: payload.components.map((c) => ({
+            name: c.name,
+            description: c.description,
+            quantity: 1,
+            unitPrice: Number(c.price),
+          })),
+        };
+
+        const res = await api.post("/estimates", dbPayload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        console.log("✅ AI 견적 DB 저장 완료:", res.data);
+      } catch (err) {
+        console.error("❌ DB 저장 실패:", err);
+      }
+    } else {
+      console.warn("⚠️ 로그인 정보 없음 — localStorage에만 저장되었습니다.");
+    }
+
+    alert("AI 견적이 보관함에 추가되었습니다!");
   };
 
   /** ✅ AI 응답이 설명형인지 판별 */
@@ -101,7 +129,7 @@ export default function ChatPage({
               Array.isArray(msg.data.components) &&
               msg.data.components.length > 0;
 
-            const isExplanation = isExplanationMessage(msg.text);
+            const isExplanation = isExplanationMessage(msg.data.text);
 
             return (
               <div key={idx} className="cp-message-ai">
@@ -129,7 +157,7 @@ export default function ChatPage({
                     </>
                   ) : (
                     <p className="cp-ai-text">
-                      {msg.text || "설명을 불러오지 못했습니다."}
+                      {msg.data.text || "설명을 불러오지 못했습니다."}
                     </p>
                   )}
                 </div>
@@ -162,7 +190,7 @@ export default function ChatPage({
                     <circle r="20" cy="50" cx="50" />
                   </svg>
                 </div>
-                <span>{`"${lastUserMessage}" 검색어로 찾는 중...`}</span>
+                <span>{`사용자의 의도 파악중...`}</span>
               </div>
             </div>
           </div>

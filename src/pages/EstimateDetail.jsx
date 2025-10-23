@@ -1,3 +1,4 @@
+// src/pages/EstimateDetail.jsx
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import "./styles/EstimateDetail.css";
@@ -6,9 +7,6 @@ import Toast from "../components/Toast";
 
 export default function EstimateDetail({ estimate, onClose }) {
   const [products, setProducts] = useState([]);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success");
   const { progress, setProgress, resetProgress } = useProgressStore();
 
   const categoryMap = {
@@ -41,12 +39,12 @@ export default function EstimateDetail({ estimate, onClose }) {
     return parseInt(String(price).replace(/,/g, ""), 10) || 0;
   };
 
-  /** ✅ 이미지 찾기 (id 또는 name 기반) */
+  /** ✅ 이미지 찾기 (브랜드 한↔영 변환 + fuzzy 매칭 강화 버전) */
   const fetchProductImage = async (category, identifier) => {
     try {
       const type = apiTypeMap[category] || category;
       const res = await api.get(`/product/type/${type}`, {
-        params: { size: 300 },
+        params: { size: 500 },
       });
       const productList = res.data.content || [];
 
@@ -59,10 +57,35 @@ export default function EstimateDetail({ estimate, onClose }) {
             .toLowerCase()
             .replace(/\s+/g, "")
             .replace(/[^\w가-힣]/g, "");
-        const target = normalize(identifier);
-        found = productList.find((p) =>
-          normalize(p.name || "").startsWith(target.slice(0, 10)),
-        );
+
+        let target = normalize(identifier);
+
+        // ✅ 브랜드명 매핑 테이블 (한 ↔ 영)
+        const brandMap = {
+          intel: "인텔",
+          amd: "AMD",
+          samsung: "삼성전자",
+          seasonic: "시소닉",
+          corsair: "커세어",
+          asus: "에이수스",
+          gigabyte: "기가바이트",
+          msi: "엠에스아이",
+          deepcool: "딥쿨",
+        };
+
+        Object.entries(brandMap).forEach(([eng, kor]) => {
+          if (target.includes(eng)) target += kor;
+          if (target.includes(kor)) target += eng;
+        });
+
+        // ✅ fuzzy 매칭
+        found = productList.find((p) => {
+          const name = normalize(p.name || "");
+          return (
+            name.includes(target.slice(0, 10)) ||
+            target.includes(name.slice(0, 10))
+          );
+        });
       }
 
       if (found) {
@@ -80,53 +103,15 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   };
 
-  /** ✅ 사용자 견적 (DB 저장형) */
-  const fetchUserEstimateProducts = async (estimateId) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const res = await api.get(`/estimate/${estimateId}/products`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = res.data || [];
-      console.log("📦 [사용자 견적 부품 목록]", data);
-
-      const withImages = await Promise.all(
-        data.map(async (p) => {
-          const image = await fetchProductImage(p.category, p.productId);
-          return {
-            id: p.id,
-            productId: p.productId,
-            productName: p.productName || "이름 없음",
-            category: p.category || "-",
-            image,
-            unitPrice: parsePrice(p.unitPrice),
-            totalPrice: parsePrice(p.totalPrice),
-            quantity: p.quantity || 1,
-          };
-        }),
-      );
-
-      console.log("✅ [사용자 견적 최종 매핑 결과]", withImages);
-      setProducts(withImages);
-    } catch (err) {
-      console.error("❌ 사용자 견적 제품 불러오기 실패:", err);
-    }
-  };
-
   /** ✅ AI 견적 (LLM 생성형) */
   const fetchAiEstimateProducts = async () => {
     if (!estimate.components) return;
-
     console.log("🧠 [AI 견적 원본 데이터]", estimate.components);
 
     try {
       const withImages = await Promise.all(
         estimate.components.map(async (c, i) => {
           const identifier = c.productId ?? c.name;
-          console.log(
-            `🔍 [AI 부품 매칭] index=${i}, type=${c.type}, name=${c.name}, productId=${c.productId}, price=${c.price}`,
-          );
-
           const image = await fetchProductImage(c.type, identifier);
           return {
             id: `ai-${i}`,
@@ -139,7 +124,6 @@ export default function EstimateDetail({ estimate, onClose }) {
           };
         }),
       );
-
       console.log("✅ [AI 견적 최종 매핑 결과]", withImages);
       setProducts(withImages);
     } catch (err) {
@@ -147,21 +131,12 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   };
 
-  /** ✅ 견적 타입 분기 */
+  /** ✅ 초기 로드 */
   useEffect(() => {
     resetProgress();
     setProgress(25);
-
-    console.log("📄 [Estimate 객체]", estimate);
-
-    if (estimate.id && estimate.id !== "local-ai" && !estimate.components) {
-      console.log("🔧 [모드] 사용자 견적 불러오기");
-      fetchUserEstimateProducts(estimate.id);
-    } else {
-      console.log("🤖 [모드] AI 견적 불러오기");
-      fetchAiEstimateProducts();
-    }
-
+    console.log("🤖 [AI 견적 불러오기 모드]");
+    fetchAiEstimateProducts();
     setProgress(100);
   }, [estimate]);
 
@@ -174,9 +149,9 @@ export default function EstimateDetail({ estimate, onClose }) {
     <div className="estimate-detail-page">
       <div className="estimate-header">
         <div className="header-left">
-          <h2>{estimate.title || "견적 상세보기"}</h2>
+          <h2>{estimate.title || "AI 견적 상세보기"}</h2>
           <p className="estimate-subtitle">
-            {estimate.description || "구성된 부품 목록"}
+            {estimate.description || "AI가 구성한 부품 목록"}
           </p>
         </div>
         <div className="header-actions">
@@ -211,7 +186,6 @@ export default function EstimateDetail({ estimate, onClose }) {
                       : "가격 정보 없음"}
                   </p>
                   <p className="product-desc">
-                    {p.quantity ? `수량 ${p.quantity}개 / ` : ""}
                     총액 {p.totalPrice?.toLocaleString() ?? "-"} 원
                   </p>
                 </div>
@@ -219,19 +193,11 @@ export default function EstimateDetail({ estimate, onClose }) {
             </div>
           ))
         ) : (
-          <p className="empty-text">구성된 부품이 없습니다.</p>
+          <p className="empty-text">AI가 구성한 부품이 없습니다.</p>
         )}
       </div>
 
       <div className="total-price">총합 {totalPrice.toLocaleString()} 원</div>
-
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          type={toastType}
-          onClose={() => setShowToast(false)}
-        />
-      )}
     </div>
   );
 }

@@ -58,7 +58,7 @@ export default function Usage() {
       const msgRes = await api.post(`/chat/rooms/${currentRoomId}/messages`, {
         prompt: question,
       });
-
+      console.log("msgRes:", msgRes);
       setMessages((prev) => [...prev, { sender: "ai", data: msgRes.data }]);
     } catch (error) {
       console.error("API 요청 실패:", error);
