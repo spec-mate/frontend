@@ -1,3 +1,4 @@
+// src/pages/MyPage.jsx
 import React, { useEffect, useState } from "react";
 import "./styles/Mypage.css";
 import api from "../api";
@@ -33,7 +34,7 @@ export default function MyPage() {
             ? res.data.data
             : [];
 
-        // ✅ 분리 기준
+        // ✅ 분리
         const aiEstimatesList = allEstimates.filter(
           (e) => e.isAi === true || e.isAi === "true",
         );
@@ -41,27 +42,22 @@ export default function MyPage() {
           (e) => !e.isAi || e.isAi === false || e.isAi === "false",
         );
 
-        // ✅ 로컬 저장된 AI 견적 포함
-        const localAi = localStorage.getItem("aiEstimateDetail");
-        if (localAi) {
-          const parsed = JSON.parse(localAi);
-          parsed.id = "local-ai";
-          aiEstimatesList.push(parsed);
+        // ✅ 로컬 저장된 AI 견적들 추가
+        const localAiList = JSON.parse(
+          localStorage.getItem("aiEstimateList") || "[]",
+        );
+        if (localAiList && localAiList.length > 0) {
+          localAiList.forEach((item) => {
+            item.id = item.id || `local-ai-${Date.now()}`;
+            aiEstimatesList.push(item);
+          });
         }
 
-        // ✅ 배열 강제 보정 (핵심 부분)
-        const fixedUserEstimates = Array.isArray(userEstimatesList)
-          ? userEstimatesList
-          : Object.values(userEstimatesList || {});
-        const fixedAiEstimates = Array.isArray(aiEstimatesList)
-          ? aiEstimatesList
-          : Object.values(aiEstimatesList || {});
+        setUserEstimates(userEstimatesList);
+        setAiEstimates(aiEstimatesList);
 
-        setUserEstimates(fixedUserEstimates);
-        setAiEstimates(fixedAiEstimates);
-
-        console.log("🟢 최종 사용자 견적:", fixedUserEstimates);
-        console.log("🟢 배열 여부:", Array.isArray(fixedUserEstimates));
+        console.log("🟢 최종 사용자 견적:", userEstimatesList);
+        console.log("🟢 최종 AI 견적:", aiEstimatesList);
       } catch (err) {
         console.error("❌ 견적 불러오기 실패:", err);
         if (err.response?.status === 403) {
@@ -89,9 +85,13 @@ export default function MyPage() {
     e.stopPropagation();
 
     // ✅ 로컬 AI 견적 삭제
-    if (estimateId === "local-ai") {
-      localStorage.removeItem("aiEstimateDetail");
-      setAiEstimates((prev) => prev.filter((e) => e.id !== "local-ai"));
+    if (estimateId.startsWith("local-ai")) {
+      const existing = JSON.parse(
+        localStorage.getItem("aiEstimateList") || "[]",
+      );
+      const filtered = existing.filter((item) => item.id !== estimateId);
+      localStorage.setItem("aiEstimateList", JSON.stringify(filtered));
+      setAiEstimates((prev) => prev.filter((e) => e.id !== estimateId));
       alert("AI 견적이 삭제되었습니다.");
       return;
     }

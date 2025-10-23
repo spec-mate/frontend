@@ -24,7 +24,9 @@ export default function ChatPage({
 
   const onSendClick = () => {
     if (chatInputRef.current) {
-      handleSend(chatInputRef.current.value);
+      const inputValue = chatInputRef.current.value.trim();
+      if (!inputValue) return;
+      handleSend(inputValue);
       chatInputRef.current.value = "";
     }
   };
@@ -32,7 +34,7 @@ export default function ChatPage({
   const lastUserMessage =
     messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
 
-  // ✅ AI 견적 로컬 보관 함수
+  /** ✅ 여러 개 보관형 저장 */
   const handleSaveEstimate = (estimateData) => {
     if (!estimateData || !estimateData.components) {
       alert("저장할 견적 데이터가 없습니다.");
@@ -40,6 +42,7 @@ export default function ChatPage({
     }
 
     const payload = {
+      id: `local-ai-${Date.now()}`, // ✅ 각 견적 고유 ID
       title: estimateData.build_name || estimateData.title || "AI 추천 견적",
       description: estimateData.build_description || "",
       notes: estimateData.notes || "",
@@ -54,12 +57,28 @@ export default function ChatPage({
       createdAt: new Date().toISOString(),
     };
 
-    console.log("로컬 저장 payload:", payload);
+    // ✅ 기존 목록 안전하게 불러오기
+    let existing = [];
+    try {
+      existing = JSON.parse(localStorage.getItem("aiEstimateList")) || [];
+      if (!Array.isArray(existing)) existing = [];
+    } catch {
+      existing = [];
+    }
 
-    // ✅ localStorage 저장
-    localStorage.setItem("aiEstimateDetail", JSON.stringify(payload));
+    // ✅ 중복 방지 & 새 데이터 추가
+    const updated = [payload, ...existing];
+    localStorage.setItem("aiEstimateList", JSON.stringify(updated));
 
-    alert("AI 추천 견적이 마이페이지 보관함에 저장되었습니다!");
+    console.log("✅ 저장된 전체 목록:", updated);
+    alert("AI 추천 견적이 보관함에 추가되었습니다!");
+  };
+
+  /** ✅ AI 응답이 설명형인지 판별 */
+  const isExplanationMessage = (text) => {
+    if (!text) return false;
+    const keywords = ["이유", "왜", "추천", "설명", "근거"];
+    return keywords.some((kw) => text.includes(kw));
   };
 
   return (
@@ -74,47 +93,57 @@ export default function ChatPage({
       </div>
 
       <div className="cp-chat-container" ref={chatContainerRef}>
-        {messages.map((msg, idx) =>
-          msg.sender === "ai" ? (
-            <div key={idx} className="cp-message-ai">
-              <div className="cp-ai-profile">
-                <img
-                  src="/small-character.svg"
-                  alt="스펙메이트"
-                  className="cp-ai-avatar"
-                />
-                <span className="cp-ai-name">스펙메이트</span>
-              </div>
+        {messages.map((msg, idx) => {
+          if (msg.sender === "ai") {
+            const hasEstimate =
+              msg.data &&
+              msg.data.components &&
+              Array.isArray(msg.data.components) &&
+              msg.data.components.length > 0;
 
-              <div className="cp-ai-bubble">
-                {msg.data ? (
-                  <>
-                    <EstimateTable estimate={msg.data} />
+            const isExplanation = isExplanationMessage(msg.text);
 
-                    {/* ✅ 보관함 버튼 */}
-                    <div className="cp-bubble-actions">
-                      <button
-                        onClick={() => {
-                          console.log("AI 견적 저장 직전:", msg.data);
-                          handleSaveEstimate(msg.data);
-                        }}
-                        className="cp-save-estimate-btn"
-                      >
-                        보관함으로 이동
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  msg.text
-                )}
+            return (
+              <div key={idx} className="cp-message-ai">
+                <div className="cp-ai-profile">
+                  <img
+                    src="/small-character.svg"
+                    alt="스펙메이트"
+                    className="cp-ai-avatar"
+                  />
+                  <span className="cp-ai-name">스펙메이트</span>
+                </div>
+
+                <div className="cp-ai-bubble">
+                  {hasEstimate && !isExplanation ? (
+                    <>
+                      <EstimateTable estimate={msg.data} />
+                      <div className="cp-bubble-actions">
+                        <button
+                          onClick={() => handleSaveEstimate(msg.data)}
+                          className="cp-save-estimate-btn"
+                        >
+                          보관함으로 이동
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="cp-ai-text">
+                      {msg.text || "설명을 불러오지 못했습니다."}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
+            );
+          }
+
+          // 사용자 메시지
+          return (
             <div key={idx} className="cp-message-user">
               <div className="cp-user-bubble">{msg.text}</div>
             </div>
-          ),
-        )}
+          );
+        })}
 
         {isLoading && (
           <div className="cp-message-ai">
