@@ -19,38 +19,51 @@ export default function MyPage() {
 
   useEffect(() => {
     const fetchMyEstimates = async () => {
+      setLoading(true);
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await api.get("/estimate/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        let userEstimatesList = [];
+        let aiEstimatesList = [];
 
-        console.log("🚀 [MyPage] 내 견적 응답:", res.data);
+        // ✅ 로그인 상태일 때만 서버 견적 요청
+        if (token) {
+          try {
+            const res = await api.get("/estimate/me", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("🚀 [MyPage] 내 견적 응답:", res.data);
 
-        // ✅ 데이터 구조 자동 판별
-        const allEstimates = Array.isArray(res.data)
-          ? res.data
-          : Array.isArray(res.data.data)
-            ? res.data.data
-            : [];
+            const allEstimates = Array.isArray(res.data)
+              ? res.data
+              : Array.isArray(res.data.data)
+                ? res.data.data
+                : [];
 
-        // ✅ 분리
-        const aiEstimatesList = allEstimates.filter(
-          (e) => e.isAi === true || e.isAi === "true",
-        );
-        const userEstimatesList = allEstimates.filter(
-          (e) => !e.isAi || e.isAi === false || e.isAi === "false",
-        );
+            aiEstimatesList = allEstimates.filter(
+              (e) => e.isAi === true || e.isAi === "true",
+            );
+            userEstimatesList = allEstimates.filter(
+              (e) => !e.isAi || e.isAi === false || e.isAi === "false",
+            );
+          } catch (err) {
+            console.warn(
+              "⚠️ 서버 견적 조회 실패 (로그인 필요 없을 수 있음):",
+              err,
+            );
+          }
+        }
 
-        // ✅ 로컬 저장된 AI 견적들 추가
-        const localAiList = JSON.parse(
-          localStorage.getItem("aiEstimateList") || "[]",
-        );
-        if (localAiList && localAiList.length > 0) {
-          localAiList.forEach((item) => {
-            item.id = item.id || `local-ai-${Date.now()}`;
-            aiEstimatesList.push(item);
-          });
+        // ✅ 로컬 저장된 AI 견적 병합
+        const localAiList =
+          JSON.parse(localStorage.getItem("aiEstimateList") || "[]") || [];
+
+        if (Array.isArray(localAiList) && localAiList.length > 0) {
+          const merged = localAiList.map((item) => ({
+            ...item,
+            id: item.id || `local-ai-${Date.now()}`,
+            isLocal: true,
+          }));
+          aiEstimatesList = [...aiEstimatesList, ...merged];
         }
 
         setUserEstimates(userEstimatesList);
@@ -60,11 +73,6 @@ export default function MyPage() {
         console.log("🟢 최종 AI 견적:", aiEstimatesList);
       } catch (err) {
         console.error("❌ 견적 불러오기 실패:", err);
-        if (err.response?.status === 403) {
-          alert("접근 권한이 없습니다. 다시 로그인 해주세요.");
-          localStorage.removeItem("accessToken");
-          window.location.href = "/login";
-        }
       } finally {
         setLoading(false);
       }
@@ -73,14 +81,11 @@ export default function MyPage() {
     fetchMyEstimates();
   }, []);
 
-  const handleOpenEstimate = (estimate) => {
-    setSelectedEstimate(estimate);
-  };
+  /** ✅ 견적 상세 열기 */
+  const handleOpenEstimate = (estimate) => setSelectedEstimate(estimate);
+  const handleCloseDetail = () => setSelectedEstimate(null);
 
-  const handleCloseDetail = () => {
-    setSelectedEstimate(null);
-  };
-
+  /** ✅ 견적 삭제 */
   const handleDelete = async (estimateId, e) => {
     e.stopPropagation();
 
@@ -96,9 +101,14 @@ export default function MyPage() {
       return;
     }
 
-    // ✅ 서버 견적 삭제
+    // ✅ 서버 견적 삭제 (로그인 상태)
     try {
       const token = localStorage.getItem("accessToken");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
       await api.delete(`/estimate/${estimateId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
