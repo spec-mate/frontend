@@ -139,14 +139,12 @@ export default function DetailPage() {
     return val;
   };
 
-  /** ✅ CPU는 유지, 나머지는 ProductDetailView 기반 핵심 5개 스펙 */
   const renderSpecs = (type, options) => {
     if (!options) return null;
     const o = options;
     let lines = [];
 
     switch (type) {
-      /** ✅ CPU 그대로 유지 */
       case "cpu":
         lines = [
           [
@@ -167,174 +165,6 @@ export default function DetailPage() {
             .join(" / "),
         ];
         break;
-
-      /** ✅ GPU */
-      case "gpu":
-      case "vga":
-        lines = [
-          [o.chipset_vendor, o.chipset].filter(Boolean).join(" / "),
-          [o.memory_capacity && `${o.memory_capacity}`, o.memory_type]
-            .filter(Boolean)
-            .join(" / "),
-          [o.boost_clock && `부스트 ${o.boost_clock}`, o.tdp && `TDP ${o.tdp}`]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.length && `길이 ${o.length}`,
-            o.power_connectors && `전원 ${o.power_connectors}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
-      /** ✅ 메인보드 */
-      case "mainboard":
-        lines = [
-          [o.socket, o.chipset].filter(Boolean).join(" / "),
-          [o.form_factor, o.memory_type].filter(Boolean).join(" / "),
-          [
-            o.m2_interface && `M.2 ${o.m2_interface}`,
-            o.pcie_x16_slots && `PCIe x16 ${o.pcie_x16_slots}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.lan_speed && `LAN ${o.lan_speed}`,
-            o.rgb && `RGB ${formatValue(o.rgb)}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
-      /** ✅ RAM */
-      case "ram":
-        lines = [
-          [o.capacity, o.speed && `${o.speed}`].filter(Boolean).join(" / "),
-          [o.memory_type, o.formfactor].filter(Boolean).join(" / "),
-          [
-            o.voltage && `전압 ${o.voltage}`,
-            o.heatsink && `방열판 ${o.heatsink}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.rgb && `RGB ${formatValue(o.rgb)}`,
-            o.modules && `${o.modules}모듈`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
-      /** ✅ SSD */
-      case "ssd":
-        lines = [
-          [o.capacity, o.interface, o.form_factor].filter(Boolean).join(" / "),
-          [
-            o.sequential_read && `읽기 ${o.sequential_read}`,
-            o.sequential_write && `쓰기 ${o.sequential_write}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.controller && `${o.controller}`,
-            o.nand_structure && `${o.nand_structure}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
-      /** ✅ HDD */
-      case "hdd":
-        lines = [
-          [o.capacity, o.interface].filter(Boolean).join(" / "),
-          [o.rpm && `${o.rpm}RPM`, o.buffersize && `캐시 ${o.buffersize}`]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.disksize && `${o.disksize}`,
-            o.noiselevel && `소음 ${o.noiselevel}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
-      /** ✅ 쿨러 */
-      case "cooler":
-        lines = [
-          [o.kind, o.cooling_method].filter(Boolean).join(" / "),
-          [o.tdp && `TDP ${o.tdp}`, o.fan_size && `팬 ${o.fan_size}`]
-            .filter(Boolean)
-            .join(" / "),
-          [o.height && `높이 ${o.height}`, o.noise && `소음 ${o.noise}`]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
-      /** ✅ 파워 */
-      /** ✅ 파워 (확장 버전) */
-      case "power":
-        lines = [
-          // 1. 출력/인증
-          [
-            o.ratedpower && `${o.ratedpower}W`,
-            o.cert80plus && `${o.cert80plus}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          // 2. 모듈러/팬
-          [
-            o.modular && `모듈러 ${formatValue(o.modular)}`,
-            o.fansize && `팬 ${o.fansize}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          // 3. PFC/레일
-          [o.pfc && `PFC ${o.pfc}`, o.railtype && `레일 ${o.railtype}`]
-            .filter(Boolean)
-            .join(" / "),
-          // 4. 커넥터
-          [
-            o.pcie8pin && `PCIe ${o.pcie8pin}`,
-            o.sata && `SATA ${o.sata}`,
-            o.ide4pin && `IDE ${o.ide4pin}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          // 5. 보증/제조사
-          [
-            o.warranty && `보증 ${o.warranty}`,
-            o.manufacturer && `${o.manufacturer}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
-      /** ✅ 케이스 */
-      case "case":
-        lines = [
-          [o.case_type, o.case_size].filter(Boolean).join(" / "),
-          [
-            o.max_vga_length && `VGA ${o.max_vga_length}`,
-            o.max_cpu_cooler_height && `쿨러 ${o.max_cpu_cooler_height}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-          [
-            o.front_panel_type && `전면 ${o.front_panel_type}`,
-            o.side_panel_type && `측면 ${o.side_panel_type}`,
-          ]
-            .filter(Boolean)
-            .join(" / "),
-        ];
-        break;
-
       default:
         lines = Object.entries(o)
           .slice(0, 3)
@@ -357,7 +187,6 @@ export default function DetailPage() {
 
   return (
     <div className="detail-page">
-      {/* 사이드바 */}
       <div className="left-column">
         <aside className="sidebar">
           <h3>부품종류</h3>
@@ -376,7 +205,6 @@ export default function DetailPage() {
         </aside>
       </div>
 
-      {/* 메인 콘텐츠 */}
       <div className="main-content">
         <div className="main-inner" ref={topRef}>
           <div className="breadcrumb">
@@ -388,7 +216,6 @@ export default function DetailPage() {
 
           <h2>{pageTitle}</h2>
 
-          {/* 필터 */}
           <div className="filter-bar">
             <div className="filter-table">
               <div className="row">
@@ -469,14 +296,13 @@ export default function DetailPage() {
             </div>
           </div>
 
-          {/* 상품 목록 */}
           <section className="detail-content">
-            <div className="product-list">
+            <div className={`product-list ${loading ? "loading" : ""}`}>
               {products.length > 0
                 ? products.map((p) => (
                     <Link
                       to={`/product/${productName}/${p.id}`}
-                      className={`product-item ${loading ? "blurred" : ""}`}
+                      className="product-item"
                       key={p.id}
                     >
                       <img src={p.image || "/no-image.svg"} alt={p.name} />
@@ -508,7 +334,6 @@ export default function DetailPage() {
                 : !loading && <p>상품이 없습니다.</p>}
             </div>
 
-            {/* 페이지네이션 */}
             {totalPages > 1 && (
               <div className="pagination">
                 {pageGroup > 0 && (
@@ -524,7 +349,6 @@ export default function DetailPage() {
                     />
                   </button>
                 )}
-
                 {Array.from({ length: endPage - startPage }, (_, i) => (
                   <button
                     key={startPage + i}
@@ -536,7 +360,6 @@ export default function DetailPage() {
                     {startPage + i + 1}
                   </button>
                 ))}
-
                 {endPage < totalPages && (
                   <button
                     className="arrow-btn"
