@@ -11,7 +11,6 @@ export default function Login() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
-  const [nickname, setNickname] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -20,28 +19,37 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
 
-      // ✅ sessionStorage 에 저장 (브라우저 닫으면 삭제)
-      sessionStorage.setItem("accessToken", res.data.accessToken);
-      sessionStorage.setItem("refreshToken", res.data.refreshToken);
-      localStorage.setItem("nickname", res.data.nickname || "유저");
-      sessionStorage.setItem("email", res.data.email);
+      const {
+        accessToken,
+        refreshToken,
+        nickname,
+        email: userEmail,
+      } = res.data;
 
-      const userNickname = res.data.nickname || "유저";
-      setNickname(userNickname);
+      if (!accessToken || !refreshToken)
+        throw new Error("토큰이 응답에 포함되지 않았습니다.");
 
-      setToastMessage(`반가워요 ${userNickname}님!`);
+      // ✅ 세션 + 로컬 동시 저장
+      sessionStorage.setItem("accessToken", accessToken);
+      sessionStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      // ✅ 유저 정보
+      localStorage.setItem("nickname", nickname || "유저");
+      sessionStorage.setItem("email", userEmail);
+
+      setToastMessage(`반가워요 ${nickname || "유저"}님!`);
       setToastType("success");
       setShowToast(true);
 
       // 2초 후 홈으로 이동
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      setTimeout(() => navigate("/"), 2000);
     } catch (err) {
       console.error("로그인 실패:", err);
-      const message =
-        err.response?.data?.message || "이메일 또는 비밀번호를 확인해주세요.";
-      setToastMessage(message);
+      setToastMessage(
+        err.response?.data?.message || "이메일 또는 비밀번호를 확인해주세요.",
+      );
       setToastType("error");
       setShowToast(true);
     }
@@ -86,12 +94,6 @@ export default function Login() {
             회원가입하기
           </Link>
         </p>
-
-        <div className="forgot-password">
-          <Link to="/forgot-password" className="forgot-link">
-            비밀번호 찾기
-          </Link>
-        </div>
       </form>
 
       {showToast && (

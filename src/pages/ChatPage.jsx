@@ -9,13 +9,16 @@ import api from "../api"; // ✅ axios 인스턴스
 
 export default function ChatPage({
   messages,
+  setMessages, // ✅ messages 초기화용
   handleBack,
   handleSend,
   isLoading,
+  setIsLoading, // ✅ 대화 중단용 (부모에서 전달 필요)
 }) {
   const chatInputRef = useRef(null);
   const chatContainerRef = useRef(null);
 
+  // 스크롤 자동 하단 고정
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -23,6 +26,7 @@ export default function ChatPage({
     }
   }, [messages, isLoading]);
 
+  // 메시지 전송
   const onSendClick = () => {
     if (chatInputRef.current) {
       const inputValue = chatInputRef.current.value.trim();
@@ -32,10 +36,18 @@ export default function ChatPage({
     }
   };
 
+  // 마지막 사용자 메시지
   const lastUserMessage =
     messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
 
-  /** ✅ 견적 저장 (DB + localStorage 병행) */
+  // ✅ 설명형 질문 판별
+  const isExplanationMessage = (text) => {
+    if (!text) return false;
+    const keywords = ["이유", "왜", "추천", "설명", "근거", "어떤", "차이"];
+    return keywords.some((kw) => text.includes(kw));
+  };
+
+  // ✅ 견적 저장 (DB + localStorage 병행)
   const handleSaveEstimate = async (estimateData) => {
     if (!estimateData || !estimateData.components) {
       alert("저장할 견적 데이터가 없습니다.");
@@ -70,7 +82,7 @@ export default function ChatPage({
     const updated = [payload, ...existing];
     localStorage.setItem("aiEstimateList", JSON.stringify(updated));
 
-    // ✅ DB 저장 (로그인 상태일 경우만)
+    // ✅ DB 저장 (로그인 상태일 경우)
     const token =
       localStorage.getItem("accessToken") ||
       sessionStorage.getItem("accessToken");
@@ -102,17 +114,41 @@ export default function ChatPage({
     alert("AI 견적이 보관함에 추가되었습니다!");
   };
 
-  /** ✅ AI 응답이 설명형인지 판별 */
-  const isExplanationMessage = (text) => {
-    if (!text) return false;
-    const keywords = ["이유", "왜", "추천", "설명", "근거"];
-    return keywords.some((kw) => text.includes(kw));
+  // ✅ 뒤로가기 클릭 시: 대화 초기화 + 로딩 중단 + 캐시 삭제
+  const handleBackWithReset = () => {
+    // 1️⃣ 로딩 중인 대화 강제 중단
+    if (setIsLoading) {
+      setIsLoading(false);
+    }
+
+    // 2️⃣ 대화 메시지 초기화
+    if (setMessages) {
+      setMessages([]);
+    }
+
+    // 3️⃣ localStorage / sessionStorage 내 채팅 캐시 제거
+    const chatKeys = [
+      "chatMessages",
+      "chatHistory",
+      "chatRoomMessages",
+      "messages",
+    ];
+    chatKeys.forEach((key) => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+
+    console.log("🧹 모든 채팅 로그 및 진행중 대화 초기화 완료");
+
+    // 4️⃣ 뒤로가기 실행
+    handleBack();
   };
 
   return (
     <div className="cp-chat-page">
       <div className="cp-question-header">
-        <IconButton onClick={handleBack} className="cp-back-btn">
+        {/* ✅ 뒤로가기: 대화 중단 + 로그 초기화 */}
+        <IconButton onClick={handleBackWithReset} className="cp-back-btn">
           <ArrowBackIcon />
         </IconButton>
         <h3 className="cp-question-title">
@@ -129,7 +165,7 @@ export default function ChatPage({
               Array.isArray(msg.data.components) &&
               msg.data.components.length > 0;
 
-            const isExplanation = isExplanationMessage(msg.data.text);
+            const isExplanation = isExplanationMessage(msg.data?.text);
 
             return (
               <div key={idx} className="cp-message-ai">
@@ -157,7 +193,9 @@ export default function ChatPage({
                     </>
                   ) : (
                     <p className="cp-ai-text">
-                      {msg.data.text || "설명을 불러오지 못했습니다."}
+                      {msg.data?.text ||
+                        msg.text ||
+                        "설명을 불러오지 못했습니다."}
                     </p>
                   )}
                 </div>
@@ -173,6 +211,7 @@ export default function ChatPage({
           );
         })}
 
+        {/* ✅ 로딩 중 메시지 */}
         {isLoading && (
           <div className="cp-message-ai">
             <div className="cp-ai-profile">
@@ -190,7 +229,11 @@ export default function ChatPage({
                     <circle r="20" cy="50" cx="50" />
                   </svg>
                 </div>
-                <span>{`사용자의 의도 파악중...`}</span>
+                <span>
+                  {isExplanationMessage(lastUserMessage)
+                    ? "사용자의 의도 파악 중..."
+                    : `"${lastUserMessage}" 검색어로 찾는 중...`}
+                </span>
               </div>
             </div>
           </div>

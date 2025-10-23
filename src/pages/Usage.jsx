@@ -27,16 +27,17 @@ export default function Usage() {
 
   const initialInputRef = useRef(null);
 
-  // 토스트가 닫힐 때 로그인 페이지로 이동하는 함수
+  // 토스트 닫을 때 로그인 페이지로 이동
   const handleToastClose = () => {
     setToastInfo((prev) => ({ ...prev, show: false }));
-    navigate("/login"); // '/login' 경로로 이동
+    navigate("/login");
   };
 
   useEffect(() => {
     setHeaderVersion("black");
   }, [setHeaderVersion]);
 
+  // ✅ 메시지 전송 함수
   const handleSend = async (promptText) => {
     const question = promptText.trim();
     if (!question || isLoading) return;
@@ -45,9 +46,9 @@ export default function Usage() {
     setMessages((prev) => [...prev, { sender: "user", text: question }]);
 
     try {
-      // 로그인 상태를 미리 확인하지 않고, 바로 API 요청을 시도합니다.
       let currentRoomId = roomId;
 
+      // 채팅방 생성
       if (!currentRoomId) {
         const roomRes = await api.post("/chat/rooms", { title: question });
         currentRoomId = roomRes.data.id;
@@ -55,16 +56,16 @@ export default function Usage() {
         setInChat(true);
       }
 
+      // 메시지 전송
       const msgRes = await api.post(`/chat/rooms/${currentRoomId}/messages`, {
         prompt: question,
       });
+
       console.log("msgRes:", msgRes);
       setMessages((prev) => [...prev, { sender: "ai", data: msgRes.data }]);
     } catch (error) {
       console.error("API 요청 실패:", error);
 
-      // API 요청 실패 시, 서버 응답이 인증 에러(401, 403)인지 확인합니다.
-      // api.js의 인터셉터가 토큰 갱신에 실패하면 이 코드가 실행됩니다.
       if (
         error.response &&
         (error.response.status === 401 || error.response.status === 403)
@@ -75,7 +76,6 @@ export default function Usage() {
           type: "warning",
         });
       } else {
-        // 그 외 다른 네트워크 에러나 서버 에러 처리
         setMessages((prev) => [
           ...prev,
           {
@@ -89,6 +89,7 @@ export default function Usage() {
     }
   };
 
+  // ✅ 초기 입력창 전송
   const handleInitialSend = () => {
     if (initialInputRef.current) {
       handleSend(initialInputRef.current.value);
@@ -100,15 +101,33 @@ export default function Usage() {
     handleSend(e.target.innerText);
   };
 
+  // ✅ 뒤로가기: 대화 상태 + 캐시 완전 초기화
   const handleBack = () => {
-    setInChat(false);
+    console.log("🧹 대화 상태 초기화 중...");
+
+    // 1️⃣ 로딩 중단
+    setIsLoading(false);
+
+    // 2️⃣ 상태 초기화
     setMessages([]);
     setRoomId(null);
+    setInChat(false);
+
+    // 3️⃣ localStorage, sessionStorage 채팅 관련 키 초기화
+    ["chatMessages", "chatHistory", "chatRoomMessages", "messages"].forEach(
+      (key) => {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      },
+    );
+
+    // 4️⃣ 로그 확인
+    console.log("✅ 모든 채팅 로그 및 대화내용 초기화 완료");
   };
 
   return (
     <div className="usage-page-container">
-      {/* 토스트 메시지를 조건부로 렌더링 */}
+      {/* 토스트 메시지 */}
       {toastInfo.show && (
         <Toast
           message={toastInfo.message}
@@ -130,6 +149,8 @@ export default function Usage() {
                 <img src="/character.svg" alt="스펙메이트 캐릭터" />
               </div>
             </div>
+
+            {/* 추천 질문 */}
             <div className="question-group-list">
               <div className="question-group-row">
                 <button
@@ -148,6 +169,7 @@ export default function Usage() {
                   작성해주세요.
                 </button>
               </div>
+
               <div className="question-group-row">
                 <button
                   className="question-bubble-btn"
@@ -166,6 +188,8 @@ export default function Usage() {
                 </button>
               </div>
             </div>
+
+            {/* 입력창 */}
             <div className="main-input-section">
               <input
                 ref={initialInputRef}
@@ -187,9 +211,11 @@ export default function Usage() {
         ) : (
           <ChatPage
             messages={messages}
+            setMessages={setMessages} // ✅ 자식에서도 상태 초기화 가능
             handleBack={handleBack}
             handleSend={handleSend}
             isLoading={isLoading}
+            setIsLoading={setIsLoading}
           />
         )}
       </main>

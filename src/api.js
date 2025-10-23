@@ -1,17 +1,15 @@
 // src/api.js
 import axios from "axios";
 
-// ✅ Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: "/api", // Vite proxy or Nginx rewrite 기준
+  baseURL: "/api",
   headers: { "Content-Type": "application/json" },
-  withCredentials: true, // ✅ 중요: 쿠키(RefreshToken) 자동 전송
+  withCredentials: true,
 });
 
 // ✅ 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
-    // sessionStorage 또는 localStorage에서 AccessToken 읽기
     const token =
       sessionStorage.getItem("accessToken") ||
       localStorage.getItem("accessToken");
@@ -30,18 +28,17 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // AccessToken 만료 시 (401 또는 403)
     if (
       error.response &&
       [401, 403].includes(error.response.status) &&
       !originalRequest._retry
     ) {
-      originalRequest._retry = true; // 무한 루프 방지
-      console.warn("🔄 AccessToken 만료 → RefreshToken으로 갱신 시도 중...");
+      originalRequest._retry = true;
+      console.warn("🔄 AccessToken 만료 → RefreshToken으로 재발급 시도 중...");
 
       const refreshToken =
-        sessionStorage.getItem("refreshToken") ||
-        localStorage.getItem("refreshToken");
+        localStorage.getItem("refreshToken") ||
+        sessionStorage.getItem("refreshToken");
 
       if (!refreshToken) {
         console.error("❌ RefreshToken 없음 → 재로그인 필요");
@@ -52,17 +49,16 @@ api.interceptors.response.use(
       }
 
       try {
-        // ✅ Refresh API 호출
+        // ✅ RequestParam 방식으로 백엔드와 맞춤
         const res = await axios.post(
-          "/api/auth/refresh",
-          { refreshToken },
+          `/api/auth/refresh?refreshToken=${encodeURIComponent(refreshToken)}`,
+          null, // body 없음
           {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true, // ✅ 쿠키 전달
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            withCredentials: true,
           },
         );
 
-        // ✅ 응답 구조 유연하게 처리
         const newAccessToken =
           res.data?.accessToken || res.data?.data?.accessToken;
 
@@ -74,9 +70,9 @@ api.interceptors.response.use(
         sessionStorage.setItem("accessToken", newAccessToken);
         localStorage.setItem("accessToken", newAccessToken);
 
-        // ✅ 기존 요청 재시도
+        console.info("✅ AccessToken 재발급 성공 → 원 요청 재시도");
+
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        console.info("✅ AccessToken 갱신 성공 → 원 요청 재시도");
         return api(originalRequest);
       } catch (refreshErr) {
         console.error("🚫 토큰 재발급 실패 → 로그인 필요:", refreshErr);
@@ -87,7 +83,6 @@ api.interceptors.response.use(
       }
     }
 
-    // 기타 오류는 그대로 반환
     return Promise.reject(error);
   },
 );
