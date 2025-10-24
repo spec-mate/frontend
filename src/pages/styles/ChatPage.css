@@ -291,6 +291,6 @@
 
   .cp-chat-container {
     padding-top: 18px;
-    margin-top: 10px; /* ✅ 동일하게 10px 간격 유지 */
+    margin-top: 20px; /* ✅ 동일하게 10px 간격 유지 */
   }
 }
