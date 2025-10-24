@@ -1,7 +1,6 @@
 /* :root 변수를 사용해 헤더 높이를 중앙에서 관리하는 것은 좋은 방법입니다. */
 :root {
-  --header-height: clamp(50px, 3.4vw, 65px); /* 실제 .header 높이에 맞춤 */
-  --question-header-height: 56px; /* cp-question-header 기본 높이 */
+  --header-height: 126px;
 }
 
 /* --- 전체 페이지 레이아웃 --- */
@@ -13,22 +12,23 @@
   min-height: 100vh;
   background: #fff;
   box-sizing: border-box;
-  padding-top: calc(var(--header-height) + var(--question-header-height));
-  padding-bottom: 80px; /* 입력창 공간 확보 */
+  /* position: fixed 된 헤더와 입력창이 콘텐츠를 가리지 않도록 패딩을 설정합니다. */
+  padding-top: var(--header-height);
+  padding-bottom: 80px; /* 하단 입력창의 대략적인 높이 */
 }
 
-/* --- 상단 고정 question-header --- */
+/* --- 상단 고정 헤더 --- */
 .cp-question-header {
   position: fixed;
-  top: var(--header-height); /* 공통 헤더 바로 아래에 위치 */
+  top: 50px; /* PC 기준 상단 위치 */
   left: 0;
   right: 0;
-  z-index: 40; /* 공통 헤더 아래에 위치해야 함 (헤더 z-index는 50) */
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  max-width: 900px;
+  max-width: 900px; /* 콘텐츠 최대 너비 제한 */
   margin: 0 auto;
   padding: 16px 20px;
   border-bottom: 1px solid #eaeaea;
@@ -40,6 +40,7 @@
   font-size: 18px;
   font-weight: 600;
   color: #111;
+  /* 제목이 너무 길 경우 말줄임표 처리 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -47,7 +48,7 @@
 
 .cp-back-btn {
   color: #333 !important;
-  flex-shrink: 0;
+  flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
 }
 
 /* --- 채팅 메시지 영역 --- */
@@ -56,11 +57,11 @@
   flex-direction: column;
   width: 100%;
   max-width: 900px;
-  flex-grow: 1;
+  flex-grow: 1; /* 남은 공간을 모두 채움 */
   padding: 20px;
   gap: 20px;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow-y: auto; /* 내용이 많아지면 스크롤 */
 }
 
 /* AI 메시지 (좌측) */
@@ -107,8 +108,8 @@
 /* 사용자 메시지 (우측) */
 .cp-message-user {
   display: flex;
-  justify-content: flex-end;
-  margin-left: auto;
+  justify-content: flex-end; /* 메시지를 오른쪽으로 정렬 */
+  margin-left: auto; /* flex-end와 함께 사용하여 오른쪽 정렬을 확실히 함 */
   width: 100%;
 }
 
@@ -118,12 +119,12 @@
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 15px;
-  max-width: 80%;
+  max-width: 80%; /* 모바일에서 조금 더 넓게 보이도록 조정 */
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
-/* --- 말풍선 내 버튼 (예: 견적 저장) --- */
+/* 말풍선 내 버튼 (견적 저장 등) */
 .cp-bubble-actions {
   display: flex;
   justify-content: flex-end;
@@ -148,13 +149,13 @@
   background-color: #f0f0f0;
 }
 
-/* --- 하단 입력창 --- */
+/* --- 하단 고정 입력창 --- */
 .cp-input-section {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 30;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -175,7 +176,7 @@
   font-size: 15px;
   outline: none;
   background: #fff;
-  resize: none;
+  resize: none; /* textarea의 경우 크기 조절 비활성화 */
 }
 
 .cp-chat-input::placeholder {
@@ -191,6 +192,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
   line-height: 0 !important;
 }
 
@@ -250,29 +252,38 @@
   }
 }
 
-/* =========================================================
-   ✅ 모바일 환경 전용 변경 (PC에는 영향 없음)
-   ========================================================= */
+/* ==========================================================================
+   반응형 디자인 (Responsive Design)
+   ========================================================================== */
+
+/* =======================================================================
+   📱 모바일 환경 전용 수정 (PC는 그대로 유지)
+   ======================================================================= */
+
+/* --- 태블릿 & 큰 모바일 (768px 이하) --- */
 @media (max-width: 768px) {
   :root {
-    --header-height: 65px; /* .header의 최대 높이값 기준 */
+    /* 실제 .header 높이에 맞춰서 고정 */
+    --header-height: 65px; /* header의 clamp 최대치 기준 */
     --question-header-height: 50px;
   }
 
-  /* question-header를 헤더 바로 아래로 내리고 겹침 방지 */
+  /* question-header가 헤더 아래로 내려가도록 위치 조정 */
   .cp-question-header {
     top: var(--header-height);
     padding: 12px 16px;
+    z-index: 40; /* header(z=50) 아래, 콘텐츠 위 */
     border-bottom: 1px solid #e0e0e0;
   }
 
-  /* 채팅 본문이 헤더 2개 높이만큼 보이도록 여백 확보 */
+  /* 채팅 페이지 상단 여백 확보 (헤더 + question-header 높이만큼) */
   .cp-chat-page {
     padding-top: calc(
       var(--header-height) + var(--question-header-height) + 20px
     );
   }
 
+  /* 폰트 및 여백 약간 축소 */
   .cp-question-title {
     font-size: 16px;
   }
