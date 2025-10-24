@@ -1,9 +1,15 @@
-/* :root 변수를 사용해 헤더 높이를 중앙에서 관리하는 것은 좋은 방법입니다. */
+/* ============================================================
+   전역 변수 (헤더, 입력창의 비율을 중앙에서 제어)
+   ============================================================ */
 :root {
-  --header-height: 126px;
+  --header-offset: 6vh; /* 상단 고정 위치 (주소창 영역 보정) */
+  --header-height: 9vh; /* 헤더 실제 높이 */
+  --input-height: 11vh; /* 입력창 높이 */
 }
 
-/* --- 전체 페이지 레이아웃 --- */
+/* ============================================================
+   전체 페이지 레이아웃
+   ============================================================ */
 .cp-chat-page {
   display: flex;
   flex-direction: column;
@@ -12,35 +18,38 @@
   min-height: 100vh;
   background: #fff;
   box-sizing: border-box;
-  /* position: fixed 된 헤더와 입력창이 콘텐츠를 가리지 않도록 패딩을 설정합니다. */
-  padding-top: var(--header-height);
-  padding-bottom: 80px; /* 하단 입력창의 대략적인 높이 */
+
+  /* 헤더와 입력창이 콘텐츠를 가리지 않도록 패딩 설정 */
+  padding-top: calc(var(--header-offset) + var(--header-height));
+  padding-bottom: calc(var(--input-height) + 2vh);
 }
 
-/* --- 상단 고정 헤더 --- */
+/* ============================================================
+   상단 고정 헤더
+   ============================================================ */
 .cp-question-header {
   position: fixed;
-  top: 50px; /* 헤더의 상단 위치 */
+  top: var(--header-offset);
   left: 0;
   right: 0;
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 2vw;
   width: 100%;
-  max-width: 900px; /* 콘텐츠 최대 너비 제한 */
+  max-width: 900px;
   margin: 0 auto;
-  padding: 16px 20px;
+  padding: 2vh 4vw;
   border-bottom: 1px solid #eaeaea;
   background: #fff;
   box-sizing: border-box;
 }
 
 .cp-question-title {
-  font-size: 18px;
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
   font-weight: 600;
   color: #111;
-  /* 제목이 너무 길 경우 말줄임표 처리 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -48,20 +57,23 @@
 
 .cp-back-btn {
   color: #333 !important;
-  flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
+  flex-shrink: 0;
 }
 
-/* --- 채팅 메시지 영역 --- */
+/* ============================================================
+   채팅 메시지 영역
+   ============================================================ */
 .cp-chat-container {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 900px;
-  flex-grow: 1; /* 남은 공간을 모두 채움 */
-  padding: 20px;
-  gap: 20px;
+  flex-grow: 1;
+  padding: 2vh 4vw;
+  gap: 2vh;
   box-sizing: border-box;
-  overflow-y: auto; /* 내용이 많아지면 스크롤 */
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 /* AI 메시지 (좌측) */
@@ -69,26 +81,28 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 1vh;
 }
 
 .cp-ai-profile {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-left: 4px;
+  gap: 2vw;
+  margin-left: 1vw;
 }
 
 .cp-ai-avatar {
-  width: 40px;
-  height: 40px;
+  width: 8vw;
+  height: 8vw;
   border-radius: 50%;
   object-fit: cover;
+  min-width: 36px;
+  min-height: 36px;
 }
 
 .cp-ai-name {
   font-weight: 600;
-  font-size: 15px;
+  font-size: clamp(0.9rem, 2.3vw, 1rem);
   color: #1e5cde;
 }
 
@@ -96,8 +110,8 @@
   background: #f5f5f5;
   border: 1px solid #eee;
   border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 15px;
+  padding: 1.2vh 2vw;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   line-height: 1.6;
   color: #111;
   white-space: pre-wrap;
@@ -108,8 +122,7 @@
 /* 사용자 메시지 (우측) */
 .cp-message-user {
   display: flex;
-  justify-content: flex-end; /* 메시지를 오른쪽으로 정렬 */
-  margin-left: auto; /* flex-end와 함께 사용하여 오른쪽 정렬을 확실히 함 */
+  justify-content: flex-end;
   width: 100%;
 }
 
@@ -117,27 +130,27 @@
   background: #e8f0ff;
   color: #111;
   border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 15px;
-  max-width: 80%; /* 모바일에서 조금 더 넓게 보이도록 조정 */
+  padding: 1.2vh 2vw;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  max-width: 80%;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
-/* 말풍선 내 버튼 (견적 저장 등) */
+/* 말풍선 내 버튼 (예: 견적 저장) */
 .cp-bubble-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 12px;
+  margin-top: 1.5vh;
 }
 
 .cp-save-estimate-btn {
-  padding: 8px 16px;
+  padding: 0.8vh 2vw;
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #fff;
   color: #333;
-  font-size: 14px;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -149,7 +162,9 @@
   background-color: #f0f0f0;
 }
 
-/* --- 하단 고정 입력창 --- */
+/* ============================================================
+   하단 고정 입력창
+   ============================================================ */
 .cp-input-section {
   position: fixed;
   bottom: 0;
@@ -158,25 +173,26 @@
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2vw;
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 2vh 4vw;
   border-top: 1px solid #eee;
   background: #fff;
   box-sizing: border-box;
+  height: var(--input-height);
 }
 
 .cp-chat-input {
   flex: 1;
   border: 1px solid #c6cbd5;
   border-radius: 30px;
-  padding: 14px 18px;
-  font-size: 15px;
+  padding: 1.6vh 3vw;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   outline: none;
   background: #fff;
-  resize: none; /* textarea의 경우 크기 조절 비활성화 */
+  resize: none;
 }
 
 .cp-chat-input::placeholder {
@@ -186,27 +202,31 @@
 .cp-send-btn {
   background-color: #1e5cde !important;
   color: #fff !important;
-  width: 46px !important;
-  height: 46px !important;
+  width: 10vw !important;
+  height: 10vw !important;
+  max-width: 48px;
+  max-height: 48px;
   border-radius: 50% !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
+  flex-shrink: 0;
 }
 
 .cp-send-btn:hover {
   background-color: #153e9f !important;
 }
 
-/* --- 로딩 인디케이터 --- */
+/* ============================================================
+   로딩 인디케이터
+   ============================================================ */
 .loading-indicator {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 2vw;
   color: #333;
-  font-size: 1rem;
-  padding: 10px;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  padding: 1.2vh;
 }
 
 .svg-spinner svg {
@@ -245,76 +265,51 @@
   }
 }
 
-/* ==========================================================================
+/* ============================================================
    반응형 디자인 (Responsive Design)
-   ========================================================================== */
+   ============================================================ */
 
 /* --- 태블릿 & 큰 모바일 (768px 이하) --- */
 @media (max-width: 768px) {
   :root {
-    --header-height: 96px; /* 모바일 헤더 높이에 맞게 조정 */
+    --header-offset: 5vh;
+    --header-height: 8vh;
+    --input-height: 12vh;
   }
 
-  /* 모바일에서 좌우 여백을 줄여 콘텐츠 영역을 확보합니다. */
-  .cp-question-header,
-  .cp-chat-container,
-  .cp-input-section {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-
-  .cp-question-title {
-    font-size: 16px;
-  }
-
-  .cp-ai-avatar {
-    width: 34px;
-    height: 34px;
+  .cp-chat-page {
+    padding-bottom: calc(var(--input-height) + 3vh);
   }
 
   .cp-ai-bubble,
   .cp-user-bubble {
-    font-size: 14px;
-  }
-
-  .cp-chat-input {
-    font-size: 14px;
-    padding: 12px 16px;
+    max-width: 85%;
   }
 }
 
 /* --- 작은 모바일 (480px 이하) --- */
 @media (max-width: 480px) {
   :root {
-    --header-height: 80px; /* 더 작은 헤더 높이 */
+    --header-offset: 4vh;
+    --header-height: 7.5vh;
+    --input-height: 13vh;
   }
 
-  /* 더 작은 기기에서는 여백을 더 줄입니다. */
-  .cp-question-header,
-  .cp-chat-container,
-  .cp-input-section {
-    padding-left: 10px;
-    padding-right: 10px;
+  .cp-chat-page {
+    padding-bottom: calc(var(--input-height) + 3vh);
   }
 
   .cp-input-section {
-    gap: 8px; /* 입력창과 버튼 사이 간격 줄임 */
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding: 1.4vh 3vw;
+    gap: 3vw;
   }
 
   .cp-chat-input {
-    padding: 10px 14px;
+    padding: 1.2vh 3vw;
   }
 
   .cp-send-btn {
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  /* 말풍선의 최대 너비를 늘려 가로 공간을 더 효율적으로 사용 */
-  .cp-ai-bubble,
-  .cp-user-bubble {
-    max-width: 85%;
+    width: 12vw !important;
+    height: 12vw !important;
   }
 }
