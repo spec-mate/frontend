@@ -289,3 +289,91 @@
 .related-product-list li:hover {
   background: #f0f0f0;
 }
+/* =======================================================================
+   📱 모바일 전용 레이아웃 수정 (한 줄 정렬 & 겹침 방지)
+   ======================================================================= */
+@media (max-width: 768px) {
+  /* 견적 테이블을 1열로 전환 */
+  .estimate-table {
+    display: grid;
+    grid-template-columns: 1fr; /* 한 줄(1열)만 표시 */
+    gap: 16px; /* 카드 간격 약간 줄임 */
+  }
+
+  /* 각 셀은 전체 너비 사용 */
+  .estimate-cell {
+    width: 100%;
+    padding: 14px;
+  }
+
+  /* 제품 이미지 크기를 줄여서 겹침 방지 */
+  .estimate-product-image img {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* 제품명, 가격이 겹치지 않게 세로 정렬 */
+  .product-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-details {
+    width: 100%;
+    height: auto;
+  }
+
+  .product-bottom-section {
+    margin-top: 6px;
+  }
+
+  /* 헤더 버튼들도 화면 폭에 맞게 조정 */
+  .trash-btn .icon,
+  .back-btn .icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* 제목 폰트 사이즈 조정 */
+  .estimate-date {
+    font-size: 26px;
+  }
+
+  .estimate-category {
+    font-size: 22px;
+  }
+
+  .product-name {
+    font-size: 16px;
+  }
+
+  .product-price {
+    font-size: 28px;
+  }
+
+  /* 모달창도 모바일에 맞게 축소 */
+  .replace-content {
+    width: 90%;
+    max-height: 80vh;
+  }
+}
+
+/* --- 작은 모바일 (480px 이하) --- */
+@media (max-width: 480px) {
+  .estimate-product-image img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .estimate-category {
+    font-size: 20px;
+  }
+
+  .product-name {
+    font-size: 15px;
+  }
+
+  .product-price {
+    font-size: 24px;
+  }
+}
