@@ -257,93 +257,29 @@
    ========================================================================== */
 
 /* =======================================================================
-   📱 모바일 환경 전용 수정 (PC는 그대로 유지)
+   📱 모바일 전용 수정 (PC는 그대로 유지)
    ======================================================================= */
-
-/* --- 태블릿 & 큰 모바일 (768px 이하) --- */
 @media (max-width: 768px) {
-  :root {
-    /* 실제 .header 높이에 맞춰서 고정 */
-    --header-height: 65px; /* header의 clamp 최대치 기준 */
-    --question-header-height: 50px;
-  }
-
-  /* question-header가 헤더 아래로 내려가도록 위치 조정 */
+  /* 실제 .header 높이만큼 question-header를 딱 붙임 */
   .cp-question-header {
-    top: var(--header-height);
-    padding: 12px 16px;
-    z-index: 40; /* header(z=50) 아래, 콘텐츠 위 */
-    border-bottom: 1px solid #e0e0e0;
+    top: 65px; /* clamp()의 최대 높이에 맞춰 정확히 맞붙게 설정 */
+    padding-top: 0;
+    margin-top: 0;
   }
 
-  /* 채팅 페이지 상단 여백 확보 (헤더 + question-header 높이만큼) */
+  /* 헤더와 question-header가 겹치지 않게 본문 패딩 보정 */
   .cp-chat-page {
-    padding-top: calc(
-      var(--header-height) + var(--question-header-height) + 20px
-    );
-  }
-
-  /* 폰트 및 여백 약간 축소 */
-  .cp-question-title {
-    font-size: 16px;
-  }
-
-  .cp-ai-avatar {
-    width: 34px;
-    height: 34px;
-  }
-
-  .cp-ai-bubble,
-  .cp-user-bubble {
-    font-size: 14px;
-  }
-
-  .cp-chat-input {
-    font-size: 14px;
-    padding: 12px 16px;
-  }
-
-  .cp-send-btn {
-    width: 42px !important;
-    height: 42px !important;
+    padding-top: calc(65px + 56px); /* 헤더(65) + question-header(대략 56) */
   }
 }
 
 /* --- 작은 모바일 (480px 이하) --- */
 @media (max-width: 480px) {
-  :root {
-    --header-height: 60px;
-    --question-header-height: 46px;
-  }
-
   .cp-question-header {
-    top: var(--header-height);
-    padding: 10px 12px;
+    top: 60px; /* 더 작은 화면에서는 header 높이가 약간 줄어듦 */
   }
 
   .cp-chat-page {
-    padding-top: calc(
-      var(--header-height) + var(--question-header-height) + 20px
-    );
-  }
-
-  .cp-chat-container,
-  .cp-input-section {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .cp-chat-input {
-    padding: 10px 14px;
-  }
-
-  .cp-send-btn {
-    width: 38px !important;
-    height: 38px !important;
-  }
-
-  .cp-ai-bubble,
-  .cp-user-bubble {
-    max-width: 85%;
+    padding-top: calc(60px + 50px);
   }
 }
