@@ -20,7 +20,7 @@
 /* --- 상단 고정 헤더 --- */
 .cp-question-header {
   position: fixed;
-  top: 50px; /* 헤더의 상단 위치 */
+  top: 50px; /* PC 기준 상단 위치 */
   left: 0;
   right: 0;
   z-index: 10;
@@ -193,6 +193,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
+  line-height: 0 !important;
+}
+
+.cp-send-btn svg {
+  display: block;
+  margin: auto;
+  transform: translateY(1px) rotate(-45deg);
 }
 
 .cp-send-btn:hover {
@@ -255,12 +262,18 @@
     --header-height: 96px; /* 모바일 헤더 높이에 맞게 조정 */
   }
 
-  .cp-chat-page {
-    /* 모바일에서는 헤더가 겹치지 않도록 상단 패딩을 추가 확보 */
-    padding-top: calc(var(--header-height) + 20px);
+  /* question-header 위치 조정 */
+  .cp-question-header {
+    top: 20px; /* 모바일에서 상단 여백 축소 */
+    padding: 14px 16px;
   }
 
-  /* 모바일에서 좌우 여백을 줄여 콘텐츠 영역을 확보합니다. */
+  /* 첫 메시지가 헤더에 가려지지 않도록 여유 공간 확보 */
+  .cp-chat-page {
+    padding-top: calc(var(--header-height) + 30px);
+  }
+
+  /* 좌우 여백 줄이기 */
   .cp-question-header,
   .cp-chat-container,
   .cp-input-section {
@@ -294,11 +307,17 @@
     --header-height: 80px; /* 더 작은 헤더 높이 */
   }
 
-  .cp-chat-page {
-    /* 아주 작은 화면에서도 첫 메시지가 완전히 보이도록 상단 여백 확대 */
-    padding-top: calc(var(--header-height) + 25px);
+  .cp-question-header {
+    top: 10px; /* 더 작은 화면에서는 거의 상단에 붙임 */
+    padding: 12px 12px;
   }
 
+  /* 첫 채팅이 헤더에 완전히 가려지지 않도록 */
+  .cp-chat-page {
+    padding-top: calc(var(--header-height) + 35px);
+  }
+
+  /* 더 작은 기기에서는 여백을 더 줄입니다. */
   .cp-question-header,
   .cp-chat-container,
   .cp-input-section {
@@ -307,7 +326,7 @@
   }
 
   .cp-input-section {
-    gap: 8px;
+    gap: 8px; /* 입력창과 버튼 사이 간격 줄임 */
     padding-top: 8px;
     padding-bottom: 8px;
   }
