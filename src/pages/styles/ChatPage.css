@@ -252,34 +252,40 @@
   }
 }
 
-/* ==========================================================================
-   반응형 디자인 (Responsive Design)
-   ========================================================================== */
-
 /* =======================================================================
-   📱 모바일 전용 수정 (PC는 그대로 유지)
+   📱 모바일 전용 정밀 보정 (PC는 그대로 유지)
    ======================================================================= */
 @media (max-width: 768px) {
-  /* 실제 .header 높이만큼 question-header를 딱 붙임 */
+  /* header와 question-header 사이 빈틈 제거 */
   .cp-question-header {
-    top: 65px; /* clamp()의 최대 높이에 맞춰 정확히 맞붙게 설정 */
-    padding-top: 0;
+    top: 50px; /* 모바일에서 header의 실제 높이(clamp 최소값 50px)에 정확히 붙임 */
     margin-top: 0;
+    padding-top: 0;
+    border-top: none;
   }
 
-  /* 헤더와 question-header가 겹치지 않게 본문 패딩 보정 */
+  /* 첫 채팅과 question-header 사이 간격을 조금 줄임 */
   .cp-chat-page {
-    padding-top: calc(65px + 56px); /* 헤더(65) + question-header(대략 56) */
+    padding-top: calc(50px + 48px); /* header(50) + question-header(약 48) */
+  }
+
+  /* 내부 채팅 메시지 영역 여백도 조금 압축 */
+  .cp-chat-container {
+    padding-top: 10px; /* 위쪽 공간 줄이기 */
   }
 }
 
 /* --- 작은 모바일 (480px 이하) --- */
 @media (max-width: 480px) {
   .cp-question-header {
-    top: 60px; /* 더 작은 화면에서는 header 높이가 약간 줄어듦 */
+    top: 50px; /* iPhone SE, Galaxy 등 대부분 기기에서 header 높이 50px */
   }
 
   .cp-chat-page {
-    padding-top: calc(60px + 50px);
+    padding-top: calc(50px + 45px); /* 상단 패딩 조금 더 줄임 */
+  }
+
+  .cp-chat-container {
+    padding-top: 8px;
   }
 }
