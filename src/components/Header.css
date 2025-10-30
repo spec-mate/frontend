@@ -1,318 +1,124 @@
 .header {
-  width: 100%;
-  /* clamp()를 사용해 헤더 높이를 유동적으로 변경 */
-  height: clamp(50px, 3.4vw, 65px); /* 최소 50px, 기본 3.4vw, 최대 65px */
-  background: rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 50;
-  transition:
-    color 0.3s ease,
-    top 0.3s ease,
-    background 0.3s ease;
+    width: 100%;
+    height: clamp(50px, 3.4vw, 65px);
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    transition: all 0.3s ease;
 }
 
-/* 흰색/검은색 글자 버전 스타일은 유지 */
+/* 흰색/검은색 버전 */
 .header-white {
-  color: white;
+    color: white;
 }
 .header-white .nav a,
 .header-white .hamburger {
-  color: white;
+    color: white;
 }
 .header-black {
-  color: black;
-  background: white;
-  border-bottom: 1.5px solid #a0a0a0;
+    color: black;
+    background: white;
+    border-bottom: 1.5px solid #a0a0a0;
 }
 .header-black .nav a,
 .header-black .hamburger {
-  color: black;
+    color: black;
 }
 
+/* ✅ 3분할 구조 (왼쪽 로고 / 중앙 메뉴 / 오른쪽 버튼) */
 .header-container {
-  width: 100%;
-  max-width: 1920px;
-  height: 100%;
-  margin: 0 auto; /* max-width보다 화면이 클 때 가운데 정렬 */
-  padding: 0 clamp(20px, 4vw, 76px); /* 내부 좌우 여백 설정 */
-  box-sizing: border-box; /* 패딩이 너비에 포함되도록 설정 */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    width: 100%;
+    max-width: 1920px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 4vw, 76px);
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* 중앙 nav 고정 */
+    align-items: center;
 }
 
+/* 왼쪽 로고 */
+.logo {
+    justify-self: start;
+}
 .logo-img {
-  /* margin-left 제거, 부모의 padding으로 여백 관리 */
-  height: 80%;
-  width: auto;
+    height: 80%;
+    width: auto;
 }
 
-/* 네비게이션 */
+/* 중앙 네비게이션 */
 .nav {
-  display: none;
+    justify-self: center;
+    display: flex;
 }
 .nav ul {
-  display: flex;
-  gap: clamp(1.5rem, 2.5vw, 2.5rem);
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    display: flex;
+    gap: clamp(1.8rem, 2.8vw, 3rem);
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .nav a,
 .mobile-menu-container a {
-  position: relative;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  font-size: clamp(16px, 0.9vw, 18px); /* 폰트 크기 유동적으로 변경 */
+    position: relative;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: clamp(16px, 0.9vw, 18px);
 }
 
-/* hover 애니메이션은 유지 */
+/* hover / active 애니메이션 */
 @keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 .nav a:hover,
 .mobile-menu-container a:hover {
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-/* 버튼 영역 */
-.login-btn {
-  /* margin-right 제거, 부모의 padding으로 여백 관리 */
-  display: none;
-  gap: clamp(10px, 0.8vw, 15px);
-}
-
-/* 로그인 / 로그아웃 / 마이페이지 공통 버튼 스타일 */
-.login-btn .login-link,
-.login-btn .logout-link,
-.login-btn .mypage-link {
-  width: clamp(90px, 5.7vw, 110px);
-  height: clamp(40px, 2.3vw, 45px);
-  font-size: clamp(16px, 1vw, 20px);
-  border-radius: 15px;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.3s ease,
-    color 0.3s ease;
-}
-/* 로그인/로그아웃 버튼 */
-.login-btn .login-link,
-.login-btn .logout-link {
-  background: #303030 !important;
-  color: white !important;
-  border: none;
-}
-.login-btn .login-link:hover,
-.login-btn .logout-link:hover {
-  background: #404040 !important;
-}
-/* 마이페이지 버튼 */
-.login-btn .mypage-link {
-  background: white !important;
-  color: black !important;
-  border: 1px solid black;
-}
-.login-btn .mypage-link:hover {
-  background: #f2f2f2 !important;
-}
-
-/* 햄버거 버튼 */
-.hamburger {
-  background: none;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  height: 80%;
-}
-.hamburger:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* 모바일 메뉴 (구조는 유지) */
-.mobile-menu {
-  display: none;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition:
-    max-height 0.3s ease,
-    opacity 0.3s ease;
-}
-.mobile-menu.open {
-  display: block;
-  max-height: 400px;
-  opacity: 1;
-}
-.mobile-menu-container {
-  padding: 1rem;
-}
-.mobile-menu-container ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.header-white .mobile-menu-container .nav-link {
-  color: white;
-}
-.header-black .mobile-menu-container .nav-link {
-  color: black;
-}
-.mobile-login {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.mobile-login .glass-btn {
-  width: 100%;
-}
-
-/* Glassmorphism 버튼 (비율 유지) */
-.glass-btn {
-  width: clamp(90px, 5.7vw, 110px);
-  height: clamp(40px, 2.3vw, 45px);
-  font-size: clamp(16px, 0.9vw, 18px);
-  font-weight: 700;
-  color: #fff !important;
-  border-radius: 15px;
-  border: 0.5px solid rgba(255, 255, 255, 0.25);
-  background: #ffffff03;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(45px);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 0px 0px rgba(255, 255, 255, 0);
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-decoration: none;
-  box-sizing: border-box;
-}
-.glass-btn::before,
-.glass-btn::after {
-  /* 가상 요소 스타일 유지 */
-}
-.glass-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 0 15px 8px rgba(255, 255, 255, 0.6);
-}
-
-/* 반응형 (기존 구조 유지) */
-@media (min-width: 768px) {
-  .nav {
-    display: flex;
-    flex: 1;
-    justify-content: center;
-  }
-  .login-btn {
-    display: flex;
-  }
-  .hamburger {
-    display: none;
-  }
-  .mobile-menu {
-    display: none !important;
-  }
-}
-@media (max-width: 768px) {
-  .login-btn {
-    display: none !important;
-  }
-  .nav {
-    display: none !important;
-  }
-}
-/* 소형 모바일은 기존 스타일 유지 가능 */
-@media (max-width: 480px) {
-  .mobile-login .glass-btn {
-    font-size: 0.75rem;
-    height: 40px;
-    line-height: 40px;
-  }
-}
-
-/* 네비게이션 링크 (폰트 크기 조정) */
-.nav-link {
-  position: relative;
-  font-weight: 600;
-  text-decoration: none;
-  padding-bottom: 4px;
-  transition: all 0.3s ease;
-  font-size: clamp(16px, 0.9vw, 18px); /* 폰트 크기 clamp 적용 */
-}
-/* :hover, .active 스타일은 유지 */
-.nav-link:hover {
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientMove 3s ease infinite;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
 }
 .nav-link.active {
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientMove 3s ease infinite;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 3s ease infinite;
 }
 .nav-link.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 200% 200%;
-  animation: gradientMove 3s ease infinite;
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    animation: gradientMove 3s ease infinite;
 }
-/* ==========================================================
-   ✅ 이용자 가이드 버튼 (로그인 버튼 왼쪽)
-   ========================================================== */
+
+/* 오른쪽 버튼 그룹 */
+.login-btn {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 0.8vw, 15px);
+}
+
+/* 이용자 가이드 버튼 */
 .guide-link {
     font-weight: 600;
     font-size: clamp(16px, 0.9vw, 18px);
@@ -328,56 +134,174 @@
     height: clamp(40px, 2.3vw, 45px);
     transition: all 0.3s ease;
 }
-
-/* ✅ 중앙 메뉴(nav-link)와 동일한 hover / active 효과 */
 .guide-link:hover {
     background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
     background-size: 200% 200%;
     -webkit-background-clip: text;
-    background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: gradientMove 3s ease infinite;
 }
 
-.guide-link.active {
-    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradientMove 3s ease infinite;
-}
-
-.guide-link.active::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-    background-size: 200% 200%;
-    animation: gradientMove 3s ease infinite;
-}
-
-/* ✅ 헤더 색상 버전에 따라 텍스트 색상 조정 */
-.header-white .guide-link {
-    color: white;
-}
-.header-black .guide-link {
-    color: black;
-}
-
-/* ✅ 로그인 버튼 그룹 내 정렬 */
-.login-btn {
+/* 로그인 / 로그아웃 / 마이페이지 버튼 */
+.login-btn .login-link,
+.login-btn .logout-link,
+.login-btn .mypage-link {
+    width: clamp(90px, 5.7vw, 110px);
+    height: clamp(40px, 2.3vw, 45px);
+    font-size: clamp(16px, 1vw, 20px);
+    border-radius: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: clamp(10px, 0.8vw, 15px);
+    justify-content: center;
+    transition:
+            background 0.3s ease,
+            color 0.3s ease;
+}
+/* 로그인/로그아웃 버튼 */
+.login-btn .login-link,
+.login-btn .logout-link {
+    background: #303030 !important;
+    color: white !important;
+    border: none;
+}
+.login-btn .login-link:hover,
+.login-btn .logout-link:hover {
+    background: #404040 !important;
+}
+/* 마이페이지 버튼 */
+.login-btn .mypage-link {
+    background: white !important;
+    color: black !important;
+    border: 1px solid black;
+}
+.login-btn .mypage-link:hover {
+    background: #f2f2f2 !important;
 }
 
-/* ✅ 반응형: 모바일에서는 guide-link 숨김 (햄버거 메뉴 안으로 이동했으므로) */
-@media (max-width: 768px) {
-    .guide-link {
+/* Glassmorphism 버튼 */
+.glass-btn {
+    width: clamp(90px, 5.7vw, 110px);
+    height: clamp(40px, 2.3vw, 45px);
+    font-size: clamp(16px, 0.9vw, 18px);
+    font-weight: 700;
+    color: #fff !important;
+    border-radius: 15px;
+    border: 0.5px solid rgba(255, 255, 255, 0.25);
+    background: #ffffff03;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(45px);
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.5),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* 햄버거 버튼 */
+.hamburger {
+    background: none;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    height: 80%;
+}
+.hamburger:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 모바일 메뉴 */
+.mobile-menu {
+    display: none;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+            max-height 0.3s ease,
+            opacity 0.3s ease;
+}
+.mobile-menu.open {
+    display: block;
+    max-height: 400px;
+    opacity: 1;
+}
+.mobile-menu-container {
+    padding: 1rem;
+}
+.mobile-menu-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.header-white .mobile-menu-container .nav-link {
+    color: white;
+}
+.header-black .mobile-menu-container .nav-link {
+    color: black;
+}
+.mobile-login {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.mobile-login .glass-btn {
+    width: 100%;
+}
+
+/* 반응형 */
+@media (min-width: 768px) {
+    .nav {
+        display: flex;
+    }
+    .login-btn {
+        display: flex;
+    }
+    .hamburger {
+        display: none;
+    }
+    .mobile-menu {
         display: none !important;
+    }
+}
+@media (max-width: 768px) {
+    .nav {
+        display: none !important;
+    }
+    .login-btn {
+        display: none !important;
+    }
+}
+@media (max-width: 480px) {
+    .mobile-login .glass-btn {
+        font-size: 0.75rem;
+        height: 40px;
+        line-height: 40px;
     }
 }

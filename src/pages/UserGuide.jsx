@@ -26,7 +26,11 @@ export default function UserGuide() {
             </p>
             <ol>
               <li>
-                홈페이지 상단의 <strong>“회원가입”</strong> 버튼을 클릭합니다.
+                홈페이지 상단의 <strong>“로그인”</strong> 버튼을 클릭합니다.
+              </li>
+              <li>
+                로그인 페이지 하단의 <strong>"회원가입"</strong>버튼을
+                클릭합니다
               </li>
               <li>닉네임, 이메일, 비밀번호를 입력합니다.</li>
               <li>
@@ -100,22 +104,9 @@ export default function UserGuide() {
         </div>
       </section>
 
-      {/* 4️⃣ AI 견적 구성 방식 */}
-      <section className="guide-section">
-        <h2>4️⃣ AI 견적 구성 방식</h2>
-        <p>
-          스펙메이트는 <strong>Spring AI + pgvector</strong> 기반의 RAG 검색
-          구조를 사용하여 실제 판매 중인 상품 정보를 바탕으로 부품을 구성합니다.
-        </p>
-        <p>
-          각 부품은 <strong>CPU, VGA, RAM, SSD, Mainboard, Power, Case</strong>{" "}
-          등 카테고리별로 최적의 성능과 가격 비율을 고려하여 선택됩니다.
-        </p>
-      </section>
-
       {/* 5️⃣ 주의사항 */}
       <section className="guide-section">
-        <h2>5️⃣ 주의사항</h2>
+        <h2>4️⃣ 주의사항</h2>
         <ul>
           <li>견적 가격은 실시간으로 변동될 수 있습니다.</li>
           <li>
