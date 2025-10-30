@@ -2,271 +2,318 @@
    기본 구조 (세로 중앙 정렬 수정)
    ========================================================== */
 .register-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /*  세로 가운데 정렬 */
-  align-items: center; /*  가로 가운데 정렬 */
-  min-height: 100vh;
-  padding: 30px 20px;
-  background-color: #fff;
-  box-sizing: border-box;
-  text-align: center;
-  position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 30px 20px;
+    background-color: #fff;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
 }
 
-/* 로고와 폼을 세트로 감싸서 세로 중앙 배치 안정화 */
 .register-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; /*  폼과 로고도 한 세트로 중앙 */
-  gap: 20px; /*  로고-폼 간격 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
 }
 
 /* ==============================
    로고
    ============================== */
 .register-logo {
-  display: block;
-  width: 500px;
-  height: 100px;
-  object-fit: contain;
-  margin: 0 auto;
+    display: block;
+    width: 500px;
+    height: 100px;
+    object-fit: contain;
+    margin: 0 auto;
 }
 
 /* ==============================
    회원가입 폼
    ============================== */
 .register-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 440px;
-  padding: 26px 22px;
-  border-radius: 12px;
-  background-color: #fff;
-  box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 440px;
+    padding: 26px 22px;
+    border-radius: 12px;
+    background-color: #fff;
+    box-sizing: border-box;
 }
 
 /* ==============================
-   입력 그룹 (콤팩트 간격)
+   입력 그룹
    ============================== */
 .input-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-bottom: 14px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 14px;
 }
 
 .input-group:last-of-type {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .input-group label {
-  font-size: 16px;
-  font-weight: 500;
-  color: #696f79;
-  text-align: left;
+    font-size: 16px;
+    font-weight: 500;
+    color: #696f79;
+    text-align: left;
 }
 
 /* ==============================
    일반 인풋
    ============================== */
 .input-group input {
-  height: 48px;
-  padding: 0 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
+    height: 48px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .input-group input:focus {
-  border-color: #1e5cde;
-  box-shadow: 0 0 4px rgba(30, 92, 222, 0.25);
-  outline: none;
+    border-color: #1e5cde;
+    box-shadow: 0 0 4px rgba(30, 92, 222, 0.25);
+    outline: none;
 }
 
 /* ==============================
    이메일 / 인증 코드 행
    ============================== */
 .input-group-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    display: flex;
+    align-items: center;
+    position: relative; /* ✅ 타이머 절대 위치 기준 */
+    gap: 6px;
+    width: 100%;
 }
 
 .input-group-row input {
-  flex: 1;
-  height: 48px;
-  padding: 0 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  box-sizing: border-box;
+    flex: 1 1 auto; /* ✅ 인풋 폭 고정 유지 */
+    min-width: 0;
+    height: 48px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
 }
 
 .small-button {
-  height: 48px;
-  padding: 0 12px;
-  background: #303030;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  white-space: nowrap;
+    flex-shrink: 0; /* ✅ 버튼이 input 폭에 영향 안 주게 */
+    height: 48px;
+    padding: 0 12px;
+    background: #303030;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    white-space: nowrap;
 }
 
 .small-button:hover {
-  animation: gradientMove 1s ease infinite;
+    animation: gradientMove 1s ease infinite;
+}
+
+/* ✅ 타이머를 오른쪽 고정 */
+.timer {
+    position: absolute;
+    right: -60px; /* 버튼 오른쪽 바깥 */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e5cde;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.timer.active {
+    opacity: 1;
 }
 
 /* ==============================
-   에러 텍스트 (왼쪽 정렬 + 최소 공간)
+   에러 텍스트
    ============================== */
 .error-text {
-  font-size: 12px;
-  color: #ff0000;
-  text-align: left;
-  min-height: 12px;
-  line-height: 12px;
-  margin-top: 1px;
+    font-size: 12px;
+    color: #ff0000;
+    text-align: left;
+    min-height: 12px;
+    line-height: 12px;
+    margin-top: 1px;
 }
 
 /* ==============================
    회원가입 버튼
    ============================== */
 .register-button {
-  width: 100%;
-  height: 52px;
-  color: #fff;
-  border: none;
-  margin-top: 18px;
-  border-radius: 12px;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 200% 200%;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.3s ease;
+    width: 100%;
+    height: 52px;
+    color: #fff;
+    border: none;
+    margin-top: 18px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.3s ease;
 }
 
 .register-button:hover {
-  animation: gradientMove 1s ease infinite;
+    animation: gradientMove 1s ease infinite;
 }
 
 @keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* ==============================
    하단 텍스트
    ============================== */
 .login-text {
-  margin: 6px 0 18px 0;
-  font-size: 16px;
-  color: #616161;
-  font-weight: 500;
-  text-align: center;
+    margin: 6px 0 18px 0;
+    font-size: 16px;
+    color: #616161;
+    font-weight: 500;
+    text-align: center;
 }
 
 .login-link {
-  font-weight: bold;
-  text-decoration: none;
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  transition: background 0.3s ease;
+    font-weight: bold;
+    text-decoration: none;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    transition: background 0.3s ease;
 }
 
 .login-link:hover {
-  text-decoration: underline;
-  animation: gradientMove 1s ease infinite;
+    text-decoration: underline;
+    animation: gradientMove 1s ease infinite;
 }
 
 /* ==========================================================
    반응형
    ========================================================== */
 @media (max-width: 1024px) {
-  .register-form {
-    width: 80%;
-    max-width: 460px;
-    padding: 22px 18px;
-  }
+    .register-form {
+        width: 80%;
+        max-width: 460px;
+        padding: 22px 18px;
+    }
 
-  .register-logo {
-    width: 400px;
-    height: auto;
-  }
+    .register-logo {
+        width: 400px;
+        height: auto;
+    }
 }
 
 @media (max-width: 768px) {
-  .register-form {
-    width: 90%;
-    max-width: 400px;
-    padding: 20px 15px;
-  }
+    .register-form {
+        width: 90%;
+        max-width: 400px;
+        padding: 20px 15px;
+    }
 
-  .register-logo {
-    width: 280px;
-    height: auto;
-  }
+    .register-logo {
+        width: 280px;
+        height: auto;
+    }
 
-  .register-button {
-    height: 50px;
-    font-size: 18px;
-  }
+    .register-button {
+        height: 50px;
+        font-size: 18px;
+    }
+
+    /* ✅ 작은 화면에서 타이머 버튼 아래로 이동 */
+    .timer {
+        position: static;
+        transform: none;
+        margin-left: 8px;
+    }
+
+    .input-group-row {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
 }
 
 @media (max-width: 480px) {
-  .register-form {
-    width: 100%;
-    max-width: 340px;
-    padding: 18px 12px;
-  }
+    .register-form {
+        width: 100%;
+        max-width: 340px;
+        padding: 18px 12px;
+    }
 
-  .register-logo {
-    width: 220px;
-    height: auto;
-  }
+    .register-logo {
+        width: 220px;
+        height: auto;
+    }
 
-  .input-group input,
-  .input-group-row input {
-    height: 44px;
-  }
+    .input-group input,
+    .input-group-row input {
+        height: 44px;
+    }
 
-  .register-button {
-    height: 48px;
-    font-size: 17px;
-  }
+    .register-button {
+        height: 48px;
+        font-size: 17px;
+    }
 
-  .input-group label {
-    font-size: 14px;
-  }
+    .input-group label {
+        font-size: 14px;
+    }
 
-  .error-text {
-    font-size: 11px;
-    min-height: 10px;
-    line-height: 10px;
-  }
+    .error-text {
+        font-size: 11px;
+        min-height: 10px;
+        line-height: 10px;
+    }
+
+    /* ✅ 모바일에서는 타이머를 버튼 아래 한 줄로 정렬 */
+    .input-group-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .small-button {
+        width: 100%;
+    }
+
+    .timer {
+        align-self: flex-end;
+        margin-top: 4px;
+    }
 }

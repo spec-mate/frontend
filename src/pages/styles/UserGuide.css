@@ -1,0 +1,164 @@
+.guide-container {
+    padding: 100px 20px 60px;
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: "Pretendard", sans-serif;
+    color: #222;
+    line-height: 1.6;
+}
+
+.guide-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.guide-header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+.guide-header p {
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.guide-section {
+    margin-bottom: 50px;
+}
+
+.guide-section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e5cde;
+    margin-bottom: 12px;
+}
+
+.guide-section p,
+.guide-section li {
+    font-size: 1rem;
+    color: #333;
+}
+
+.guide-section ol {
+    padding-left: 20px;
+}
+
+.guide-section ul {
+    padding-left: 20px;
+}
+
+.faq h3 {
+    font-size: 1.1rem;
+    color: #111;
+    margin-top: 16px;
+    margin-bottom: 6px;
+}
+
+.faq p {
+    color: #444;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.guide-footer {
+    text-align: center;
+    color: #777;
+    font-size: 0.9rem;
+    border-top: 1px solid #ddd;
+    padding-top: 30px;
+}
+
+/* ✅ 1열 (텍스트 왼쪽, 이미지 오른쪽) 구조 */
+.guide-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* 왼쪽 텍스트 */
+.guide-text {
+    flex: 1;
+    min-width: 280px;
+}
+
+/* 오른쪽 이미지 */
+.guide-image-side {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.guide-image-side img {
+    width: 100%;
+    max-width: 450px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ 기존 guide-image (단일 이미지용) */
+.guide-image {
+    text-align: right;
+    margin: 20px 0 40px;
+}
+
+.guide-image img {
+    width: 50%;
+    max-width: 700px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ 반응형 디자인 */
+@media (max-width: 768px) {
+    .guide-container {
+        padding: 80px 16px 50px;
+    }
+
+    .guide-header h1 {
+        font-size: 2rem;
+    }
+
+    .guide-section h2 {
+        font-size: 1.3rem;
+    }
+
+    .guide-section p,
+    .guide-section li {
+        font-size: 0.95rem;
+    }
+
+    .guide-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .guide-text {
+        text-align: left;
+    }
+
+    .guide-image-side img {
+        width: 90%;
+        max-width: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .guide-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .guide-header p {
+        font-size: 0.95rem;
+    }
+}

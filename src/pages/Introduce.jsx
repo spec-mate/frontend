@@ -16,7 +16,6 @@ export default function Introduce() {
     "부품별로 최적의 PC가 뭔지 알고 싶어요.",
     "지금 사도 오래 쓸 수 있는 PC 구성을 원해요.",
   ];
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {

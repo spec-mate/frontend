@@ -290,90 +290,212 @@
   background: #f0f0f0;
 }
 /* =======================================================================
-   📱 모바일 전용 레이아웃 수정 (한 줄 정렬 & 겹침 방지)
+   📱 모바일 반응형 레이아웃 (768px 이하)
    ======================================================================= */
 @media (max-width: 768px) {
-  /* 견적 테이블을 1열로 전환 */
-  .estimate-table {
-    display: grid;
-    grid-template-columns: 1fr; /* 한 줄(1열)만 표시 */
-    gap: 16px; /* 카드 간격 약간 줄임 */
-  }
+    .estimate-detail-page {
+        padding: 20px 12px 60px;
+    }
 
-  /* 각 셀은 전체 너비 사용 */
-  .estimate-cell {
-    width: 100%;
-    padding: 14px;
-  }
+    .estimate-table {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
 
-  /* 제품 이미지 크기를 줄여서 겹침 방지 */
-  .estimate-product-image img {
-    width: 100px;
-    height: 100px;
-  }
+    .estimate-cell {
+        width: 100%;
+        padding: 14px 12px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
 
-  /* 제품명, 가격이 겹치지 않게 세로 정렬 */
-  .product-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .estimate-category {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1e5cde;
+        margin-bottom: 8px;
+    }
 
-  .product-details {
-    width: 100%;
-    height: auto;
-  }
+    .product-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-  .product-bottom-section {
-    margin-top: 6px;
-  }
+    .estimate-product-image img {
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+    }
 
-  /* 헤더 버튼들도 화면 폭에 맞게 조정 */
-  .trash-btn .icon,
-  .back-btn .icon {
-    width: 40px;
-    height: 40px;
-  }
+    .product-details {
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
 
-  /* 제목 폰트 사이즈 조정 */
-  .estimate-date {
-    font-size: 26px;
-  }
+    .product-meta {
+        margin-bottom: 4px;
+    }
 
-  .estimate-category {
-    font-size: 22px;
-  }
+    .meta-product-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #222;
+    }
 
-  .product-name {
-    font-size: 16px;
-  }
+    .meta-short {
+        font-size: 13px;
+        color: #666;
+        line-height: 1.4;
+    }
 
-  .product-price {
-    font-size: 28px;
-  }
+    .product-price {
+        font-size: 22px;
+        font-weight: 600;
+        color: #1e5cde;
+    }
 
-  /* 모달창도 모바일에 맞게 축소 */
-  .replace-content {
-    width: 90%;
-    max-height: 80vh;
-  }
+    .product-desc {
+        font-size: 13px;
+        color: #555;
+    }
+
+    .total-price {
+        font-size: 18px;
+        color: #c90000;
+        font-weight: 700;
+        text-align: right;
+        margin-top: 16px;
+    }
+
+    .back-btn .icon {
+        width: 36px;
+        height: 36px;
+    }
 }
 
-/* --- 작은 모바일 (480px 이하) --- */
+/* =======================================================================
+   📱 작은 모바일 (480px 이하)
+   ======================================================================= */
 @media (max-width: 480px) {
-  .estimate-product-image img {
-    width: 90px;
-    height: 90px;
-  }
+    .estimate-detail-page {
+        padding: 16px 10px 40px;
+    }
 
-  .estimate-category {
-    font-size: 20px;
-  }
+    .estimate-cell {
+        padding: 12px 10px;
+        border-radius: 8px;
+    }
 
-  .product-name {
-    font-size: 15px;
-  }
+    .estimate-category {
+        font-size: 16px;
+    }
 
-  .product-price {
-    font-size: 24px;
-  }
+    .meta-product-name {
+        font-size: 15px;
+    }
+
+    .meta-short {
+        font-size: 12px;
+    }
+
+    .product-price {
+        font-size: 20px;
+    }
+
+    .product-desc {
+        font-size: 12px;
+    }
+
+    .estimate-product-image img {
+        max-width: 240px;
+        border-radius: 4px;
+    }
+
+    .total-price {
+        font-size: 16px;
+    }
+}
+
+.estimate-product-image img {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    transition: opacity 0.3s ease-out;
+}
+.product-container.clickable {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.product-container.clickable:hover {
+    background: #f9f9f9;
+}
+
+.dropdown-list {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.2s ease-in;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.dropdown-item:hover {
+    background: #f1f5ff;
+}
+
+.dropdown-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.dropdown-text {
+    display: flex;
+    flex-direction: column;
+}
+.dropdown-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.dropdown-price {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.dropdown-empty {
+    padding: 10px;
+    text-align: center;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

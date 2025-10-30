@@ -1,11 +1,8 @@
-// Header.jsx
-
 import React, { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import logoWhite from "/logo.svg";
 import logoBlue from "/blue-logo.svg";
 import Toast from "../components/Toast";
-
 import "./Header.css";
 import { useHeaderStore } from "../store/headerStore";
 
@@ -101,8 +98,12 @@ export default function Header() {
           </ul>
         </nav>
 
-        {/* 로그인/마이페이지 */}
+        {/* ✅ 이용자 가이드 + 로그인 버튼 그룹 */}
         <div className="login-btn">
+          <Link to="/guide" className="nav-link guide-link">
+            이용자 가이드
+          </Link>
+
           {isLoggedIn ? (
             <>
               <Link
@@ -164,7 +165,17 @@ export default function Header() {
                 PC 부품 정보
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/guide"
+                className="nav-link"
+                onClick={() => setOpen(false)}
+              >
+                이용자 가이드
+              </NavLink>
+            </li>
           </ul>
+
           <div className="mobile-login">
             {isLoggedIn ? (
               <>

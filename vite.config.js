@@ -13,4 +13,8 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    sourcemap: false,
+    assetsInlineLimit: 4096, // 4KB 이하 이미지는 inline 처리
+  },
 });

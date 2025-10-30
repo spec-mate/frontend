@@ -1,10 +1,28 @@
-// src/pages/MyPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import "./styles/Mypage.css";
 import api from "../api";
 import EstimateDetail from "./EstimateDetail";
 import Header from "../components/Header";
 import { useHeaderStore } from "../store/headerStore";
+
+// ✅ LazyImage 컴포넌트 (React.memo + lazy load)
+const LazyImage = React.memo(({ src, alt }) => (
+  <img
+    src={src}
+    alt={alt}
+    loading="lazy"
+    decoding="async"
+    style={{
+      width: "100%",
+      height: "auto",
+      borderRadius: "8px",
+      display: "block",
+      willChange: "transform, opacity",
+      transform: "translateZ(0)",
+      backfaceVisibility: "hidden",
+    }}
+  />
+));
 
 export default function MyPage() {
   const [userEstimates, setUserEstimates] = useState([]);
@@ -13,10 +31,12 @@ export default function MyPage() {
   const [selectedEstimate, setSelectedEstimate] = useState(null);
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
 
+  // ✅ 헤더 색상 설정
   useEffect(() => {
-    setHeaderVersion("black");
-  }, [setHeaderVersion]);
+    useHeaderStore.getState().setHeaderVersion("black");
+  }, []);
 
+  // ✅ 견적 데이터 로드
   useEffect(() => {
     const fetchMyEstimates = async () => {
       try {
@@ -25,16 +45,12 @@ export default function MyPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("🚀 [MyPage] 내 견적 응답:", res.data);
-
-        // ✅ 데이터 구조 자동 판별
         const allEstimates = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data.data)
             ? res.data.data
             : [];
 
-        // ✅ 분리
         const aiEstimatesList = allEstimates.filter(
           (e) => e.isAi === true || e.isAi === "true",
         );
@@ -42,22 +58,16 @@ export default function MyPage() {
           (e) => !e.isAi || e.isAi === false || e.isAi === "false",
         );
 
-        // ✅ 로컬 저장된 AI 견적들 추가
+        // ✅ 로컬 저장된 AI 견적 추가
         const localAiList = JSON.parse(
           localStorage.getItem("aiEstimateList") || "[]",
         );
-        if (localAiList && localAiList.length > 0) {
-          localAiList.forEach((item) => {
-            item.id = item.id || `local-ai-${Date.now()}`;
-            aiEstimatesList.push(item);
-          });
-        }
+        localAiList.forEach((item) => {
+          item.id = item.id || `local-ai-${Date.now()}`;
+        });
 
         setUserEstimates(userEstimatesList);
-        setAiEstimates(aiEstimatesList);
-
-        console.log("🟢 최종 사용자 견적:", userEstimatesList);
-        console.log("🟢 최종 AI 견적:", aiEstimatesList);
+        setAiEstimates([...aiEstimatesList, ...localAiList]);
       } catch (err) {
         console.error("❌ 견적 불러오기 실패:", err);
         if (err.response?.status === 403) {
@@ -73,18 +83,20 @@ export default function MyPage() {
     fetchMyEstimates();
   }, []);
 
-  const handleOpenEstimate = (estimate) => {
+  // ✅ 상세 보기 / 닫기 핸들러
+  const handleOpenEstimate = useCallback((estimate) => {
     setSelectedEstimate(estimate);
-  };
+  }, []);
 
-  const handleCloseDetail = () => {
+  const handleCloseDetail = useCallback(() => {
     setSelectedEstimate(null);
-  };
+  }, []);
 
-  const handleDelete = async (estimateId, e) => {
+  // ✅ 견적 삭제
+  const handleDelete = useCallback(async (estimateId, e) => {
     e.stopPropagation();
 
-    // ✅ 로컬 AI 견적 삭제
+    // 로컬 AI 견적 삭제
     if (estimateId.startsWith("local-ai")) {
       const existing = JSON.parse(
         localStorage.getItem("aiEstimateList") || "[]",
@@ -96,7 +108,6 @@ export default function MyPage() {
       return;
     }
 
-    // ✅ 서버 견적 삭제
     try {
       const token = localStorage.getItem("accessToken");
       await api.delete(`/estimate/${estimateId}`, {
@@ -113,7 +124,12 @@ export default function MyPage() {
         window.location.href = "/login";
       }
     }
-  };
+  }, []);
+
+  const nickname = useMemo(
+    () => localStorage.getItem("nickname") || "유저",
+    [],
+  );
 
   return (
     <div className="mypage">
@@ -123,8 +139,9 @@ export default function MyPage() {
         <div className="loading">불러오는 중...</div>
       ) : !selectedEstimate ? (
         <>
+          {/* 헤더 */}
           <div className="mypage-header">
-            <h2>{localStorage.getItem("nickname") || "유저"}</h2>
+            <h2>{nickname}</h2>
             <span className="user-role">
               스펙메이트 <span className="highlight-member">회원</span>
             </span>
@@ -136,27 +153,24 @@ export default function MyPage() {
               <img src="/arrow-right.svg" alt="→" className="arrow-icon" />
             </h3>
 
-            {/* ✅ 사용자 견적 */}
+            {/* 사용자 견적 */}
             <div className="estimate-block">
-              <h4 className="block-title">
-                {localStorage.getItem("nickname") || "유저"}님의 견적
-              </h4>
+              <h4 className="block-title">{nickname}님의 견적</h4>
               <div className="estimate-grid">
-                {userEstimates && userEstimates.length > 0 ? (
+                {userEstimates.length > 0 ? (
                   userEstimates.map((estimate) => (
                     <div
                       key={estimate.id}
                       className="estimate-card"
                       onClick={() => handleOpenEstimate(estimate)}
                     >
-                      <img
+                      <LazyImage
                         src="/gaming.svg"
                         alt={estimate.title || "내 견적"}
-                        className="estimate-image"
                       />
                       <p>{estimate.title || "사용자 견적"}</p>
                       <button
-                        className="delete-btn"
+                        className="delete-estimate-btn"
                         onClick={(e) => handleDelete(estimate.id, e)}
                       >
                         삭제
@@ -171,25 +185,24 @@ export default function MyPage() {
               </div>
             </div>
 
-            {/* ✅ AI 견적 */}
+            {/* AI 견적 */}
             <div className="estimate-block">
               <h4 className="block-title">AI 추천 견적</h4>
               <div className="estimate-grid">
-                {aiEstimates && aiEstimates.length > 0 ? (
+                {aiEstimates.length > 0 ? (
                   aiEstimates.map((estimate) => (
                     <div
                       key={estimate.id}
                       className="estimate-card ai-card"
                       onClick={() => handleOpenEstimate(estimate)}
                     >
-                      <img
+                      <LazyImage
                         src="/small-character.svg"
                         alt={estimate.title || "AI 견적"}
-                        className="estimate-image"
                       />
                       <p>{estimate.title || "AI 추천 견적"}</p>
                       <button
-                        className="delete-btn"
+                        className="delete-estimate-btn"
                         onClick={(e) => handleDelete(estimate.id, e)}
                       >
                         삭제

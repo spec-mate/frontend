@@ -197,3 +197,9 @@
     padding: 3px 6px;
   }
 }
+.estimate-card img {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    transition: opacity 0.3s ease-out;
+}

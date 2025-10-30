@@ -37,7 +37,7 @@ export default function DetailPage() {
     mainboard: "mainboard",
     cpu: "cpu",
     gpu: "vga",
-    ram: "RAM",
+    ram: "ram",
     ssd: "ssd",
     hdd: "hdd",
     cooler: "cooler",

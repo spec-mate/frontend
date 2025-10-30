@@ -1,297 +1,320 @@
-/* 기본 스타일 */
+/* =============================
+   Global Base Style
+============================= */
 html,
 body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  overflow-x: hidden;
-  background: #fff;
-  -ms-overflow-style: none; /* IE, Edge */
-  scrollbar-width: none; /* Firefox */
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    overflow-x: hidden;
+    background: #fff;
+    -ms-overflow-style: none; /* IE, Edge */
+    scrollbar-width: none; /* Firefox */
 }
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  display: none;
-}
-.home {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  z-index: 0;
-}
-.home::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url("/main-image1.svg") center center / cover no-repeat;
-  background-attachment: fixed;
-  z-index: -1;
-}
-.overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+    display: none;
 }
 
+/* =============================
+   Hero Section (Home)
+============================= */
+.home {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    z-index: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+.home::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("/main-image1.svg") center center / cover no-repeat;
+    background-attachment: fixed;
+    z-index: -1;
+    transform: translateZ(0); /* GPU acceleration */
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* =============================
+   Main Content (Text + Image)
+============================= */
 .main {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 26vw 26vw 1fr;
-  grid-template-rows: 1fr 37vh 1fr;
-  align-items: center;
-  justify-items: center;
-  box-sizing: border-box;
-  padding-top: 65px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 26vw 26vw 1fr;
+    grid-template-rows: 1fr 37vh 1fr;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding-top: 65px;
+    box-sizing: border-box;
 }
 
 .main-text {
-  grid-column: 2;
-  grid-row: 2;
-  color: white;
-  font-weight: bold;
-  line-height: 1.3;
-  text-align: left;
+    grid-column: 2;
+    grid-row: 2;
+    color: #fff;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: left;
+    will-change: transform, opacity;
 }
 
 .main-text h1 {
-  margin-bottom: 20px;
-  font-size: clamp(32px, 2.9vw, 56px);
-  color: white;
+    margin-bottom: 20px;
+    font-size: clamp(32px, 2.9vw, 56px);
 }
 
 .main-text h6 {
-  margin-top: 1rem;
-  font-size: clamp(16px, 1.3vw, 25px);
-  font-weight: normal;
+    margin-top: 1rem;
+    font-size: clamp(16px, 1.3vw, 25px);
+    font-weight: 400;
+    opacity: 0.9;
 }
 
 .main-button {
-  margin-top: 20px;
-  width: clamp(180px, 11.7vw, 225px);
-  height: clamp(55px, 3.4vw, 65px);
-  padding: 1vw 1.5vw;
-  font-size: clamp(16px, 1.04vw, 20px);
-  box-sizing: border-box;
-  color: #fff;
-  font-weight: 700;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
-  background-size: 200% 200%;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    margin-top: 20px;
+    width: clamp(180px, 11.7vw, 225px);
+    height: clamp(55px, 3.4vw, 65px);
+    padding: 1vw 1.5vw;
+    font-size: clamp(16px, 1.04vw, 20px);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    will-change: transform;
 }
 
 .main-button:hover {
-  animation: gradientMove 3s ease infinite;
+    animation: gradientMove 3s ease infinite;
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(30, 92, 222, 0.35);
 }
 
 @keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
+/* =============================
+   PC Images
+============================= */
 .main-images {
-  grid-column: 3;
-  grid-row: 2;
-  position: relative;
-  width: 26vw;
-  height: 37vh;
+    grid-column: 3;
+    grid-row: 2;
+    position: relative;
+    width: 26vw;
+    height: 37vh;
+    will-change: transform;
 }
 
 .pc-image {
-  position: absolute;
-  max-width: 64%;
-  width: 100%;
-  height: auto;
+    position: absolute;
+    width: 100%;
+    max-width: 64%;
+    height: auto;
+    transition: transform 0.5s ease-out, opacity 0.3s;
+    backface-visibility: hidden;
 }
 
 .pc-left {
-  top: 10%;
-  left: 0;
-  z-index: 2;
+    top: 10%;
+    left: 0;
+    z-index: 2;
 }
 
 .pc-right {
-  top: 0;
-  right: 0;
-  z-index: 1;
+    top: 0;
+    right: 0;
+    z-index: 1;
 }
 
-/* 두 번째 섹션 */
+.pc-image:hover {
+    transform: scale(1.05);
+}
+
+/* =============================
+   Info Section
+============================= */
 .info-section {
-  padding: 120px 20px; /* 좌우 패딩 추가 */
-  display: flex;
-  justify-content: center;
-  background: transparent;
-  box-sizing: border-box;
+    padding: 120px 20px;
+    display: flex;
+    justify-content: center;
+    background: transparent;
+    box-sizing: border-box;
 }
 
 .info-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 40px;
-  max-width: 52vw;
-  width: 100%; /* 너비를 90%에서 100%로 변경하여 padding으로 제어 */
-  padding: 40px;
-  border-radius: 15px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-  color: white;
-  height: auto;
-  box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    max-width: 52vw;
+    width: 100%;
+    padding: 40px;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    box-sizing: border-box;
 }
 
 .info-left {
-  flex: 1;
-  max-width: 450px;
-  font-size: 15px;
-  line-height: 1.6;
+    flex: 1;
+    max-width: 450px;
+    font-size: 15px;
+    line-height: 1.6;
+    will-change: transform, opacity;
 }
 
 .info-right {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .introduce-image {
-  max-width: 100%;
-  height: auto;
-}
-
-/* ==========================================================================
-   반응형 디자인 (Responsive Design)
-   ========================================================================== */
-
-/* --- 태블릿 (1024px 이하) --- */
-@media (max-width: 1024px) {
-  .main {
-    /* grid 대신 flex를 사용하여 세로 배치로 전환 */
-    display: flex;
-    flex-direction: column;
-    grid-template-columns: none;
-    grid-template-rows: none;
-    text-align: center;
-    padding: 100px 40px 40px; /* 패딩 조정 */
-    min-height: auto; /* 뷰포트 높이에 맞추지 않도록 변경 */
-  }
-  .main-text {
-    text-align: center;
-    order: 1; /* 텍스트가 먼저 오도록 순서 지정 */
-  }
-  .main-button {
-    margin: 20px auto 0; /* 버튼이 중앙에 오도록 margin 수정 */
-  }
-  .main-images {
-    order: 2; /* 이미지가 텍스트 다음에 오도록 순서 지정 */
-    margin: 40px auto 0;
-    width: 100%;
-    max-width: 400px;
-    height: 250px; /* 높이를 지정하여 이미지 위치 기준점 마련 */
-    position: relative;
-    display: flex; /* 내부 요소 정렬을 위해 flex 사용 */
-    justify-content: center;
-    align-items: center;
-  }
-  .pc-image {
-    position: absolute;
-    max-width: 250px; /* 이미지 크기 조정 */
-    height: auto;
-  }
-  .pc-left {
-    top: 5%; /* 위치 미세 조정 */
-    left: 50%;
-    transform: translateX(-85%); /* 더 왼쪽으로 이동하여 겹침 효과 강조 */
-    z-index: 2;
-  }
-  .pc-right {
-    top: 0;
-    left: 50%;
-    transform: translateX(-25%); /* 겹치도록 위치 조정 */
-    z-index: 1;
-  }
-  .info-section {
-    padding: 80px 20px; /* 섹션 상하 패딩 줄임 */
-  }
-  .info-box {
-    flex-direction: column;
-    align-items: center; /* 아이템들이 중앙에 오도록 정렬 */
-    text-align: center;
-    gap: 30px;
-    padding: 30px;
-    max-width: 90%;
-  }
-  .info-left {
     max-width: 100%;
-    font-size: 14px;
-  }
-  .info-right {
-    width: 100%;
-  }
-  .introduce-image {
-    max-width: 80%;
-  }
+    height: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
-/* --- 모바일 (768px 이하) --- */
+/* =============================
+   Responsive
+============================= */
+
+/* Tablet (≤1024px) */
+@media (max-width: 1024px) {
+    .main {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        padding: 100px 40px 40px;
+        min-height: auto;
+    }
+
+    .main-text {
+        order: 1;
+        text-align: center;
+    }
+
+    .main-button {
+        margin: 20px auto 0;
+    }
+
+    .main-images {
+        order: 2;
+        margin: 40px auto 0;
+        width: 100%;
+        max-width: 400px;
+        height: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .pc-image {
+        position: absolute;
+        max-width: 250px;
+    }
+
+    .pc-left {
+        top: 5%;
+        left: 50%;
+        transform: translateX(-85%);
+    }
+
+    .pc-right {
+        top: 0;
+        left: 50%;
+        transform: translateX(-25%);
+    }
+
+    .info-box {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 30px;
+        padding: 30px;
+        max-width: 90%;
+    }
+
+    .info-left {
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    .introduce-image {
+        max-width: 80%;
+    }
+}
+
+/* Mobile (≤768px) */
 @media (max-width: 768px) {
-  .main {
-    padding: 80px 20px 40px;
-  }
-  .main-images {
-    height: 200px; /* 이미지 영역 높이 추가 축소 */
-  }
-  .pc-image {
-    max-width: 180px; /* 이미지 크기 추가 축소 */
-  }
-  .info-section {
-    padding: 60px 20px;
-  }
-  .info-box {
-    padding: 25px;
-  }
-  .introduce-image {
-    max-width: 100%; /* 모바일에서는 이미지가 꽉 차도록 */
-  }
+    .main {
+        padding: 80px 20px 40px;
+    }
+    .main-images {
+        height: 200px;
+    }
+    .pc-image {
+        max-width: 180px;
+    }
+    .info-section {
+        padding: 60px 20px;
+    }
+    .info-box {
+        padding: 25px;
+    }
+    .introduce-image {
+        max-width: 100%;
+    }
 }
 
-/* --- 작은 모바일 (480px 이하) --- */
+/* Small Mobile (≤480px) */
 @media (max-width: 480px) {
-  .main-text h1 {
-    font-size: 28px; /* 제목 폰트 크기 직접 조정 */
-  }
-  .main-text h6 {
-    font-size: 15px; /* 부제목 폰트 크기 직접 조정 */
-  }
-  .main-button {
-    width: 100%; /* 버튼이 가로로 꽉 차도록 */
-    height: 50px;
-  }
-  .main-images {
-    margin-top: 30px;
-    height: 150px;
-  }
-  .pc-image {
-    max-width: 140px;
-  }
+    .main-text h1 {
+        font-size: 28px;
+    }
+    .main-text h6 {
+        font-size: 15px;
+    }
+    .main-button {
+        width: 100%;
+        height: 50px;
+    }
+    .main-images {
+        margin-top: 30px;
+        height: 150px;
+    }
+    .pc-image {
+        max-width: 140px;
+    }
 }

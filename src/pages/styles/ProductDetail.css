@@ -635,3 +635,13 @@
   border-radius: 8px;
   z-index: 50;
 }
+.product-item img {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    transition: opacity 0.3s ease-out;
+}
+
+.product-item img[data-loaded="true"] {
+    opacity: 1;
+}

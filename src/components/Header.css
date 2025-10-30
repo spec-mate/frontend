@@ -105,7 +105,7 @@
   width: clamp(90px, 5.7vw, 110px);
   height: clamp(40px, 2.3vw, 45px);
   font-size: clamp(16px, 1vw, 20px);
-  border-radius: 20px;
+  border-radius: 15px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
@@ -206,7 +206,7 @@
   font-size: clamp(16px, 0.9vw, 18px);
   font-weight: 700;
   color: #fff !important;
-  border-radius: 999px;
+  border-radius: 15px;
   border: 0.5px solid rgba(255, 255, 255, 0.25);
   background: #ffffff03;
   backdrop-filter: blur(5px);
@@ -309,4 +309,75 @@
   background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
   background-size: 200% 200%;
   animation: gradientMove 3s ease infinite;
+}
+/* ==========================================================
+   ✅ 이용자 가이드 버튼 (로그인 버튼 왼쪽)
+   ========================================================== */
+.guide-link {
+    font-weight: 600;
+    font-size: clamp(16px, 0.9vw, 18px);
+    text-decoration: none;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: clamp(40px, 2.3vw, 45px);
+    transition: all 0.3s ease;
+}
+
+/* ✅ 중앙 메뉴(nav-link)와 동일한 hover / active 효과 */
+.guide-link:hover {
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 3s ease infinite;
+}
+
+.guide-link.active {
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 3s ease infinite;
+}
+
+.guide-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #1e5cde, #1e2bde, #9b1ede);
+    background-size: 200% 200%;
+    animation: gradientMove 3s ease infinite;
+}
+
+/* ✅ 헤더 색상 버전에 따라 텍스트 색상 조정 */
+.header-white .guide-link {
+    color: white;
+}
+.header-black .guide-link {
+    color: black;
+}
+
+/* ✅ 로그인 버튼 그룹 내 정렬 */
+.login-btn {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 0.8vw, 15px);
+}
+
+/* ✅ 반응형: 모바일에서는 guide-link 숨김 (햄버거 메뉴 안으로 이동했으므로) */
+@media (max-width: 768px) {
+    .guide-link {
+        display: none !important;
+    }
 }

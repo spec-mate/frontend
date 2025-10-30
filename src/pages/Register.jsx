@@ -196,7 +196,12 @@ export default function Register() {
                 인증번호 <br />
                 전송
               </button>
-              {timer > 0 && <span className="timer">{formatTime(timer)}</span>}
+              {/* ✅ 타이머 고정 위치 */}
+              {timer > 0 ? (
+                <span className="timer active">{formatTime(timer)}</span>
+              ) : (
+                <span className="timer"></span>
+              )}
             </div>
             <ErrorMessage message={emailError || ""} />
           </div>
@@ -225,7 +230,7 @@ export default function Register() {
             <ErrorMessage message={codeError || ""} />
           </div>
 
-          {/* ✅ 비밀번호 */}
+          {/* 비밀번호 */}
           <div className="input-group">
             <label htmlFor="password">비밀번호*</label>
             <input
@@ -238,7 +243,7 @@ export default function Register() {
             <ErrorMessage message={passwordError || ""} />
           </div>
 
-          {/* ✅ 비밀번호 확인 */}
+          {/* 비밀번호 확인 */}
           <div className="input-group">
             <label htmlFor="confirmPassword">비밀번호 확인*</label>
             <input

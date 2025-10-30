@@ -12,6 +12,7 @@ import ProductDetailView from "./pages/ProductDetailView";
 import MyPage from "./pages/Mypage";
 import EstimateDetail from "./pages/EstimateDetail";
 import ProgressBar from "./components/ProgressBar";
+import UserGuide from "./pages/UserGuide";
 
 function App() {
   const location = useLocation();
@@ -29,6 +30,7 @@ function App() {
         <Route path="/usage" element={<Usage />} />
         <Route path="/info" element={<ProductInfo />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/guide" element={<UserGuide />} />
         <Route path="/product/:productName" element={<ProductDetail />} />
         <Route path="/estimate/:id" element={<EstimateDetail />} />
         <Route

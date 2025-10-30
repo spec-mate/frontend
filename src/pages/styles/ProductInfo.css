@@ -234,3 +234,8 @@
     font-size: 13px;
   }
 }
+.product-card img {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
