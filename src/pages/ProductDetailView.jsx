@@ -670,58 +670,6 @@ export default function ProductDetailView() {
             </div>
           </div>
         </div>
-        <div className="recommend-section">
-          <div className="recommend-overlay-text">
-            <div className="recommend-title-block">
-              <img
-                src="/small-character.svg"
-                alt="specmate icon"
-                className="specmate-icon"
-              />
-              <div className="recommend-title-vertical">
-                <div className="recommend-title-main">
-                  스펙메이트의 용도별 조합 추천!
-                </div>
-                <div className="recommend-title-desc">박스를 클릭해보세요!</div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className={`recommend-cards ${selectedBuild ? "is-selected" : ""}`}
-          >
-            {/* 왼쪽 슬롯 */}
-            <div className="recommend-card-area">
-              {selectedBuild === "office" ? (
-                <RecommendDetail
-                  build={officeBuild}
-                  onClose={() => handleCardClick(null)}
-                />
-              ) : (
-                <RecommendCard
-                  build={gamingBuild}
-                  onClick={() => handleCardClick("gaming")}
-                  isActive={selectedBuild === "gaming"}
-                />
-              )}
-            </div>
-            {/* 오른쪽 슬롯 */}
-            <div className="recommend-card-area">
-              {selectedBuild === "gaming" ? (
-                <RecommendDetail
-                  build={gamingBuild}
-                  onClose={() => handleCardClick(null)}
-                />
-              ) : (
-                <RecommendCard
-                  build={officeBuild}
-                  onClick={() => handleCardClick("office")}
-                  isActive={selectedBuild === "office"}
-                />
-              )}
-            </div>
-          </div>
-        </div>
       </div>
       {showToast && (
         <Toast
