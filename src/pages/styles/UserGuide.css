@@ -1,102 +1,302 @@
+/* 전체 컨테이너 */
 .guide-container {
-    max-width: 1100px;
-    margin: 120px auto 80px;
-    padding: 0 20px;
-    font-family: "Pretendard", "Noto Sans KR", sans-serif;
-    color: #222;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
 }
 
-/* 헤더 */
+/* 헤더 영역 */
 .guide-header {
     text-align: center;
-    margin-bottom: 80px;
+    margin-bottom: 50px;
 }
+
 .guide-header h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 15px;
-}
-.guide-header p {
-    font-size: 1.1rem;
-    color: #555;
-    line-height: 1.6;
-}
-
-/* 섹션 제목 */
-.guide-section h2 {
-    font-size: 1.6rem;
-    margin-bottom: 25px;
+    font-size: 2rem;
     font-weight: 700;
-    border-left: 5px solid #1e5cde;
-    padding-left: 10px;
+    margin-bottom: 10px;
 }
 
-/* 세로 배치 고정 */
-.guide-row {
+.guide-header p {
+    color: #555;
+    font-size: 1rem;
+}
+
+/* 카드 리스트 */
+.guide-card-list {
     display: flex;
     flex-direction: column;
-    align-items: center; /* 이미지도 포함한 모든 요소를 가운데 정렬 */
-    gap: 30px;
-    margin-bottom: 70px;
+    gap: 20px;
 }
 
-/* 텍스트 영역 */
-.guide-text {
-    width: 100%;
-    text-align: left;
-}
-.guide-text p {
-    font-size: 1rem;
-    color: #444;
-    margin-bottom: 10px;
-    line-height: 1.7;
-}
-.guide-text ol {
-    padding-left: 25px;
-    line-height: 1.9;
-    list-style-position: outside;
-}
-.guide-text li {
-    margin-bottom: 10px;
-    color: #222;
-}
-
-/* 이미지 정렬 */
-.guide-image-side {
-    width: 100%;
-    display: flex;
-    justify-content: center; /* 가로 가운데 */
-    align-items: center; /* 세로 가운데 */
-}
-.guide-image-side img {
-    width: 80%;
-    max-width: 600px;
-    border-radius: 10px;
-    border: 1px solid #eee;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    margin: 0 auto;
-}
-
-/* 주의사항 */
-.guide-tips {
-    background: #f8faff;
+/* 카드 버튼 */
+.guide-card-btn {
+    background: #f5f6f7;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
     padding: 25px 30px;
-    border-radius: 10px;
-    border-left: 5px solid #1e5cde;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
 }
-.guide-tips li {
+
+.guide-card-btn:hover {
+    background: linear-gradient(135deg, #f6f8ff 0%, #eef2ff 100%);
+    border-color: #dce2ff;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.guide-card-btn:hover h2,
+.guide-card-btn:hover p {
+    color: #1e293b;
+}
+
+/* 카드 텍스트 */
+.guide-card-text h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+.guide-card-text p {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* 카드 내부 구조 */
+.guide-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+/* 아이콘 영역 */
+.guide-card-icon {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.guide-card-icon img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.guide-card-btn:hover .guide-card-icon img {
+    transform: scale(1.08);
+}
+
+/* ✅ 떠다니는 글자 공통 스타일 (가시성 + 네온 효과) */
+.float-text {
+    position: absolute;
+    font-weight: 900;
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    opacity: 0;
+    -webkit-text-stroke: 1.3px rgba(0, 0, 0, 0.85);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* hover 시 표시 + 빛나는 효과 */
+.float-active:hover .float-text {
+    opacity: 1;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95))
+    drop-shadow(0 0 16px rgba(150, 180, 255, 0.8))
+    drop-shadow(0 0 24px rgba(150, 180, 255, 0.6));
+}
+
+/* ✅ 상단 / 중단 / 하단 배치 */
+.text1 {
+    top: 6%;              /* 상단 */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #38bdf8; /* 하늘색 */
+    text-shadow:
+            0 0 10px rgba(56, 189, 248, 0.9),
+            0 0 20px rgba(56, 189, 248, 0.7),
+            0 0 40px rgba(56, 189, 248, 0.6);
+    animation: float1 4.2s ease-in-out infinite;
+}
+
+.text2 {
+    top: 45%;             /* 중단 */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #a855f7; /* 보라색 */
+    text-shadow:
+            0 0 10px rgba(168, 85, 247, 0.9),
+            0 0 20px rgba(168, 85, 247, 0.7),
+            0 0 40px rgba(168, 85, 247, 0.6);
+    animation: float2 4.8s ease-in-out infinite;
+}
+
+.text3 {
+    bottom: 6%;           /* 하단 */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #2dd4bf; /* 민트색 */
+    text-shadow:
+            0 0 10px rgba(45, 212, 191, 0.9),
+            0 0 20px rgba(45, 212, 191, 0.7),
+            0 0 40px rgba(45, 212, 191, 0.6);
+    animation: float3 5.3s ease-in-out infinite;
+}
+
+/* ✅ 각기 다른 움직임 */
+@keyframes float1 {
+    0% { transform: translate(-50%, 0); }
+    25% { transform: translate(-50%, -8px) rotate(-2deg); }
+    50% { transform: translate(-50%, 6px) rotate(2deg); }
+    75% { transform: translate(-50%, -4px) rotate(-1deg); }
+    100% { transform: translate(-50%, 0); }
+}
+
+@keyframes float2 {
+    0% { transform: translate(-50%, 0); }
+    25% { transform: translate(-50%, -6px) rotate(3deg); }
+    50% { transform: translate(-50%, 8px) rotate(-2deg); }
+    75% { transform: translate(-50%, -5px) rotate(1deg); }
+    100% { transform: translate(-50%, 0); }
+}
+
+@keyframes float3 {
+    0% { transform: translate(-50%, 0); }
+    25% { transform: translate(-50%, 10px) rotate(2deg); }
+    50% { transform: translate(-50%, -8px) rotate(-3deg); }
+    75% { transform: translate(-50%, 5px) rotate(1deg); }
+    100% { transform: translate(-50%, 0); }
+}
+
+/* 인트로 카드 */
+.intro-card {
+    background: #f5f6f7;
+    border-color: #e5e7eb;
+    text-align: center;
+    cursor: default;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+.intro-card:hover {
+    background: linear-gradient(135deg, #f6f8ff 0%, #eef2ff 100%);
+    border-color: #dce2ff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    color: #1e293b;
+    transform: translateY(-3px);
+}
+
+.intro-card h2 {
+    color: #1e293b;
+}
+
+.intro-card p {
+    color: #4b5563;
+}
+
+/* 상세 페이지 */
+.guide-detail-container {
+    max-width: 700px;
+    margin: 60px auto;
+    padding: 20px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.guide-detail-steps {
+    list-style: decimal;
+    padding-left: 20px;
+    color: #333;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.guide-detail-steps li {
     margin-bottom: 10px;
 }
 
-/* 푸터 */
-.guide-footer {
-    text-align: center;
-    font-size: 0.9rem;
-    color: #888;
-    margin-top: 100px;
-    border-top: 1px solid #eee;
-    padding-top: 20px;
+.guide-detail-img {
+    display: block;
+    max-width: 100%;
+    margin: 30px auto 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 반응형 대응 */
+@media (max-width: 768px) {
+    .guide-card-content {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .guide-card-icon img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .guide-card-btn {
+        padding: 20px;
+    }
+
+    .guide-card-text h2 {
+        font-size: 1.1rem;
+    }
+
+    .guide-card-text p {
+        font-size: 0.9rem;
+    }
+
+    .text1, .text2, .text3 {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .guide-card-content {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .guide-card-icon {
+        align-self: flex-end;
+        margin-top: 10px;
+    }
+
+    .guide-card-icon img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .guide-card-btn {
+        padding: 18px;
+    }
+
+    .text1, .text2, .text3 {
+        font-size: 0.9rem;
+    }
 }

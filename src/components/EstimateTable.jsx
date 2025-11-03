@@ -50,7 +50,7 @@ export default function EstimateTable({ estimate }) {
               <td>{productTypeMap[product.type] || product.type}</td>
               <td>{product.name}</td>
               <td style={{ textAlign: "right" }}>
-                {formatPrice(product.price)}원
+                {formatPrice(product.detail?.price)}원
               </td>
             </tr>
           ))}

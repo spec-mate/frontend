@@ -5,7 +5,7 @@ import EstimateDetail from "./EstimateDetail";
 import Header from "../components/Header";
 import { useHeaderStore } from "../store/headerStore";
 
-// ✅ LazyImage 컴포넌트 (React.memo + lazy load)
+// ✅ LazyImage (React.memo + lazy loading)
 const LazyImage = React.memo(({ src, alt }) => (
   <img
     src={src}
@@ -36,38 +36,49 @@ export default function MyPage() {
     useHeaderStore.getState().setHeaderVersion("black");
   }, []);
 
-  // ✅ 견적 데이터 로드
+  // ✅ 견적 데이터 로드 (사용자 + AI 견적 병렬 호출)
   useEffect(() => {
-    const fetchMyEstimates = async () => {
+    const fetchAllEstimates = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await api.get("/estimate/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        if (!token) {
+          console.warn("⚠️ accessToken 없음 — 로그인 필요");
+          window.location.href = "/login";
+          return;
+        }
 
-        const allEstimates = Array.isArray(res.data)
-          ? res.data
-          : Array.isArray(res.data.data)
-            ? res.data.data
+        const headers = { Authorization: `Bearer ${token}` };
+
+        // ✅ 두 API 병렬 호출
+        const [userRes, aiRes] = await Promise.all([
+          api.get("/estimate/me", { headers }),
+          api.get("/aiestimates/me", { headers }),
+        ]);
+
+        const userData = Array.isArray(userRes.data)
+          ? userRes.data
+          : Array.isArray(userRes.data.data)
+            ? userRes.data.data
             : [];
 
-        const aiEstimatesList = allEstimates.filter(
-          (e) => e.isAi === true || e.isAi === "true",
-        );
-        const userEstimatesList = allEstimates.filter(
-          (e) => !e.isAi || e.isAi === false || e.isAi === "false",
+        const aiData = Array.isArray(aiRes.data)
+          ? aiRes.data
+          : Array.isArray(aiRes.data.data)
+            ? aiRes.data.data
+            : [];
+
+        setUserEstimates(userData);
+        setAiEstimates(aiData);
+
+        console.log("📦 사용자 견적 개수:", userData.length);
+        userData.forEach((e, i) =>
+          console.log(`  👤 [${i + 1}] ${e.id} ${e.title || e.build_name}`),
         );
 
-        // ✅ 로컬 저장된 AI 견적 추가
-        const localAiList = JSON.parse(
-          localStorage.getItem("aiEstimateList") || "[]",
+        console.log("🧠 AI 견적 개수:", aiData.length);
+        aiData.forEach((e, i) =>
+          console.log(`  🤖 [${i + 1}] ${e.id} ${e.title || e.build_name}`),
         );
-        localAiList.forEach((item) => {
-          item.id = item.id || `local-ai-${Date.now()}`;
-        });
-
-        setUserEstimates(userEstimatesList);
-        setAiEstimates([...aiEstimatesList, ...localAiList]);
       } catch (err) {
         console.error("❌ 견적 불러오기 실패:", err);
         if (err.response?.status === 403) {
@@ -80,11 +91,16 @@ export default function MyPage() {
       }
     };
 
-    fetchMyEstimates();
+    fetchAllEstimates();
   }, []);
 
-  // ✅ 상세 보기 / 닫기 핸들러
+  // ✅ 상세 보기 열기 / 닫기
   const handleOpenEstimate = useCallback((estimate) => {
+    console.log(
+      "🔍 선택된 견적:",
+      estimate.id,
+      estimate.title || estimate.build_name,
+    );
     setSelectedEstimate(estimate);
   }, []);
 
@@ -92,32 +108,36 @@ export default function MyPage() {
     setSelectedEstimate(null);
   }, []);
 
-  // ✅ 견적 삭제
-  const handleDelete = useCallback(async (estimateId, e) => {
+  // ✅ 견적 삭제 (AI / 사용자 구분)
+  const handleDelete = useCallback(async (estimateId, e, isAi = false) => {
     e.stopPropagation();
-
-    // 로컬 AI 견적 삭제
-    if (estimateId.startsWith("local-ai")) {
-      const existing = JSON.parse(
-        localStorage.getItem("aiEstimateList") || "[]",
-      );
-      const filtered = existing.filter((item) => item.id !== estimateId);
-      localStorage.setItem("aiEstimateList", JSON.stringify(filtered));
-      setAiEstimates((prev) => prev.filter((e) => e.id !== estimateId));
-      alert("AI 견적이 삭제되었습니다.");
-      return;
-    }
 
     try {
       const token = localStorage.getItem("accessToken");
-      await api.delete(`/estimate/${estimateId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const headers = { Authorization: `Bearer ${token}` };
 
-      setUserEstimates((prev) => prev.filter((item) => item.id !== estimateId));
-      setAiEstimates((prev) => prev.filter((item) => item.id !== estimateId));
+      // ✅ 분기: AI 견적 vs 일반 견적
+      const endpoint = isAi
+        ? `/aiestimates/${estimateId}`
+        : `/estimate/${estimateId}`;
+
+      console.log(`🗑️ DELETE 요청 → ${endpoint}`);
+      await api.delete(endpoint, { headers });
+
+      // ✅ 프론트엔드 상태 갱신
+      if (isAi) {
+        setAiEstimates((prev) => prev.filter((item) => item.id !== estimateId));
+      } else {
+        setUserEstimates((prev) =>
+          prev.filter((item) => item.id !== estimateId),
+        );
+      }
+
+      console.log(
+        `✅ ${isAi ? "AI 견적" : "사용자 견적"} 삭제 완료: ${estimateId}`,
+      );
     } catch (err) {
-      console.error("견적 삭제 실패:", err);
+      console.error("❌ 견적 삭제 실패:", err);
       if (err.response?.status === 403) {
         alert("삭제 권한이 없습니다. 다시 로그인 해주세요.");
         localStorage.removeItem("accessToken");
@@ -131,6 +151,7 @@ export default function MyPage() {
     [],
   );
 
+  // ✅ 렌더링
   return (
     <div className="mypage">
       <Header />
@@ -171,7 +192,7 @@ export default function MyPage() {
                       <p>{estimate.title || "사용자 견적"}</p>
                       <button
                         className="delete-estimate-btn"
-                        onClick={(e) => handleDelete(estimate.id, e)}
+                        onClick={(e) => handleDelete(estimate.id, e, false)}
                       >
                         삭제
                       </button>
@@ -194,7 +215,9 @@ export default function MyPage() {
                     <div
                       key={estimate.id}
                       className="estimate-card ai-card"
-                      onClick={() => handleOpenEstimate(estimate)}
+                      onClick={() =>
+                        handleOpenEstimate({ ...estimate, isAi: true })
+                      }
                     >
                       <LazyImage
                         src="/small-character.svg"
@@ -203,7 +226,7 @@ export default function MyPage() {
                       <p>{estimate.title || "AI 추천 견적"}</p>
                       <button
                         className="delete-estimate-btn"
-                        onClick={(e) => handleDelete(estimate.id, e)}
+                        onClick={(e) => handleDelete(estimate.id, e, true)}
                       >
                         삭제
                       </button>

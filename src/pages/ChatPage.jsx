@@ -1,24 +1,22 @@
-// src/pages/ChatPage.jsx
 import React, { useEffect, useRef } from "react";
 import "./styles/ChatPage.css";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import EstimateTable from "../components/EstimateTable.jsx";
-import api from "../api"; // ✅ axios 인스턴스
+import api from "../api";
 
 export default function ChatPage({
   messages,
-  setMessages, // ✅ messages 초기화용
+  setMessages,
   handleBack,
-  handleSend,
   isLoading,
-  setIsLoading, // ✅ 대화 중단용 (부모에서 전달 필요)
+  setIsLoading,
+  roomId,
 }) {
   const chatInputRef = useRef(null);
   const chatContainerRef = useRef(null);
 
-  // 스크롤 자동 하단 고정
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -26,51 +24,151 @@ export default function ChatPage({
     }
   }, [messages, isLoading]);
 
-  // 메시지 전송
-  const onSendClick = () => {
-    if (chatInputRef.current) {
-      const inputValue = chatInputRef.current.value.trim();
-      if (!inputValue) return;
-      handleSend(inputValue);
-      chatInputRef.current.value = "";
+  // ✅ 메시지 전송
+  const handleSend = async (userInput) => {
+    if (!userInput.trim()) return;
+    if (!roomId) {
+      alert("채팅방 ID가 존재하지 않습니다.");
+      return;
+    }
+
+    setIsLoading(true);
+    setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
+
+    try {
+      const res = await api.post(`/api/chat/rooms/${roomId}/messages`, {
+        text: userInput,
+        notes: "사용자 요청 기반 AI 견적",
+      });
+
+      console.log("✅ AI 응답:", res.data);
+      const aiData = res.data?.data?.data || res.data?.data;
+
+      if (!aiData || Object.keys(aiData).length === 0) {
+        setMessages((prev) => [
+          ...prev,
+          { sender: "ai", text: "AI 응답 데이터를 불러오지 못했습니다." },
+        ]);
+      } else {
+        setMessages((prev) => [...prev, { sender: "ai", data: aiData }]);
+      }
+    } catch (err) {
+      console.error("❌ 채팅 메시지 전송 실패:", err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "ai",
+          text: "서버에서 응답을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+      if (chatInputRef.current) chatInputRef.current.value = "";
     }
   };
 
-  // 마지막 사용자 메시지
+  const onSendClick = () => {
+    if (chatInputRef.current) {
+      const inputValue = chatInputRef.current.value.trim();
+      if (inputValue) handleSend(inputValue);
+    }
+  };
+
+  const handleBackWithReset = () => {
+    if (setIsLoading) setIsLoading(false);
+    if (setMessages) setMessages([]);
+    ["chatMessages", "chatHistory", "chatRoomMessages", "messages"].forEach(
+      (k) => {
+        localStorage.removeItem(k);
+        sessionStorage.removeItem(k);
+      },
+    );
+    handleBack();
+  };
+
+  // ✅ 설명형 판단
   const lastUserMessage =
     messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
 
-  // ✅ 설명형 질문 판별
   const isExplanationMessage = (text) => {
     if (!text) return false;
-    const keywords = ["이유", "왜", "추천", "설명", "근거", "어떤", "차이"];
+    const keywords = ["이유", "왜", "추천", "설명", "근거", "차이"];
     return keywords.some((kw) => text.includes(kw));
   };
 
-  // ✅ 견적 저장 (DB + localStorage 병행)
+  // ✅ 부품 중복 제거 및 정렬
+  const deduplicateComponents = (components = []) => {
+    const unique = [];
+    const seen = new Set();
+    for (const c of components) {
+      const typeKey = c.type?.toLowerCase() || "unknown";
+      if (!seen.has(typeKey)) {
+        seen.add(typeKey);
+        unique.push({ ...c, type: typeKey });
+      }
+    }
+    return unique;
+  };
+
+  const normalizeComponents = (components = []) => {
+    const TYPE_ORDER = [
+      "mainboard",
+      "cpu",
+      "vga",
+      "ram",
+      "ssd",
+      "hdd",
+      "cooler",
+      "power",
+      "case",
+    ];
+
+    const map = {};
+    for (const c of components) {
+      const key = c.type?.toLowerCase() || "unknown";
+      map[key] = c;
+    }
+
+    return TYPE_ORDER.map(
+      (type) =>
+        map[type] || {
+          type,
+          name: "미선택",
+          description: "정보 없음",
+          detail: { price: "0", image: "" },
+        },
+    );
+  };
+
+  // ✅ 견적 보관함 저장 기능
   const handleSaveEstimate = async (estimateData) => {
     if (!estimateData || !estimateData.components) {
       alert("저장할 견적 데이터가 없습니다.");
       return;
     }
 
+    const cleanedComponents = normalizeComponents(
+      deduplicateComponents(estimateData.components),
+    );
+
     const payload = {
       id: `local-ai-${Date.now()}`,
-      title: estimateData.build_name || estimateData.title || "AI 추천 견적",
+      title: estimateData.build_name || "AI 추천 견적",
       description: estimateData.build_description || "",
       notes: estimateData.notes || "",
-      total: estimateData.total || 0,
+      total: String(estimateData.total || "0"),
       isAi: true,
-      components: estimateData.components.map((c) => ({
+      components: cleanedComponents.map((c) => ({
         type: c.type,
         name: c.name,
-        price: Number(c.price) || 0,
-        description: c.description || "",
+        description: c.description,
+        price: c.detail?.price || "0",
+        image: c.detail?.image || "",
       })),
       createdAt: new Date().toISOString(),
     };
 
-    // ✅ localStorage 병행 저장
+    // ✅ localStorage 저장
     let existing = [];
     try {
       existing = JSON.parse(localStorage.getItem("aiEstimateList")) || [];
@@ -82,24 +180,33 @@ export default function ChatPage({
     const updated = [payload, ...existing];
     localStorage.setItem("aiEstimateList", JSON.stringify(updated));
 
-    // ✅ DB 저장 (로그인 상태일 경우)
+    // ✅ DB 저장 (로그인 상태일 때)
     const token =
       localStorage.getItem("accessToken") ||
       sessionStorage.getItem("accessToken");
+
     if (token) {
       try {
         const dbPayload = {
-          title: payload.title,
-          totalPrice: Number(payload.total),
-          products: payload.components.map((c) => ({
+          build_name: payload.title,
+          build_description: payload.description,
+          total: String(payload.total),
+          notes: payload.notes,
+          components: cleanedComponents.map((c) => ({
+            type: c.type,
             name: c.name,
             description: c.description,
-            quantity: 1,
-            unitPrice: Number(c.price),
+            detail: {
+              price: c.detail?.price || "0",
+              image: c.detail?.image || "",
+            },
           })),
         };
 
-        const res = await api.post("/estimates", dbPayload, {
+        // ✅ 콘솔에 DB 저장 데이터 출력
+        console.log("📦 DB 저장 요청 payload:", dbPayload);
+
+        const res = await api.post("/aiestimates", dbPayload, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -114,40 +221,9 @@ export default function ChatPage({
     alert("AI 견적이 보관함에 추가되었습니다!");
   };
 
-  // ✅ 뒤로가기 클릭 시: 대화 초기화 + 로딩 중단 + 캐시 삭제
-  const handleBackWithReset = () => {
-    // 1️⃣ 로딩 중인 대화 강제 중단
-    if (setIsLoading) {
-      setIsLoading(false);
-    }
-
-    // 2️⃣ 대화 메시지 초기화
-    if (setMessages) {
-      setMessages([]);
-    }
-
-    // 3️⃣ localStorage / sessionStorage 내 채팅 캐시 제거
-    const chatKeys = [
-      "chatMessages",
-      "chatHistory",
-      "chatRoomMessages",
-      "messages",
-    ];
-    chatKeys.forEach((key) => {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    });
-
-    console.log("🧹 모든 채팅 로그 및 진행중 대화 초기화 완료");
-
-    // 4️⃣ 뒤로가기 실행
-    handleBack();
-  };
-
   return (
     <div className="cp-chat-page">
       <div className="cp-question-header">
-        {/* ✅ 뒤로가기: 대화 중단 + 로그 초기화 */}
         <IconButton onClick={handleBackWithReset} className="cp-back-btn">
           <ArrowBackIcon />
         </IconButton>
@@ -159,13 +235,12 @@ export default function ChatPage({
       <div className="cp-chat-container" ref={chatContainerRef}>
         {messages.map((msg, idx) => {
           if (msg.sender === "ai") {
+            const aiData = msg.data?.data ? msg.data.data : msg.data;
             const hasEstimate =
-              msg.data &&
-              msg.data.components &&
-              Array.isArray(msg.data.components) &&
-              msg.data.components.length > 0;
-
-            const isExplanation = isExplanationMessage(msg.data?.text);
+              aiData &&
+              Array.isArray(aiData.components) &&
+              aiData.components.length > 0;
+            const isExplanation = isExplanationMessage(aiData?.text);
 
             return (
               <div key={idx} className="cp-message-ai">
@@ -181,10 +256,24 @@ export default function ChatPage({
                 <div className="cp-ai-bubble">
                   {hasEstimate && !isExplanation ? (
                     <>
-                      <EstimateTable estimate={msg.data} />
+                      <EstimateTable
+                        estimate={{
+                          ...aiData,
+                          components: normalizeComponents(
+                            deduplicateComponents(aiData.components),
+                          ),
+                        }}
+                      />
                       <div className="cp-bubble-actions">
                         <button
-                          onClick={() => handleSaveEstimate(msg.data)}
+                          onClick={() =>
+                            handleSaveEstimate({
+                              ...aiData,
+                              components: normalizeComponents(
+                                deduplicateComponents(aiData.components),
+                              ),
+                            })
+                          }
                           className="cp-save-estimate-btn"
                         >
                           보관함으로 이동
@@ -193,9 +282,9 @@ export default function ChatPage({
                     </>
                   ) : (
                     <p className="cp-ai-text">
-                      {msg.data?.text ||
+                      {aiData?.text ||
                         msg.text ||
-                        "설명을 불러오지 못했습니다."}
+                        "AI 응답 데이터를 불러오지 못했습니다."}
                     </p>
                   )}
                 </div>
@@ -203,7 +292,6 @@ export default function ChatPage({
             );
           }
 
-          // 사용자 메시지
           return (
             <div key={idx} className="cp-message-user">
               <div className="cp-user-bubble">{msg.text}</div>
@@ -211,7 +299,6 @@ export default function ChatPage({
           );
         })}
 
-        {/* ✅ 로딩 중 메시지 */}
         {isLoading && (
           <div className="cp-message-ai">
             <div className="cp-ai-profile">

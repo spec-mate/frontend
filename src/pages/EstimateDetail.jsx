@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import api from "../api";
 import "./styles/EstimateDetail.css";
 import { useProgressStore } from "../store/progressStore";
-import Toast from "../components/Toast";
 
 // ✅ LazyImage (React.memo + lazy loading)
 const LazyImage = React.memo(({ src, alt }) => (
@@ -32,26 +31,11 @@ export default function EstimateDetail({ estimate, onClose }) {
       cpu: "CPU",
       mainboard: "메인보드",
       case: "케이스",
-      gpu: "그래픽카드",
+      vga: "그래픽카드",
       ssd: "SSD",
       cooler: "쿨러",
       power: "파워",
       hdd: "HDD",
-    }),
-    [],
-  );
-
-  const apiTypeMap = useMemo(
-    () => ({
-      cpu: "cpu",
-      gpu: "vga",
-      ram: "ram",
-      mainboard: "mainboard",
-      ssd: "ssd",
-      hdd: "hdd",
-      power: "power",
-      cooler: "cooler",
-      case: "case",
     }),
     [],
   );
@@ -62,171 +46,104 @@ export default function EstimateDetail({ estimate, onClose }) {
     return parseInt(String(price).replace(/,/g, ""), 10) || 0;
   }, []);
 
-  // ✅ 이미지 + 제품정보 캐시
-  const productCache = useMemo(() => new Map(), []);
-
-  // ✅ 이미지/정보 조회
-  const fetchProductInfo = useCallback(
-    async (category, identifier) => {
-      const cacheKey = `${category}-${identifier}`;
-      if (productCache.has(cacheKey)) return productCache.get(cacheKey);
-
-      try {
-        const type = apiTypeMap[category] || category;
-        const res = await api.get(`/product/type/${type}`, {
-          params: { size: 300 },
-        });
-        const list = res.data.content || [];
-
-        const normalize = (s) =>
-          String(s || "")
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .replace(/[^\w가-힣]/g, "");
-
-        const found =
-          typeof identifier === "number"
-            ? list.find((p) => p.id === identifier)
-            : list.find((p) =>
-                normalize(p.name).includes(normalize(identifier).slice(0, 8)),
-              );
-
-        const result = {
-          image: found?.image || "/no-image.svg",
-          name: found?.name || "이름 없음",
-          options: found?.options || {},
-        };
-        productCache.set(cacheKey, result);
-        return result;
-      } catch {
-        const fallback = {
-          image: "/no-image.svg",
-          name: "이름 없음",
-          options: {},
-        };
-        productCache.set(cacheKey, fallback);
-        return fallback;
-      }
-    },
-    [apiTypeMap, productCache],
-  );
-
-  /** ✅ 제품별 주요 스펙 요약 추출 */
-  const getShortSpecs = useCallback((category, options = {}) => {
-    if (!options || Object.keys(options).length === 0) return "";
-
-    switch (category) {
-      case "cpu":
-        return [
-          options.core && `${options.core}코어`,
-          options.thread && `${options.thread}스레드`,
-          options.boost_clock && `${options.boost_clock}`,
-        ]
-          .filter(Boolean)
-          .join(" / ");
-      case "gpu":
-        return [
-          options.memory && `${options.memory}`,
-          options.memory_type && options.memory_type,
-          options.chipset && options.chipset,
-        ]
-          .filter(Boolean)
-          .join(" / ");
-      case "ram":
-        return [
-          options.capacity && `${options.capacity}`,
-          options.clock && `${options.clock}`,
-          options.type && options.type,
-        ]
-          .filter(Boolean)
-          .join(" / ");
-      case "ssd":
-      case "hdd":
-        return [
-          options.capacity && `${options.capacity}`,
-          options.interface && options.interface,
-          options.type && options.type,
-        ]
-          .filter(Boolean)
-          .join(" / ");
-      default:
-        return Object.values(options).slice(0, 2).filter(Boolean).join(" / ");
-    }
-  }, []);
-
-  /** ✅ 사용자 견적 */
+  /** ✅ 사용자 견적 로드 (GET /estimate/:id/products) */
   const fetchUserEstimateProducts = useCallback(
     async (estimateId) => {
+      console.log("📡 [API 호출] 사용자 견적 불러오기:", estimateId);
       try {
         const token = localStorage.getItem("accessToken");
+        if (!token) {
+          console.warn("⚠️ 토큰 없음 — 로그인 필요");
+          return;
+        }
+
         const res = await api.get(`/estimate/${estimateId}/products`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        console.log("✅ [응답 데이터]", res.data);
         const data = res.data || [];
 
-        const results = await Promise.allSettled(
-          data.map(async (p) => {
-            const info = await fetchProductInfo(p.category, p.productId);
-            return {
-              id: p.id,
-              category: p.category,
-              productId: p.productId,
-              productName: info.name || p.productName,
-              shortSpecs: getShortSpecs(p.category, info.options),
-              image: info.image,
-              unitPrice: parsePrice(p.unitPrice),
-              totalPrice: parsePrice(p.totalPrice),
-              quantity: p.quantity || 1,
-            };
-          }),
-        );
+        const mapped = data.map((p) => ({
+          id: p.id,
+          category: p.category,
+          productId: p.productId,
+          productName: p.productName,
+          image: p.image || "/no-image.svg",
+          unitPrice: parsePrice(p.unitPrice),
+          totalPrice: parsePrice(p.totalPrice),
+          quantity: p.quantity || 1,
+        }));
 
-        const mapped = results
-          .filter((r) => r.status === "fulfilled")
-          .map((r) => r.value);
+        console.log("🧩 [매핑된 사용자 견적]", mapped);
         setProducts(mapped);
       } catch (err) {
-        console.error("❌ 사용자 견적 불러오기 실패:", err);
+        console.error("❌ [오류] 사용자 견적 불러오기 실패:", err);
       }
     },
-    [fetchProductInfo, getShortSpecs, parsePrice],
+    [parsePrice],
   );
 
-  /** ✅ AI 견적 */
+  /** ✅ AI 견적 로드 (GET /aiestimates/me) */
   const fetchAiEstimateProducts = useCallback(async () => {
-    if (!estimate.components) return;
-    try {
-      const results = await Promise.allSettled(
-        estimate.components.map(async (c, i) => {
-          const info = await fetchProductInfo(c.type, c.name ?? c.productId);
-          return {
-            id: `ai-${i}`,
-            category: c.type,
-            productName: info.name,
-            shortSpecs: getShortSpecs(c.type, info.options),
-            image: info.image,
-            unitPrice: parsePrice(c.price),
-            totalPrice: parsePrice(c.price),
-            quantity: 1,
-          };
-        }),
-      );
+    console.log("📡 [API 호출] AI 견적 불러오기 시작");
 
-      const mapped = results
-        .filter((r) => r.status === "fulfilled")
-        .map((r) => r.value);
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.warn("⚠️ 토큰 없음 — 로그인 필요");
+        return;
+      }
+
+      // ✅ baseURL에 이미 /api가 있으므로, 중복 피하기 위해 '/aiestimates/me' 사용
+      const res = await api.get("/aiestimates/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("✅ [응답 전체 AI 견적 데이터]", res.data);
+
+      // estimate.id와 일치하는 AI 견적만 선택
+      const targetEstimate = res.data.find((e) => e.id === estimate.id);
+      if (!targetEstimate) {
+        console.warn("⚠️ 일치하는 AI 견적을 찾지 못했습니다:", estimate.id);
+        return;
+      }
+
+      console.log("🎯 [선택된 AI 견적]", targetEstimate);
+
+      const mapped = (targetEstimate.products || []).map((p, i) => ({
+        id: p.id || `ai-${i}`,
+        category: p.type,
+        productName: p.matched_name || p.productName || "이름 없음",
+        image: p.image || "/no-image.svg",
+        unitPrice: parsePrice(p.unitPrice),
+        totalPrice: parsePrice(p.unitPrice) * (p.quantity || 1),
+        quantity: p.quantity || 1,
+      }));
+
+      console.log("🧩 [매핑된 AI 견적 제품]", mapped);
       setProducts(mapped);
     } catch (err) {
-      console.error("❌ AI 견적 처리 실패:", err);
+      console.error("❌ [오류] AI 견적 불러오기 실패:", err);
     }
-  }, [estimate, fetchProductInfo, getShortSpecs, parsePrice]);
+  }, [estimate.id, parsePrice]);
 
+  /** ✅ 최초 렌더링 시 API 호출 */
   useEffect(() => {
+    console.log("🚀 [INIT] EstimateDetail 컴포넌트 진입");
+    console.log("📦 estimate 데이터:", estimate);
+
     resetProgress();
     setProgress(25);
-    if (estimate.id && !estimate.components)
+
+    if (estimate.isAi) {
+      console.log("➡️ [분기] AI 견적 로드 실행 (/aiestimates/me)");
+      fetchAiEstimateProducts();
+    } else {
+      console.log("➡️ [분기] 사용자 견적 로드 실행 (/estimate/:id/products)");
       fetchUserEstimateProducts(estimate.id);
-    else fetchAiEstimateProducts();
+    }
+
     setProgress(100);
   }, [
     estimate,
@@ -236,6 +153,7 @@ export default function EstimateDetail({ estimate, onClose }) {
     setProgress,
   ]);
 
+  /** ✅ 총합 계산 */
   const totalPrice = useMemo(
     () =>
       products.reduce(
@@ -245,6 +163,7 @@ export default function EstimateDetail({ estimate, onClose }) {
     [products, parsePrice],
   );
 
+  /** ✅ 렌더링 */
   return (
     <div className="estimate-detail-page">
       <div className="estimate-header">
@@ -281,15 +200,10 @@ export default function EstimateDetail({ estimate, onClose }) {
                 </div>
 
                 <div className="product-details">
-                  {/* ✅ 상품명 + 간단한 스펙 */}
                   <div className="product-meta">
                     <p className="meta-product-name">{p.productName}</p>
-                    {p.shortSpecs && (
-                      <p className="meta-short">{p.shortSpecs}</p>
-                    )}
                   </div>
 
-                  {/* 가격/총액 */}
                   <p className="product-price">
                     {p.unitPrice
                       ? `${p.unitPrice.toLocaleString()} 원`
