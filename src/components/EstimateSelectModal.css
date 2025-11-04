@@ -1,0 +1,85 @@
+.estimate-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.estimate-modal {
+    background: #fff;
+    padding: 24px 28px;
+    border-radius: 10px;
+    width: 460px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.estimate-modal h3 {
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.close-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    border: none;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.estimate-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.estimate-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.estimate-item strong {
+    font-size: 0.95rem;
+}
+
+.estimate-item p {
+    margin: 3px 0 0 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.add-btn,
+.new-btn {
+    background: #2d5be3;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.add-btn:hover,
+.new-btn:hover {
+    background: #234ac0;
+}
+
+.empty-box {
+    text-align: center;
+    padding: 20px;
+}
+
+.error {
+    color: #d00;
+}

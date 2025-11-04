@@ -1,10 +1,10 @@
-// src/pages/ProductDetailView.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api";
 import Toast from "../components/Toast";
 import "./styles/ProductDetailView.css";
-import { addProductToEstimate } from "./estimateUtils"; // 1. 유틸리티 함수 불러오기
+import EstimateSelectModal from "../components/EstimateSelectModal"; // ✅ 추가
+import { addProductToEstimate } from "./estimateUtils";
 
 export default function ProductDetailView() {
   const { id } = useParams();
@@ -13,8 +13,9 @@ export default function ProductDetailView() {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
   const [showToast, setShowToast] = useState(false);
+  const [showModal, setShowModal] = useState(false); // ✅ 추가
 
-  // (이하 optionLabels, specKeys 등 다른 코드는 모두 동일합니다)
+  // ✅ 기존 모든 매핑값 유지
   const optionLabels = {
     manufacturer: "제조회사",
     socket: "소켓 구분",
@@ -150,6 +151,7 @@ export default function ProductDetailView() {
     radiator_top: "상단 라디에이터 지원",
     radiator_rear: "후면 라디에이터 지원",
   };
+
   const specKeys = {
     cpu: [
       "manufacturer",
@@ -231,21 +233,14 @@ export default function ProductDetailView() {
       "height",
       "color",
       "rgb",
-      "manufacturer",
       "memorytype",
       "formfactor",
-      "capacity",
-      "speed",
       "timing",
-      "voltage",
       "modules",
-      "expo",
-      "xmp",
       "xmp3",
       "heatsink",
       "ledlight",
       "ledcolor",
-      "height",
       "thickness",
       "ondieecc",
       "intel_support",
@@ -346,16 +341,15 @@ export default function ProductDetailView() {
     ],
   };
 
-  const formatPrice = (price) => {
-    if (!price) return null;
-    const numeric = Number(String(price).replace(/,/g, ""));
-    return isNaN(numeric) ? null : numeric.toLocaleString();
-  };
-  const formatValue = (value) => {
-    if (value === true || value === "true") return "O";
-    if (value === false || value === "false") return "X";
-    return value;
-  };
+  const formatPrice = (price) =>
+    !price ? null : Number(String(price).replace(/,/g, "")).toLocaleString();
+  const formatValue = (value) =>
+    value === true || value === "true"
+      ? "O"
+      : value === false || value === "false"
+        ? "X"
+        : value;
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -368,7 +362,7 @@ export default function ProductDetailView() {
     fetchProduct();
   }, [id]);
 
-  // 2. '보관하기' 버튼 클릭 시 실행될 함수 수정
+  // ✅ 수정된 보관하기
   const handleSaveToEstimate = async () => {
     if (!product) {
       setToastMessage("상품 정보를 불러오는 중입니다.");
@@ -376,57 +370,17 @@ export default function ProductDetailView() {
       setShowToast(true);
       return;
     }
-
-    // 유틸리티 함수가 요구하는 형식으로 제품 정보를 준비합니다.
-    const productToAdd = {
-      id: product.id,
-      category: product.type,
-      name: product.name,
-    };
-
-    // 유틸리티 함수를 호출합니다.
-    const result = await addProductToEstimate(productToAdd);
-
-    // 결과에 따라 Toast 메시지를 설정합니다.
-    setToastMessage(result.message);
-    setToastType(result.success ? "success" : "error");
-    setShowToast(true);
+    setShowModal(true);
   };
 
   if (!product) return <p>상품 불러오는 중...</p>;
 
-  // (이하 나머지 코드는 모두 동일합니다)
   const optionsNormalized = {};
   Object.entries(product.options || {}).forEach(([key, value]) => {
-    const keyTrimmed = key.trim();
-    const koreanToEnglish = {
-      정격출력: "wattage",
-      효율: "efficiency",
-      인증: "certification",
-      모듈러: "modular",
-      팬크기: "fan_size",
-      베어링: "bearing_type",
-      보호회로: "protection_features",
-      길이: "length",
-      무게: "weight",
-      보증기간: "warranty",
-      용량: "capacity",
-      타입: "type",
-      속도: "speed",
-      지연시간: "latency",
-      전압: "voltage",
-      xmp: "xmp",
-      방열판: "heatspreader",
-    };
-    const mappedKey = koreanToEnglish[keyTrimmed] || keyTrimmed;
-    const normalizedKey = mappedKey
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "_")
-      .replace(/[\(\)\/]/g, "_")
-      .replace(/[^a-z0-9가-힣_]/gi, "_");
-    optionsNormalized[normalizedKey] = value;
+    const mappedKey = key.trim().toLowerCase().replace(/\s+/g, "_");
+    optionsNormalized[mappedKey] = value;
   });
+
   const typeKey = product.type?.toLowerCase();
   const typeLabelMap = {
     cpu: "프로세서",
@@ -440,6 +394,7 @@ export default function ProductDetailView() {
     case: "케이스",
   };
   const typeLabel = typeLabelMap[typeKey] || product.type;
+
   const entries = (specKeys[typeKey] || [])
     .map((key) => [
       key,
@@ -450,122 +405,8 @@ export default function ProductDetailView() {
     .filter(([, v]) => v !== undefined && v !== null)
     .slice(0, 16);
   const gridPairs = [];
-  for (let i = 0; i < entries.length; i += 2) {
+  for (let i = 0; i < entries.length; i += 2)
     gridPairs.push([entries[i], entries[i + 1]]);
-  }
-
-  const handleCardClick = (buildId) => {
-    setSelectedBuild((prev) => (prev === buildId ? null : buildId));
-  };
-
-  const builds = {
-    gaming: {
-      cpu: "AMD 라이젠7-6세대 9800X3D (그래네트 핏치)",
-      mainboard: "ASUS PRIME B550M-A WIFI 대역CTS",
-      gpu: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
-      memory: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
-      power: "SuperFlower Leadex III Gold 750W",
-      ssd: "WD Black SN850X NVMe (1TB)",
-      cooler: "Noctua NH-U12S redux (저소음 공랭)",
-      case: "Fractal Design Define 7 Compact",
-      price: "￦1,900,000",
-    },
-    office: {
-      cpu: "AMD 라이젠7-6세대 9800X3D (그래네트 핏치)",
-      mainboard: "ASUS PRIME B550M-A WIFI 대역CTS",
-      gpu: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
-      memory: "NVIDIA GeForce RTX 4060 Dual OC D6 8GB",
-      power: "SuperFlower Leadex III Gold 750W",
-      ssd: "WD Black SN850X NVMe (1TB)",
-      cooler: "Noctua NH-U12S redux (저소음 공랭)",
-      case: "Fractal Design Define 7 Compact",
-      price: "￦1,900,000",
-    },
-  };
-
-  const gamingBuild = {
-    id: "gaming",
-    title: "게이밍",
-    image: "/gaming.svg",
-    desc: "최신 부품 조합으로 최적의 게임환경을 보장하는 게이밍 PC",
-    details: builds.gaming,
-    caseImage: "/gaming-case.png",
-  };
-  const officeBuild = {
-    id: "office",
-    title: "사무용",
-    image: "/affairs.svg",
-    desc: "업무와 멀티태스킹에 최적화된 안정적이고 조용한 사무용 PC",
-    details: builds.office,
-    caseImage: "/office-case.png",
-  };
-
-  const RecommendCard = ({ build, onClick, isActive }) => (
-    <div
-      className={`recommend-card ${isActive ? "active" : ""}`}
-      onClick={onClick}
-    >
-      <img src={build.image} alt={`${build.title} PC`} />
-      <div className="recommend-label">{build.title}</div>
-      <div className="recommend-desc">{build.desc}</div>
-    </div>
-  );
-  const RecommendDetail = ({ build, onClose }) => (
-    <div className="recommend-detail-popup">
-      <button className="popup-close-btn" onClick={onClose}>
-        &times;
-      </button>
-      <table className="recommend-table">
-        <tbody>
-          <tr>
-            <td>CPU</td>
-            <td className="recommend-highlight">{build.details.cpu}</td>
-          </tr>
-          <tr>
-            <td>메인보드</td>
-            <td>{build.details.mainboard}</td>
-          </tr>
-          <tr>
-            <td>그래픽카드</td>
-            <td>{build.details.gpu}</td>
-          </tr>
-          <tr>
-            <td>메모리</td>
-            <td>{build.details.memory}</td>
-          </tr>
-          <tr>
-            <td>파워</td>
-            <td>{build.details.power}</td>
-          </tr>
-          <tr>
-            <td>SSD</td>
-            <td>{build.details.ssd}</td>
-          </tr>
-          <tr>
-            <td>쿨러</td>
-            <td>{build.details.cooler}</td>
-          </tr>
-          <tr>
-            <td>케이스</td>
-            <td>{build.details.case}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div
-        className="popup-image-section"
-        style={{ backgroundImage: `url(${build.caseImage})` }}
-      >
-        <div className="recommend-detail-info">
-          <div className="recommend-detail-title">{build.title}</div>
-          <div className="recommend-detail-desc">{build.desc}</div>
-          <div className="recommend-detail-price">{build.details.price}</div>
-          <button className="recommend-detail-cart-btn">
-            <img src="/cart-white.svg" alt="cart icon" /> 견적 보관하기
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="product-detail-view">
@@ -583,12 +424,14 @@ export default function ProductDetailView() {
           </Link>{" "}
           &gt; <span>{product.name}</span>
         </div>
+
         <h2 className="product-title">{product.name}</h2>
         <div className="tags">
           <span>#{product.manufacturer}</span>
           <span>#{typeLabel}</span>
           <span>등록일: {product.regDate || product.reg_date}</span>
         </div>
+
         <div className="product-box">
           <div className="box-flex">
             <div className="box-image">
@@ -633,6 +476,7 @@ export default function ProductDetailView() {
               </div>
             </div>
           </div>
+
           <div className="price-box">
             <span className="price-label">최저가</span>
             <strong className="price-value">
@@ -647,6 +491,7 @@ export default function ProductDetailView() {
                 "정보 없음"
               )}
             </strong>
+
             <div className="price-actions">
               {product.lowestPrice?.link && (
                 <a
@@ -671,6 +516,21 @@ export default function ProductDetailView() {
           </div>
         </div>
       </div>
+
+      {/* ✅ 모달 추가 */}
+      {showModal && (
+        <EstimateSelectModal
+          product={product}
+          onClose={() => setShowModal(false)}
+          onSuccess={(msg, type = "success") => {
+            setToastMessage(msg);
+            setToastType(type);
+            setShowToast(true);
+            setShowModal(false);
+          }}
+        />
+      )}
+
       {showToast && (
         <Toast
           message={toastMessage}

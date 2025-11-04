@@ -13,7 +13,8 @@ import EstimateDetail from "./pages/EstimateDetail";
 import ProgressBar from "./components/ProgressBar";
 import UserGuide from "./pages/UserGuide";
 import UserGuideDetail from "./pages/UserGuideDetail.jsx";
-
+import FindPassword from "./pages/FindPassword.jsx";
+import PasswordReset from "./pages/PasswordReset.jsx";
 function App() {
   const location = useLocation();
   const hideHeaderRoutes = ["/login", "/register", "/usage"];
@@ -33,6 +34,9 @@ function App() {
         <Route path="/guide/:id" element={<UserGuideDetail />} />
         <Route path="/product/:productName" element={<ProductDetail />} />
         <Route path="/estimate/:id" element={<EstimateDetail />} />
+        <Route path="/findpassword" element={<FindPassword />} />
+        <Route path="/reset-password" element={<PasswordReset />} />
+
         <Route
           path="/product/:productName/:id"
           element={<ProductDetailView />}

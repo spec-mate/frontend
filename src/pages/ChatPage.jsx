@@ -42,14 +42,20 @@ export default function ChatPage({
       });
 
       console.log("✅ AI 응답:", res.data);
-      const aiData = res.data?.data?.data || res.data?.data;
+
+      const aiData = res.data?.data || res.data;
+      const isPromptOnly = typeof aiData?.prompt === "string";
 
       if (!aiData || Object.keys(aiData).length === 0) {
         setMessages((prev) => [
           ...prev,
           { sender: "ai", text: "AI 응답 데이터를 불러오지 못했습니다." },
         ]);
+      } else if (isPromptOnly) {
+        // 텍스트 응답만 있을 때
+        setMessages((prev) => [...prev, { sender: "ai", text: aiData.prompt }]);
       } else {
+        // 견적형 응답
         setMessages((prev) => [...prev, { sender: "ai", data: aiData }]);
       }
     } catch (err) {
@@ -140,7 +146,7 @@ export default function ChatPage({
     );
   };
 
-  // ✅ 견적 보관함 저장 기능
+  // ✅ 견적 보관함 저장 기능 (title → build_name 매핑)
   const handleSaveEstimate = async (estimateData) => {
     if (!estimateData || !estimateData.components) {
       alert("저장할 견적 데이터가 없습니다.");
@@ -151,10 +157,13 @@ export default function ChatPage({
       deduplicateComponents(estimateData.components),
     );
 
+    // ✅ title 사용 (기본값 보장)
+    const safeTitle = estimateData.title?.trim() || "AI 추천 견적";
+
     const payload = {
       id: `local-ai-${Date.now()}`,
-      title: estimateData.build_name || "AI 추천 견적",
-      description: estimateData.build_description || "",
+      title: safeTitle,
+      description: estimateData.description || "",
       notes: estimateData.notes || "",
       total: String(estimateData.total || "0"),
       isAi: true,
@@ -188,7 +197,8 @@ export default function ChatPage({
     if (token) {
       try {
         const dbPayload = {
-          build_name: payload.title,
+          // ✅ title → build_name으로 매핑
+          build_name: safeTitle || "AI 추천 견적",
           build_description: payload.description,
           total: String(payload.total),
           notes: payload.notes,
@@ -203,13 +213,10 @@ export default function ChatPage({
           })),
         };
 
-        // ✅ 콘솔에 DB 저장 데이터 출력
         console.log("📦 DB 저장 요청 payload:", dbPayload);
-
         const res = await api.post("/aiestimates", dbPayload, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         console.log("✅ AI 견적 DB 저장 완료:", res.data);
       } catch (err) {
         console.error("❌ DB 저장 실패:", err);
@@ -282,7 +289,8 @@ export default function ChatPage({
                     </>
                   ) : (
                     <p className="cp-ai-text">
-                      {aiData?.text ||
+                      {aiData?.prompt ||
+                        aiData?.text ||
                         msg.text ||
                         "AI 응답 데이터를 불러오지 못했습니다."}
                     </p>

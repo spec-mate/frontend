@@ -1,3 +1,4 @@
+// src/pages/EstimateDetail.jsx
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import api from "../api";
 import "./styles/EstimateDetail.css";
@@ -17,6 +18,9 @@ const LazyImage = React.memo(({ src, alt }) => (
       borderRadius: "6px",
       background: "#fafafa",
       border: "1px solid #eee",
+    }}
+    onError={(e) => {
+      e.target.src = "/no-image.svg"; // fallback
     }}
   />
 ));
@@ -69,7 +73,14 @@ export default function EstimateDetail({ estimate, onClose }) {
           category: p.category,
           productId: p.productId,
           productName: p.productName,
-          image: p.image || "/no-image.svg",
+          // ✅ 백엔드 매핑 자동 감지
+          image:
+            p.image ||
+            p.imageUrl ||
+            p.productImage ||
+            p.product?.image ||
+            p.product?.imageUrl ||
+            "/no-image.svg",
           unitPrice: parsePrice(p.unitPrice),
           totalPrice: parsePrice(p.totalPrice),
           quantity: p.quantity || 1,
@@ -95,14 +106,12 @@ export default function EstimateDetail({ estimate, onClose }) {
         return;
       }
 
-      // ✅ baseURL에 이미 /api가 있으므로, 중복 피하기 위해 '/aiestimates/me' 사용
       const res = await api.get("/aiestimates/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       console.log("✅ [응답 전체 AI 견적 데이터]", res.data);
 
-      // estimate.id와 일치하는 AI 견적만 선택
       const targetEstimate = res.data.find((e) => e.id === estimate.id);
       if (!targetEstimate) {
         console.warn("⚠️ 일치하는 AI 견적을 찾지 못했습니다:", estimate.id);
@@ -115,7 +124,14 @@ export default function EstimateDetail({ estimate, onClose }) {
         id: p.id || `ai-${i}`,
         category: p.type,
         productName: p.matched_name || p.productName || "이름 없음",
-        image: p.image || "/no-image.svg",
+        // ✅ 백엔드 매핑 자동 감지
+        image:
+          p.image ||
+          p.imageUrl ||
+          p.productImage ||
+          p.product?.image ||
+          p.product?.imageUrl ||
+          "/no-image.svg",
         unitPrice: parsePrice(p.unitPrice),
         totalPrice: parsePrice(p.unitPrice) * (p.quantity || 1),
         quantity: p.quantity || 1,

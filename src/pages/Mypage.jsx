@@ -108,7 +108,7 @@ export default function MyPage() {
     setSelectedEstimate(null);
   }, []);
 
-  // ✅ 견적 삭제 (AI / 사용자 구분)
+  // ✅ 견적 삭제 (AI / 사용자 구분 + 강제 삭제 추가)
   const handleDelete = useCallback(async (estimateId, e, isAi = false) => {
     e.stopPropagation();
 
@@ -116,7 +116,6 @@ export default function MyPage() {
       const token = localStorage.getItem("accessToken");
       const headers = { Authorization: `Bearer ${token}` };
 
-      // ✅ 분기: AI 견적 vs 일반 견적
       const endpoint = isAi
         ? `/aiestimates/${estimateId}`
         : `/estimate/${estimateId}`;
@@ -138,6 +137,28 @@ export default function MyPage() {
       );
     } catch (err) {
       console.error("❌ 견적 삭제 실패:", err);
+
+      // ✅ 강제 삭제 확인창
+      const confirmForceDelete = window.confirm(
+        "서버에서 견적 삭제에 실패했습니다.\n목록에서 강제로 제거하시겠습니까?",
+      );
+
+      if (confirmForceDelete) {
+        if (isAi) {
+          setAiEstimates((prev) =>
+            prev.filter((item) => item.id !== estimateId),
+          );
+        } else {
+          setUserEstimates((prev) =>
+            prev.filter((item) => item.id !== estimateId),
+          );
+        }
+
+        console.log(
+          `⚠️ 서버 삭제 실패 → ${isAi ? "AI" : "사용자"} 견적을 프론트에서 강제 제거함.`,
+        );
+      }
+
       if (err.response?.status === 403) {
         alert("삭제 권한이 없습니다. 다시 로그인 해주세요.");
         localStorage.removeItem("accessToken");

@@ -43,7 +43,7 @@ export default function Login() {
       setToastType("success");
       setShowToast(true);
 
-      // 2초 후 홈으로 이동
+      // ✅ 2초 후 홈으로 이동
       setTimeout(() => navigate("/"), 2000);
     } catch (err) {
       console.error("로그인 실패:", err);
@@ -62,6 +62,7 @@ export default function Login() {
       </Link>
 
       <form className="login-form" onSubmit={handleSubmit}>
+        {/* 이메일 입력 */}
         <div className="input-group">
           <input
             type="email"
@@ -73,6 +74,7 @@ export default function Login() {
           />
         </div>
 
+        {/* 비밀번호 입력 */}
         <div className="input-group">
           <input
             type="password"
@@ -84,18 +86,28 @@ export default function Login() {
           />
         </div>
 
+        {/* 로그인 버튼 */}
         <button type="submit" className="login-button">
           로그인
         </button>
 
+        {/* 회원가입 안내 */}
         <p className="signup-text">
           회원이 아니신가요?{" "}
           <Link to="/register" className="signup-link">
             회원가입하기
           </Link>
         </p>
+
+        {/* ✅ 추가된 비밀번호 찾기 링크 */}
+        <p className="forgot-text">
+          <Link to="/findpassword" className="forgot-link">
+            비밀번호 찾기
+          </Link>
+        </p>
       </form>
 
+      {/* Toast 알림 */}
       {showToast && (
         <Toast
           message={toastMessage}
