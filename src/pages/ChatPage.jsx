@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./styles/ChatPage.css";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -12,11 +12,45 @@ export default function ChatPage({
   handleBack,
   isLoading,
   setIsLoading,
-  roomId,
 }) {
   const chatInputRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const [roomId, setRoomId] = useState(null);
+  const [accessToken] = useState(
+    // ✅ 세션 내에서 고정된 토큰
+    localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken"),
+  );
 
+  // ✅ 페이지 진입 시 자동 채팅방 생성
+  useEffect(() => {
+    const createChatRoom = async () => {
+      if (!accessToken) {
+        alert("로그인이 필요합니다.");
+        handleBack();
+        return;
+      }
+
+      try {
+        const res = await api.post(
+          "/chat/rooms",
+          { title: "AI 견적 요청" },
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          },
+        );
+
+        console.log("✅ 새 채팅방 생성 완료:", res.data);
+        setRoomId(res.data.id);
+      } catch (err) {
+        console.error("❌ 채팅방 생성 실패:", err);
+        alert("채팅방 생성 중 오류가 발생했습니다.");
+      }
+    };
+    createChatRoom();
+  }, [accessToken]);
+
+  // ✅ 메시지 스크롤 유지
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -27,8 +61,9 @@ export default function ChatPage({
   // ✅ 메시지 전송
   const handleSend = async (userInput) => {
     if (!userInput.trim()) return;
+
     if (!roomId) {
-      alert("채팅방 ID가 존재하지 않습니다.");
+      alert("채팅방 ID가 아직 생성되지 않았습니다. 잠시만 기다려주세요.");
       return;
     }
 
@@ -36,10 +71,16 @@ export default function ChatPage({
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
 
     try {
-      const res = await api.post(`/api/chat/rooms/${roomId}/messages`, {
-        text: userInput,
-        notes: "사용자 요청 기반 AI 견적",
-      });
+      const res = await api.post(
+        `/chat/rooms/${roomId}/messages`,
+        {
+          text: userInput,
+          notes: "사용자 요청 기반 AI 견적",
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
 
       console.log("✅ AI 응답:", res.data);
 
@@ -52,19 +93,22 @@ export default function ChatPage({
           { sender: "ai", text: "AI 응답 데이터를 불러오지 못했습니다." },
         ]);
       } else if (isPromptOnly) {
-        // 텍스트 응답만 있을 때
         setMessages((prev) => [...prev, { sender: "ai", text: aiData.prompt }]);
       } else {
-        // 견적형 응답
         setMessages((prev) => [...prev, { sender: "ai", data: aiData }]);
       }
     } catch (err) {
       console.error("❌ 채팅 메시지 전송 실패:", err);
+
+      // ✅ 명시적 만료 에러만 api.js에서 refresh하도록 처리됨
       setMessages((prev) => [
         ...prev,
         {
           sender: "ai",
-          text: "서버에서 응답을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.",
+          text:
+            err.response?.status === 403
+              ? "권한이 만료되었습니다. 잠시 후 다시 시도해주세요."
+              : "서버 응답 오류가 발생했습니다.",
         },
       ]);
     } finally {
@@ -75,14 +119,14 @@ export default function ChatPage({
 
   const onSendClick = () => {
     if (chatInputRef.current) {
-      const inputValue = chatInputRef.current.value.trim();
-      if (inputValue) handleSend(inputValue);
+      const value = chatInputRef.current.value.trim();
+      if (value) handleSend(value);
     }
   };
 
   const handleBackWithReset = () => {
-    if (setIsLoading) setIsLoading(false);
-    if (setMessages) setMessages([]);
+    setIsLoading(false);
+    setMessages([]);
     ["chatMessages", "chatHistory", "chatRoomMessages", "messages"].forEach(
       (k) => {
         localStorage.removeItem(k);
@@ -92,7 +136,7 @@ export default function ChatPage({
     handleBack();
   };
 
-  // ✅ 설명형 판단
+  // ✅ 설명형 여부 판별
   const lastUserMessage =
     messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
 
@@ -102,22 +146,22 @@ export default function ChatPage({
     return keywords.some((kw) => text.includes(kw));
   };
 
-  // ✅ 부품 중복 제거 및 정렬
+  // ✅ 중복 부품 제거 + 정렬
   const deduplicateComponents = (components = []) => {
     const unique = [];
     const seen = new Set();
     for (const c of components) {
-      const typeKey = c.type?.toLowerCase() || "unknown";
-      if (!seen.has(typeKey)) {
-        seen.add(typeKey);
-        unique.push({ ...c, type: typeKey });
+      const key = c.type?.toLowerCase() || "unknown";
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push({ ...c, type: key });
       }
     }
     return unique;
   };
 
   const normalizeComponents = (components = []) => {
-    const TYPE_ORDER = [
+    const ORDER = [
       "mainboard",
       "cpu",
       "vga",
@@ -128,14 +172,13 @@ export default function ChatPage({
       "power",
       "case",
     ];
-
     const map = {};
     for (const c of components) {
       const key = c.type?.toLowerCase() || "unknown";
       map[key] = c;
     }
 
-    return TYPE_ORDER.map(
+    return ORDER.map(
       (type) =>
         map[type] || {
           type,
@@ -146,18 +189,16 @@ export default function ChatPage({
     );
   };
 
-  // ✅ 견적 보관함 저장 기능 (title → build_name 매핑)
+  // ✅ 견적 저장
   const handleSaveEstimate = async (estimateData) => {
-    if (!estimateData || !estimateData.components) {
+    if (!estimateData?.components) {
       alert("저장할 견적 데이터가 없습니다.");
       return;
     }
 
-    const cleanedComponents = normalizeComponents(
+    const cleaned = normalizeComponents(
       deduplicateComponents(estimateData.components),
     );
-
-    // ✅ title 사용 (기본값 보장)
     const safeTitle = estimateData.title?.trim() || "AI 추천 견적";
 
     const payload = {
@@ -167,7 +208,7 @@ export default function ChatPage({
       notes: estimateData.notes || "",
       total: String(estimateData.total || "0"),
       isAi: true,
-      components: cleanedComponents.map((c) => ({
+      components: cleaned.map((c) => ({
         type: c.type,
         name: c.name,
         description: c.description,
@@ -177,32 +218,22 @@ export default function ChatPage({
       createdAt: new Date().toISOString(),
     };
 
-    // ✅ localStorage 저장
-    let existing = [];
-    try {
-      existing = JSON.parse(localStorage.getItem("aiEstimateList")) || [];
-      if (!Array.isArray(existing)) existing = [];
-    } catch {
-      existing = [];
-    }
+    localStorage.setItem(
+      "aiEstimateList",
+      JSON.stringify([
+        payload,
+        ...(JSON.parse(localStorage.getItem("aiEstimateList")) || []),
+      ]),
+    );
 
-    const updated = [payload, ...existing];
-    localStorage.setItem("aiEstimateList", JSON.stringify(updated));
-
-    // ✅ DB 저장 (로그인 상태일 때)
-    const token =
-      localStorage.getItem("accessToken") ||
-      sessionStorage.getItem("accessToken");
-
-    if (token) {
+    if (accessToken) {
       try {
         const dbPayload = {
-          // ✅ title → build_name으로 매핑
-          build_name: safeTitle || "AI 추천 견적",
+          build_name: safeTitle,
           build_description: payload.description,
           total: String(payload.total),
           notes: payload.notes,
-          components: cleanedComponents.map((c) => ({
+          components: cleaned.map((c) => ({
             type: c.type,
             name: c.name,
             description: c.description,
@@ -213,16 +244,15 @@ export default function ChatPage({
           })),
         };
 
-        console.log("📦 DB 저장 요청 payload:", dbPayload);
         const res = await api.post("/aiestimates", dbPayload, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${accessToken}` },
         });
-        console.log("✅ AI 견적 DB 저장 완료:", res.data);
+        console.log("✅ 견적 DB 저장 완료:", res.data);
       } catch (err) {
         console.error("❌ DB 저장 실패:", err);
       }
     } else {
-      console.warn("⚠️ 로그인 정보 없음 — localStorage에만 저장되었습니다.");
+      console.warn("⚠️ 로그인 정보 없음 — localStorage에만 저장됨.");
     }
 
     alert("AI 견적이 보관함에 추가되었습니다!");
@@ -244,9 +274,7 @@ export default function ChatPage({
           if (msg.sender === "ai") {
             const aiData = msg.data?.data ? msg.data.data : msg.data;
             const hasEstimate =
-              aiData &&
-              Array.isArray(aiData.components) &&
-              aiData.components.length > 0;
+              aiData?.components && aiData.components.length > 0;
             const isExplanation = isExplanationMessage(aiData?.text);
 
             return (

@@ -1,4 +1,3 @@
-// src/api.js
 import axios from "axios";
 
 const api = axios.create({
@@ -28,6 +27,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // AccessToken 만료 시 RefreshToken으로 재발급
     if (
       error.response &&
       [401, 403].includes(error.response.status) &&
@@ -49,18 +49,16 @@ api.interceptors.response.use(
       }
 
       try {
-        // ✅ RequestParam 방식으로 백엔드와 맞춤
-        const res = await axios.post(
-          `/api/auth/refresh?refreshToken=${encodeURIComponent(refreshToken)}`,
-          null, // body 없음
+        // ✅ api 인스턴스로 호출해야 CORS/withCredentials 유지됨
+        const res = await api.post(
+          `/auth/refresh?refreshToken=${encodeURIComponent(refreshToken)}`,
+          null,
           {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            withCredentials: true,
           },
         );
 
-        const newAccessToken =
-          res.data?.accessToken || res.data?.data?.accessToken;
+        const newAccessToken = res.data.accessToken;
 
         if (!newAccessToken) {
           throw new Error("응답에 accessToken이 존재하지 않습니다.");
@@ -70,9 +68,12 @@ api.interceptors.response.use(
         sessionStorage.setItem("accessToken", newAccessToken);
         localStorage.setItem("accessToken", newAccessToken);
 
-        console.info("✅ AccessToken 재발급 성공 → 원 요청 재시도");
-
+        // ✅ axios 인스턴스 전역에도 새 토큰 반영
+        api.defaults.headers.common["Authorization"] =
+          `Bearer ${newAccessToken}`;
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        console.info("✅ AccessToken 재발급 성공 → 원 요청 재시도");
         return api(originalRequest);
       } catch (refreshErr) {
         console.error("🚫 토큰 재발급 실패 → 로그인 필요:", refreshErr);
@@ -82,7 +83,6 @@ api.interceptors.response.use(
         return Promise.reject(refreshErr);
       }
     }
-
     return Promise.reject(error);
   },
 );
