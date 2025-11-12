@@ -6,13 +6,17 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// ✅ 공통 토큰 로더
+export const getAccessToken = () =>
+  sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken");
+export const getRefreshToken = () =>
+  sessionStorage.getItem("refreshToken") ||
+  localStorage.getItem("refreshToken");
+
 // ✅ 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
-    const token =
-      sessionStorage.getItem("accessToken") ||
-      localStorage.getItem("accessToken");
-
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,7 +31,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // AccessToken 만료 시 RefreshToken으로 재발급
     if (
       error.response &&
       [401, 403].includes(error.response.status) &&
@@ -42,47 +45,47 @@ api.interceptors.response.use(
 
       if (!refreshToken) {
         console.error("❌ RefreshToken 없음 → 재로그인 필요");
-        sessionStorage.clear();
         localStorage.clear();
+        sessionStorage.clear();
         window.location.href = "/login";
         return Promise.reject(error);
       }
 
       try {
-        // ✅ api 인스턴스로 호출해야 CORS/withCredentials 유지됨
-        const res = await api.post(
-          `/auth/refresh?refreshToken=${encodeURIComponent(refreshToken)}`,
+        const res = await axios.post(
+          `/api/auth/refresh?refreshToken=${encodeURIComponent(refreshToken)}`,
           null,
-          {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          },
+          { withCredentials: true },
         );
 
+        console.log("🔁 Refresh 응답:", res.data);
+
         const newAccessToken = res.data.accessToken;
+        if (!newAccessToken) throw new Error("accessToken 누락됨");
 
-        if (!newAccessToken) {
-          throw new Error("응답에 accessToken이 존재하지 않습니다.");
-        }
-
-        // ✅ 새 AccessToken 저장
-        sessionStorage.setItem("accessToken", newAccessToken);
         localStorage.setItem("accessToken", newAccessToken);
+        sessionStorage.setItem("accessToken", newAccessToken);
 
-        // ✅ axios 인스턴스 전역에도 새 토큰 반영
+        // ✅ 새 토큰 반영
         api.defaults.headers.common["Authorization"] =
           `Bearer ${newAccessToken}`;
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         console.info("✅ AccessToken 재발급 성공 → 원 요청 재시도");
+
+        // ✅ 약간의 딜레이 (필터 갱신 문제 방지)
+        await new Promise((r) => setTimeout(r, 150));
+
         return api(originalRequest);
       } catch (refreshErr) {
-        console.error("🚫 토큰 재발급 실패 → 로그인 필요:", refreshErr);
-        sessionStorage.clear();
+        console.error("🚫 토큰 재발급 실패 → 재로그인 필요:", refreshErr);
         localStorage.clear();
+        sessionStorage.clear();
         window.location.href = "/login";
         return Promise.reject(refreshErr);
       }
     }
+
     return Promise.reject(error);
   },
 );

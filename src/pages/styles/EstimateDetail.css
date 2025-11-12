@@ -91,7 +91,13 @@
   display: flex;
   flex-direction: column;
 }
-
+.meta-product-name {
+    /* 여기에 원하는 스타일을 적용하세요 */
+    font-size: 23px;
+    font-weight: 600;
+    color: #222;
+    margin:0;
+}
 .spacer {
   flex-grow: 1;
 }

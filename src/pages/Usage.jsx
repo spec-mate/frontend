@@ -18,7 +18,7 @@ export default function Usage() {
   const [roomId, setRoomId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 토스트 메시지 상태 관리
+  // ✅ 토스트 메시지 상태
   const [toastInfo, setToastInfo] = useState({
     show: false,
     message: "",
@@ -27,7 +27,7 @@ export default function Usage() {
 
   const initialInputRef = useRef(null);
 
-  // 토스트 닫을 때 로그인 페이지로 이동
+  // ✅ 토스트 닫기 → 로그인 페이지 이동
   const handleToastClose = () => {
     setToastInfo((prev) => ({ ...prev, show: false }));
     navigate("/login");
@@ -47,19 +47,28 @@ export default function Usage() {
 
     try {
       let currentRoomId = roomId;
+      const token =
+        localStorage.getItem("accessToken") ||
+        sessionStorage.getItem("accessToken");
 
-      // 채팅방 생성
+      // ✅ 채팅방 없으면 생성 (JWT 포함)
       if (!currentRoomId) {
-        const roomRes = await api.post("/chat/rooms", { title: question });
+        setInChat(true); // ✅ 먼저 ChatPage 진입 (UX 개선)
+        const roomRes = await api.post(
+          "/chat/rooms",
+          { title: question },
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
         currentRoomId = roomRes.data.id;
         setRoomId(currentRoomId);
-        setInChat(true);
       }
 
-      // 메시지 전송
-      const msgRes = await api.post(`/chat/rooms/${currentRoomId}/messages`, {
-        prompt: question,
-      });
+      // ✅ 메시지 전송
+      const msgRes = await api.post(
+        `/chat/rooms/${currentRoomId}/messages`,
+        { prompt: question },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
 
       console.log("msgRes:", msgRes);
       setMessages((prev) => [...prev, { sender: "ai", data: msgRes.data }]);
@@ -101,19 +110,15 @@ export default function Usage() {
     handleSend(e.target.innerText);
   };
 
-  // ✅ 뒤로가기: 대화 상태 + 캐시 완전 초기화
+  // ✅ 뒤로가기 (완전 초기화)
   const handleBack = () => {
     console.log("🧹 대화 상태 초기화 중...");
 
-    // 1️⃣ 로딩 중단
     setIsLoading(false);
-
-    // 2️⃣ 상태 초기화
     setMessages([]);
     setRoomId(null);
     setInChat(false);
 
-    // 3️⃣ localStorage, sessionStorage 채팅 관련 키 초기화
     ["chatMessages", "chatHistory", "chatRoomMessages", "messages"].forEach(
       (key) => {
         localStorage.removeItem(key);
@@ -121,13 +126,12 @@ export default function Usage() {
       },
     );
 
-    // 4️⃣ 로그 확인
     console.log("✅ 모든 채팅 로그 및 대화내용 초기화 완료");
   };
 
   return (
     <div className="usage-page-container">
-      {/* 토스트 메시지 */}
+      {/* ✅ 토스트 메시지 */}
       {toastInfo.show && (
         <Toast
           message={toastInfo.message}
@@ -140,6 +144,7 @@ export default function Usage() {
       <main className="usage-main-content">
         {!inChat ? (
           <>
+            {/* ✅ 소개 섹션 */}
             <div className="section-hero">
               <h2 className="usage-title-text">
                 당신만을 위한 맞춤형 PC 견적 AI,{" "}
@@ -150,7 +155,7 @@ export default function Usage() {
               </div>
             </div>
 
-            {/* 추천 질문 */}
+            {/* ✅ 추천 질문 */}
             <div className="question-group-list">
               <div className="question-group-row">
                 <button
@@ -176,8 +181,7 @@ export default function Usage() {
                   onClick={handleBubbleClick}
                   disabled={isLoading}
                 >
-                  예산 상관없이 게임이 잘 돌아가는 게이밍 PC를 5대 정도 맞춰서
-                  추천해주세요.
+                  예산 상관없이 게임이 잘 돌아가는 게이밍 PC를 추천해주세요.
                 </button>
                 <button
                   className="question-bubble-btn"
@@ -189,7 +193,7 @@ export default function Usage() {
               </div>
             </div>
 
-            {/* 입력창 */}
+            {/* ✅ 입력창 */}
             <div className="main-input-section">
               <input
                 ref={initialInputRef}
@@ -211,7 +215,7 @@ export default function Usage() {
         ) : (
           <ChatPage
             messages={messages}
-            setMessages={setMessages} // ✅ 자식에서도 상태 초기화 가능
+            setMessages={setMessages}
             handleBack={handleBack}
             handleSend={handleSend}
             isLoading={isLoading}

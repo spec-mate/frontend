@@ -1,10 +1,11 @@
+// src/pages/ChatPage.jsx
 import React, { useEffect, useRef, useState } from "react";
 import "./styles/ChatPage.css";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import EstimateTable from "../components/EstimateTable.jsx";
-import api from "../api";
+import api, { getAccessToken } from "../api";
 
 export default function ChatPage({
   messages,
@@ -16,16 +17,16 @@ export default function ChatPage({
   const chatInputRef = useRef(null);
   const chatContainerRef = useRef(null);
   const [roomId, setRoomId] = useState(null);
-  const [accessToken] = useState(
-    // ✅ 세션 내에서 고정된 토큰
-    localStorage.getItem("accessToken") ||
-      sessionStorage.getItem("accessToken"),
-  );
+  const hasCreatedRoomRef = useRef(false); // ✅ 중복 생성 방지용 플래그
 
-  // ✅ 페이지 진입 시 자동 채팅방 생성
+  // ✅ 페이지 진입 시 자동 채팅방 생성 (StrictMode 대응)
   useEffect(() => {
+    if (hasCreatedRoomRef.current) return; // 이미 생성된 경우 중복 방지
+    hasCreatedRoomRef.current = true;
+
     const createChatRoom = async () => {
-      if (!accessToken) {
+      const token = getAccessToken();
+      if (!token) {
         alert("로그인이 필요합니다.");
         handleBack();
         return;
@@ -35,22 +36,24 @@ export default function ChatPage({
         const res = await api.post(
           "/chat/rooms",
           { title: "AI 견적 요청" },
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          },
+          { headers: { Authorization: `Bearer ${token}` } },
         );
-
         console.log("✅ 새 채팅방 생성 완료:", res.data);
-        setRoomId(res.data.id);
+
+        const newRoomId = res.data.id;
+        setRoomId(newRoomId);
+        localStorage.setItem("chatRoomId", newRoomId); // ✅ MyPage에서도 참조 가능
       } catch (err) {
         console.error("❌ 채팅방 생성 실패:", err);
         alert("채팅방 생성 중 오류가 발생했습니다.");
+        hasCreatedRoomRef.current = false; // 실패 시 재시도 허용
       }
     };
-    createChatRoom();
-  }, [accessToken]);
 
-  // ✅ 메시지 스크롤 유지
+    createChatRoom();
+  }, []); // ✅ 한 번만 실행됨 (중복 생성 방지)
+
+  // ✅ 메시지 스크롤 자동 유지
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -61,29 +64,23 @@ export default function ChatPage({
   // ✅ 메시지 전송
   const handleSend = async (userInput) => {
     if (!userInput.trim()) return;
-
     if (!roomId) {
       alert("채팅방 ID가 아직 생성되지 않았습니다. 잠시만 기다려주세요.");
       return;
     }
 
+    const token = getAccessToken();
     setIsLoading(true);
     setMessages((prev) => [...prev, { sender: "user", text: userInput }]);
 
     try {
       const res = await api.post(
         `/chat/rooms/${roomId}/messages`,
-        {
-          text: userInput,
-          notes: "사용자 요청 기반 AI 견적",
-        },
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
+        { prompt: userInput },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       console.log("✅ AI 응답:", res.data);
-
       const aiData = res.data?.data || res.data;
       const isPromptOnly = typeof aiData?.prompt === "string";
 
@@ -99,18 +96,12 @@ export default function ChatPage({
       }
     } catch (err) {
       console.error("❌ 채팅 메시지 전송 실패:", err);
-
-      // ✅ 명시적 만료 에러만 api.js에서 refresh하도록 처리됨
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "ai",
-          text:
-            err.response?.status === 403
-              ? "권한이 만료되었습니다. 잠시 후 다시 시도해주세요."
-              : "서버 응답 오류가 발생했습니다.",
-        },
-      ]);
+      const status = err.response?.status;
+      let errorMsg = "서버 응답 오류가 발생했습니다.";
+      if (status === 403 || status === 401) {
+        errorMsg = "인증이 만료되었습니다. 잠시 후 다시 시도해주세요.";
+      }
+      setMessages((prev) => [...prev, { sender: "ai", text: errorMsg }]);
     } finally {
       setIsLoading(false);
       if (chatInputRef.current) chatInputRef.current.value = "";
@@ -118,32 +109,23 @@ export default function ChatPage({
   };
 
   const onSendClick = () => {
-    if (chatInputRef.current) {
-      const value = chatInputRef.current.value.trim();
-      if (value) handleSend(value);
-    }
+    const value = chatInputRef.current?.value?.trim();
+    if (value) handleSend(value);
   };
 
+  // ✅ 뒤로가기 + 캐시 초기화
   const handleBackWithReset = () => {
     setIsLoading(false);
     setMessages([]);
-    ["chatMessages", "chatHistory", "chatRoomMessages", "messages"].forEach(
-      (k) => {
-        localStorage.removeItem(k);
-        sessionStorage.removeItem(k);
-      },
-    );
     handleBack();
   };
 
   // ✅ 설명형 여부 판별
   const lastUserMessage =
     messages.filter((msg) => msg.sender === "user").pop()?.text || "요청";
-
   const isExplanationMessage = (text) => {
-    if (!text) return false;
     const keywords = ["이유", "왜", "추천", "설명", "근거", "차이"];
-    return keywords.some((kw) => text.includes(kw));
+    return text && keywords.some((kw) => text.includes(kw));
   };
 
   // ✅ 중복 부품 제거 + 정렬
@@ -177,7 +159,6 @@ export default function ChatPage({
       const key = c.type?.toLowerCase() || "unknown";
       map[key] = c;
     }
-
     return ORDER.map(
       (type) =>
         map[type] || {
@@ -189,73 +170,100 @@ export default function ChatPage({
     );
   };
 
-  // ✅ 견적 저장
+  // ✅ 견적 저장 (중복 완전 차단)
+  // ✅ 견적 저장 (중복 완전 차단)
   const handleSaveEstimate = async (estimateData) => {
-    if (!estimateData?.components) {
-      alert("저장할 견적 데이터가 없습니다.");
+    const token = getAccessToken();
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      handleBack();
       return;
     }
 
-    const cleaned = normalizeComponents(
-      deduplicateComponents(estimateData.components),
-    );
-    const safeTitle = estimateData.title?.trim() || "AI 추천 견적";
-
-    const payload = {
-      id: `local-ai-${Date.now()}`,
-      title: safeTitle,
-      description: estimateData.description || "",
-      notes: estimateData.notes || "",
-      total: String(estimateData.total || "0"),
-      isAi: true,
-      components: cleaned.map((c) => ({
-        type: c.type,
-        name: c.name,
-        description: c.description,
-        price: c.detail?.price || "0",
-        image: c.detail?.image || "",
-      })),
-      createdAt: new Date().toISOString(),
-    };
-
-    localStorage.setItem(
-      "aiEstimateList",
-      JSON.stringify([
-        payload,
-        ...(JSON.parse(localStorage.getItem("aiEstimateList")) || []),
-      ]),
-    );
-
-    if (accessToken) {
-      try {
-        const dbPayload = {
-          build_name: safeTitle,
-          build_description: payload.description,
-          total: String(payload.total),
-          notes: payload.notes,
-          components: cleaned.map((c) => ({
-            type: c.type,
-            name: c.name,
-            description: c.description,
-            detail: {
-              price: c.detail?.price || "0",
-              image: c.detail?.image || "",
-            },
-          })),
-        };
-
-        const res = await api.post("/aiestimates", dbPayload, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        console.log("✅ 견적 DB 저장 완료:", res.data);
-      } catch (err) {
-        console.error("❌ DB 저장 실패:", err);
-      }
-    } else {
-      console.warn("⚠️ 로그인 정보 없음 — localStorage에만 저장됨.");
+    // ✅ 중복 저장 방지 락
+    if (window.__savingEstimateInProgress) {
+      console.warn("⚠️ 중복 저장 요청 차단됨");
+      return;
     }
+    window.__savingEstimateInProgress = true;
 
-    alert("AI 견적이 보관함에 추가되었습니다!");
+    try {
+      // ✅ 기존 저장된 AI 견적 목록 조회
+      const existingRes = await api.get("/aiestimates/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const existingEstimates = Array.isArray(existingRes.data)
+        ? existingRes.data
+        : existingRes.data.data || [];
+
+      const rawTitle =
+        estimateData.title ||
+        estimateData.build_name ||
+        estimateData.name ||
+        "AI 추천 견적";
+      const totalValue = String(estimateData.total || "0");
+
+      // ✅ 1️⃣ 동일 aiEstimateId가 이미 존재하는지 확인
+      const alreadySavedById = existingEstimates.some(
+        (e) => e.id === estimateData.ai_estimate_id,
+      );
+
+      if (alreadySavedById) {
+        alert("이미 저장된 AI 견적입니다.");
+        return;
+      }
+
+      // ✅ 2️⃣ 동일 title + total 조합도 중복 저장 차단
+      const alreadySavedByContent = existingEstimates.some(
+        (e) =>
+          (e.title || "").trim() === rawTitle.trim() &&
+          String(e.total || "0") === totalValue,
+      );
+
+      if (alreadySavedByContent) {
+        alert("이미 동일한 견적이 보관함에 있습니다.");
+        return;
+      }
+
+      // ✅ 저장 데이터 정리
+      const cleaned = normalizeComponents(
+        deduplicateComponents(estimateData.components),
+      );
+
+      const dbPayload = {
+        aiEstimateId: estimateData.ai_estimate_id || null,
+        title: rawTitle.trim(),
+        description:
+          estimateData.description || estimateData.build_description || "",
+        total: totalValue,
+        components: cleaned.map((c) => ({
+          type: c.type,
+          name: c.name,
+          description: c.description,
+          detail: {
+            price: String(c.detail?.price || "0"),
+            image: c.detail?.image || "",
+          },
+        })),
+      };
+
+      console.log("📦 견적 저장 요청:", dbPayload);
+
+      const res = await api.post("/aiestimates", dbPayload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("✅ 견적 저장 완료:", res.data);
+      alert("AI 견적이 보관함에 추가되었습니다!");
+    } catch (err) {
+      console.error("❌ 견적 저장 실패:", err);
+      alert("견적 저장 중 오류가 발생했습니다.");
+    } finally {
+      setTimeout(() => {
+        window.__savingEstimateInProgress = false;
+      }, 1500);
+    }
   };
 
   return (
@@ -301,14 +309,16 @@ export default function ChatPage({
                       />
                       <div className="cp-bubble-actions">
                         <button
-                          onClick={() =>
+                          onClick={(e) => {
+                            e.target.disabled = true;
                             handleSaveEstimate({
                               ...aiData,
                               components: normalizeComponents(
                                 deduplicateComponents(aiData.components),
                               ),
-                            })
-                          }
+                            });
+                            setTimeout(() => (e.target.disabled = false), 1500);
+                          }}
                           className="cp-save-estimate-btn"
                         >
                           보관함으로 이동
