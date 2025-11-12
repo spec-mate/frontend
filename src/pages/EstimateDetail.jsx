@@ -315,7 +315,7 @@ export default function EstimateDetail({ estimate, onClose }) {
                   {p.description && (
                     <p className="product-desc">{p.description}</p>
                   )}
-                  <p className="product-desc">
+                  <p className="product-dec">
                     {p.quantity ? `수량 ${p.quantity}개 / ` : ""}
                     총액 {p.totalPrice?.toLocaleString() ?? "-"} 원
                   </p>
