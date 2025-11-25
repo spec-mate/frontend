@@ -55,8 +55,7 @@ export default function Usage() {
       if (!currentRoomId) {
         setInChat(true); // ✅ 먼저 ChatPage 진입 (UX 개선)
         const roomRes = await api.post(
-          "/chat/rooms",
-          { title: question },
+          "/chat/room",
           { headers: { Authorization: `Bearer ${token}` } },
         );
         currentRoomId = roomRes.data.id;
@@ -65,8 +64,8 @@ export default function Usage() {
 
       // ✅ 메시지 전송
       const msgRes = await api.post(
-        `/chat/rooms/${currentRoomId}/messages`,
-        { prompt: question },
+        `/chat/room/${currentRoomId}/message`,
+        { content: question },
         { headers: { Authorization: `Bearer ${token}` } },
       );
 

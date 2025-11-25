@@ -19,6 +19,18 @@ export default function ChatPage({
   const [roomId, setRoomId] = useState(null);
   const hasCreatedRoomRef = useRef(false); // ✅ 중복 생성 방지용 플래그
 
+  const convertMainToComponents = (mainObj = {}) => {
+    return Object.values(mainObj).map((item) => ({
+      type: item.category,
+      name: item.name,
+      description: item.description,
+      detail: {
+        price: String(item.price || "0"),
+        image: item.image || "",
+      },
+    }));
+  };
+
   // ✅ 페이지 진입 시 자동 채팅방 생성 (StrictMode 대응)
   useEffect(() => {
     if (hasCreatedRoomRef.current) return; // 이미 생성된 경우 중복 방지
@@ -34,8 +46,7 @@ export default function ChatPage({
 
       try {
         const res = await api.post(
-          "/chat/rooms",
-          { title: "AI 견적 요청" },
+          "/chat/room",
           { headers: { Authorization: `Bearer ${token}` } },
         );
         console.log("✅ 새 채팅방 생성 완료:", res.data);
@@ -75,7 +86,7 @@ export default function ChatPage({
 
     try {
       const res = await api.post(
-        `/chat/rooms/${roomId}/messages`,
+        `/chat/room/${roomId}/messages`,
         { prompt: userInput },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -146,13 +157,13 @@ export default function ChatPage({
     const ORDER = [
       "mainboard",
       "cpu",
-      "vga",
+      "gpu",
       "ram",
-      "ssd",
-      "hdd",
-      "cooler",
+      "storage",
+      "cpucooler",
       "power",
       "case",
+      "casefan"
     ];
     const map = {};
     for (const c of components) {
@@ -170,7 +181,6 @@ export default function ChatPage({
     );
   };
 
-  // ✅ 견적 저장 (중복 완전 차단)
   // ✅ 견적 저장 (중복 완전 차단)
   const handleSaveEstimate = async (estimateData) => {
     const token = getAccessToken();
@@ -281,9 +291,12 @@ export default function ChatPage({
         {messages.map((msg, idx) => {
           if (msg.sender === "ai") {
             const aiData = msg.data?.data ? msg.data.data : msg.data;
-            const hasEstimate =
-              aiData?.components && aiData.components.length > 0;
-            const isExplanation = isExplanationMessage(aiData?.text);
+
+            const isEstimateIntent =
+              aiData.intent === "build" || aiData.intent === "modify";
+            const isReply =
+              typeof aiData.reply === "string" &&
+              aiData.reply.trim().length > 0;
 
             return (
               <div key={idx} className="cp-message-ai">
@@ -297,38 +310,44 @@ export default function ChatPage({
                 </div>
 
                 <div className="cp-ai-bubble">
-                  {hasEstimate && !isExplanation ? (
+                  {/* 1️⃣ 일반 텍스트(reply) */}
+                  {isReply && (
+                    <p className="cp-ai-text">{aiData.reply}</p>
+                  )}
+
+                  {/* 2️⃣ 견적(build/modify) */}
+                  {isEstimateIntent && !isReply && (
                     <>
-                      <EstimateTable
-                        estimate={{
-                          ...aiData,
-                          components: normalizeComponents(
-                            deduplicateComponents(aiData.components),
-                          ),
-                        }}
-                      />
-                      <div className="cp-bubble-actions">
-                        <button
-                          onClick={(e) => {
-                            e.target.disabled = true;
-                            handleSaveEstimate({
-                              ...aiData,
-                              components: normalizeComponents(
-                                deduplicateComponents(aiData.components),
+                      {aiData.intro && (
+                        <p className="cp-ai-text">{aiData.intro}</p>
+                      )}
+
+                      {aiData.main && (
+                        <EstimateTable
+                          estimate={{
+                            components: normalizeComponents(
+                              deduplicateComponents(
+                                convertMainToComponents(aiData.main)
                               ),
-                            });
-                            setTimeout(() => (e.target.disabled = false), 1500);
+                            ),
+                            total: aiData.total || "0",
                           }}
-                          className="cp-save-estimate-btn"
-                        >
-                          보관함으로 이동
-                        </button>
-                      </div>
+                        />
+                      )}
+
+                      {aiData.another_input_text && (
+                        <p className="cp-ai-text">
+                          {aiData.another_input_text}
+                        </p>
+                      )}
                     </>
-                  ) : (
+                  )}
+
+                  {/* 3️⃣ 기본 텍스트 */}
+                  {!isEstimateIntent && !isReply && (
                     <p className="cp-ai-text">
-                      {aiData?.prompt ||
-                        aiData?.text ||
+                      {aiData.prompt ||
+                        aiData.text ||
                         msg.text ||
                         "AI 응답 데이터를 불러오지 못했습니다."}
                     </p>
@@ -363,9 +382,8 @@ export default function ChatPage({
                   </svg>
                 </div>
                 <span>
-                  {isExplanationMessage(lastUserMessage)
-                    ? "사용자의 의도 파악 중..."
-                    : `"${lastUserMessage}" 검색어로 찾는 중...`}
+                  "{messages[messages.length - 1]?.text ||
+                    "검색 중..."}" 처리 중...
                 </span>
               </div>
             </div>
