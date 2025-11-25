@@ -3,476 +3,581 @@ import { useParams, Link } from "react-router-dom";
 import api from "../api";
 import Toast from "../components/Toast";
 import "./styles/ProductDetailView.css";
-import EstimateSelectModal from "../components/EstimateSelectModal"; // ✅ 추가
-import { addProductToEstimate } from "./estimateUtils";
+import EstimateSelectModal from "../components/EstimateSelectModal";
 
 export default function ProductDetailView() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [selectedBuild, setSelectedBuild] = useState(null);
+  const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
-  const [showToast, setShowToast] = useState(false);
-  const [showModal, setShowModal] = useState(false); // ✅ 추가
+  const [showModal, setShowModal] = useState(false);
 
-  // ✅ 기존 모든 매핑값 유지
+  // ------------------------------------------------------------
+  // 카테고리 매핑
+  // ------------------------------------------------------------
+  const categoryMap = {
+    cpucooler: "cooler",
+    cooler: "cooler",
+    power: "power",
+    psu: "power",
+    chassis: "case",
+    case: "case",
+  };
+
+  // ------------------------------------------------------------
+  // LABELS (전체 스펙 라벨)
+  // ------------------------------------------------------------
   const optionLabels = {
     manufacturer: "제조회사",
-    socket: "소켓 구분",
-    core: "코어 수",
-    thread: "스레드 수",
-    base_clock: "기본 클럭",
-    max_clock: "최대 클럭",
-    l2_cache: "L2 캐시",
-    l3_cache: "L3 캐시",
-    tdp: "TDP",
-    generation: "세대",
-    memory_type: "메모리 규격",
-    memory_clock: "메모리 클럭",
+    color: "색상",
+    series: "시리즈",
+    variant: "모델",
+
+    // CPU
+    core_family: "코어 패밀리",
+    microarchitecture: "마이크로아키텍처",
+    socket: "소켓",
+    cores_total: "코어 수",
+    threads: "스레드 수",
+    base_clock_ghz: "기본 클럭(GHz)",
+    boost_clock_ghz: "부스트 클럭(GHz)",
+    l2_cache_mb: "L2 캐시(MB)",
+    l3_cache_mb: "L3 캐시(MB)",
+    lithography: "제조 공정",
+    ecc_support: "ECC 지원",
+    includes_cooler: "기본 쿨러 포함",
     integrated_graphics: "내장 그래픽",
-    pcie: "PCIe 버전",
-    chipset_vendor: "칩셋 벤더",
-    chipset: "칩셋",
-    process: "제조 공정",
-    boost_clock: "부스트 클럭",
-    cuda_cores: "쿠다코어/스트림프로세서",
-    memory_capacity: "메모리 용량",
-    memory_bus: "메모리 버스폭",
-    pcie_interface: "PCIe 인터페이스",
-    recommended_psu: "권장 파워 용량",
-    power_connectors: "전원 커넥터",
-    length: "제품 길이",
-    fan_count: "팬 수",
-    backplate: "백플레이트",
-    vrm: "전원부(페이즈)",
-    xmp_support: "XMP 지원",
-    expo_support: "EXPO 지원",
-    pcie_x16_slots: "PCIe x16 슬롯",
-    pcie_x1_slots: "PCIe x1 슬롯",
-    m2_interface: "M.2 인터페이스",
-    m2_heatsink: "M.2 히트싱크",
-    usb_10gbps: "USB 10Gbps 포트",
-    usb_5gbps: "USB 5Gbps 포트",
-    usb_2_0: "USB 2.0 포트",
-    usb_a: "USB-A 포트",
-    usb_c: "USB-C 포트",
-    lan_ports: "LAN 포트 수",
-    lan_chipset: "LAN 칩셋",
-    lan_speed: "LAN 속도",
-    audio_chipset: "오디오 칩셋",
-    audio_jacks: "오디오 잭",
-    bios_flashback: "BIOS 플래시백",
-    fan_headers: "팬 헤더",
-    io_headers: "I/O 헤더",
-    uefi_support: "UEFI 지원",
-    rgb: "RGB 지원",
-    memorytype: "메모리 규격",
-    formfactor: "폼팩터",
-    capacity: "용량",
-    speed: "속도(MHz)",
-    timing: "지연시간(CL)",
-    voltage: "전압(V)",
+    memory_support_max_gb: "메모리 최대 지원",
+    memory_types: "지원 메모리 타입",
+    packaging: "패키징",
+    release_year: "출시 연도",
+    tdp_watt: "TDP(W)",
+
+    // RAM
+    capacity_gb: "총 용량(GB)",
+    module_capacity_gb: "모듈당 용량(GB)",
     modules: "모듈 수",
-    expo: "EXPO 지원",
-    xmp: "XMP 지원",
-    xmp3: "XMP 3.0 지원",
-    heatsink: "방열판",
-    ledlight: "LED 지원",
-    ledcolor: "LED 색상",
-    height: "높이(mm)",
-    thickness: "두께(mm)",
-    ondieecc: "On-Die ECC 지원",
-    product_category: "제품분류",
+    speed_mhz: "속도(MHz)",
+    cas_latency: "CAS 레이턴시",
+    timings: "타이밍",
+    voltage: "전압(V)",
+    ram_type: "RAM 종류",
     form_factor: "폼팩터",
+    heat_spreader: "히트스프레더",
+    registered: "Registered/Buffered",
+    rgb: "RGB",
+
+    // GPU
+    architecture: "아키텍처",
+    chipset_manufacturer: "칩셋 제조사",
+    chipset: "칩셋",
+    core_count: "코어 수",
+    base_clock_mhz: "기본 클럭(MHz)",
+    boost_clock_mhz: "부스트 클럭(MHz)",
+    effective_memory_clock_mhz: "메모리 클럭(MHz)",
+    memory_gb: "메모리 용량(GB)",
+    memory_bus_bit: "버스폭(bit)",
+    memory_type: "메모리 타입",
     interface: "인터페이스",
-    protocol: "프로토콜",
-    nand_structure: "낸드 구조",
-    ram_included: "DRAM 포함여부",
-    ram_type: "DRAM 타입/용량",
-    controller: "컨트롤러",
-    sequential_read: "순차 읽기",
-    sequential_write: "순차 쓰기",
-    read_iops: "읽기 IOPS",
-    write_iops: "쓰기 IOPS",
-    tbw: "내구성(TBW)",
-    mtbf: "MTBF",
-    nvme_heatsink: "방열판 포함",
-    producttype: "용도/분류",
-    disksize: "디스크 크기",
-    rpm: "회전 속도",
-    buffersize: "캐시 메모리(버퍼)",
-    transferspeed: "전송 속도",
-    recordingmethod: "기록 방식",
-    diskcount: "디스크 수",
-    heliumfilled: "헬륨 충전여부",
-    workload: "내구성(TBW)",
-    warrantyusage: "보증/내구성 TB",
-    noiselevel: "소음(dB)",
-    regdate: "출시일",
-    ratedpower: "정격 출력(W)",
-    cert80plus: "80PLUS 인증",
-    modular: "모듈러",
-    fansize: "팬 크기(mm)",
-    fancount: "팬 수",
-    bearing: "베어링 종류",
-    warranty: "보증기간",
-    mainconnector: "메인커넥터",
-    pcie8pin: "PCIe 8핀",
-    sata: "SATA 커넥터",
-    ide4pin: "IDE 커넥터",
-    railtype: "출력 레일",
-    pfc: "PFC 방식",
-    kind: "종류",
-    cooling_method: "냉각 방식",
-    air_type: "타워 형태",
-    intel_socket: "인텔 소켓",
-    amd_socket: "AMD 소켓",
-    width: "가로(mm)",
-    depth: "세로(mm)",
-    weight: "무게(kg)",
-    connector: "커넥터",
-    max_airflow: "최대 풍량",
-    static_pressure: "정압",
-    pwm: "PWM 지원",
-    led: "LED 지원",
-    case_type: "케이스 타입",
-    case_size: "케이스 크기",
-    supported_power: "지원 파워 규격",
-    power_included: "파워 포함 여부",
-    max_vga_length: "최대 VGA 길이",
-    max_cpu_cooler_height: "최대 쿨러 높이",
-    power_length: "파워 길이",
-    front_panel_type: "전면 패널",
-    side_panel_type: "측면 패널",
-    side_opening: "측면 개폐 방식",
-    dust_filter: "먼지 필터",
-    total_fans: "총 팬 수",
-    led_fans: "LED 팬 수",
-    radiator_top: "상단 라디에이터 지원",
-    radiator_rear: "후면 라디에이터 지원",
+    tdp_w: "TDP(W)",
+    slot_width: "슬롯 너비",
+    length_mm: "길이(mm)",
+
+    // GPU — video_outputs 분해
+    video_outputs_hdmi_2_1: "HDMI 2.1",
+    video_outputs_displayport_2_1_b: "DisplayPort 2.1b",
+
+    // STORAGE
+    type: "종류",
+    nand_type: "NAND 타입",
+    read_speed: "읽기 속도",
+    write_speed: "쓰기 속도",
+    nvme: "NVMe 여부",
+
+    // POWER
+    wattage_w: "정격 출력(W)",
+    efficiency_rating: "효율 등급",
+    modular: "모듈러 방식",
+    fanless: "팬리스 여부",
+
+    connectors_sata: "SATA",
+    connectors_eps_8_pin: "EPS 8-pin",
+    connectors_atx_24_pin: "ATX 24-pin",
+    connectors_molex_4_pin: "Molex 4-pin",
+    connectors_floppy_4_pin: "Floppy 4-pin",
+    connectors_pcie_12vhpwr: "PCIe 12VHPWR",
+    connectors_pcie_6_plus_2_pin: "PCIe 6+2-pin",
+
+    // CPU COOLER
+    cpu_sockets: "지원 소켓",
+    fan_bearing_type: "팬 베어링",
+    fan_size_mm: "팬 크기(mm)",
+    heat_pipes: "히트파이프",
+    height_mm: "높이(mm)",
+    max_fan_rpm: "최대 RPM",
+    min_fan_rpm: "최소 RPM",
+    max_noise_level: "최대 소음(dB)",
+    min_noise_level: "최소 소음(dB)",
+    max_tdp_w: "최대 TDP(W)",
+    radiator_size: "라디에이터 크기(mm)",
+    weight_g: "무게(g)",
+
+    // CASE
+    dimensions_text: "전체 사이즈(mm)",
+    expansion_slots: "확장 슬롯",
+    front_usb_ports: "전면 USB 포트",
+    internal_2_5_bays: `내부 2.5" 베이`,
+    internal_3_5_bays: `내부 3.5" 베이`,
+    max_gpu_length_mm: "GPU 최대 길이(mm)",
+    max_cpu_cooler_height_mm: "CPU 쿨러 최대 높이(mm)",
+    has_transparent_side_panel: "투명 패널",
+    side_panel: "측면 패널",
+    supported_psu_form_factors: "지원 PSU",
+    weight_kg: "무게(kg)",
+    volume_liters: "용량(L)",
+
+    // MAINBOARD
+    audio_chipset: "오디오 칩셋",
+    raid_support: "RAID 지원",
+
+    // subdivided headers
+    fan_headers_pump: "PUMP 헤더",
+    fan_headers_cpu_fan: "CPU FAN 헤더",
+    fan_headers_cpu_opt: "CPU OPT 헤더",
+    fan_headers_case_fan: "CASE FAN 헤더",
+
+    rgb_headers_argb_5v: "ARGB 5V 헤더",
+    rgb_headers_rgb_12v: "RGB 12V 헤더",
+
+    storage_devices_sata_6_gb_s: "SATA 6Gb/s 포트",
+
+    usb_headers_usb_2_0: "USB 2.0 헤더",
+    usb_headers_usb_3_2_gen_1: "USB 3.2 Gen1 헤더",
+    usb_headers_usb_3_2_gen_2x2: "USB 3.2 Gen2x2 헤더",
+
+    bios_features_flashback: "BIOS 플래시백",
   };
 
+  // ------------------------------------------------------------
+  // SPEC KEYS
+  // ------------------------------------------------------------
   const specKeys = {
     cpu: [
-      "manufacturer",
+      "series",
+      "variant",
       "socket",
-      "core",
-      "thread",
-      "base_clock",
-      "max_clock",
-      "l2_cache",
-      "l3_cache",
-      "tdp",
-      "generation",
-      "pcie",
-      "memory_type",
+      "cores_total",
+      "threads",
+      "base_clock_ghz",
+      "boost_clock_ghz",
+      "l2_cache_mb",
+      "l3_cache_mb",
+      "lithography",
+      "tdp_watt",
+      "includes_cooler",
       "integrated_graphics",
-      "memory_clock",
+      "memory_support_max_gb",
+      "memory_types",
+      "ecc_support",
+      "release_year",
+      "packaging",
     ],
-    vga: [
-      "chipset_vendor",
-      "chipset",
-      "process",
-      "base_clock",
-      "boost_clock",
-      "cuda_cores",
-      "memory_type",
-      "memory_capacity",
-      "memory_bus",
-      "pcie_interface",
-      "tdp",
-      "recommended_psu",
-      "power_connectors",
-      "length",
-      "fan_count",
-      "backplate",
-    ],
-    mainboard: [
-      "manufacturer",
-      "socket",
-      "chipset",
-      "vrm",
-      "xmp_support",
-      "expo_support",
-      "pcie_x16_slots",
-      "pcie_x1_slots",
-      "m2_interface",
-      "m2_heatsink",
-      "hdmi",
-      "displayport",
-      "usb_10gbps",
-      "usb_5gbps",
-      "usb_2_0",
-      "usb_a",
-      "usb_c",
-      "lan_ports",
-      "lan_chipset",
-      "lan_speed",
-      "audio_chipset",
-      "audio_jacks",
-      "bios_flashback",
-      "fan_headers",
-      "io_headers",
-      "uefi_support",
-      "rgb",
-    ],
+
     ram: [
-      "manufacturer",
-      "capacity",
-      "type",
-      "speed",
-      "latency",
-      "voltage",
-      "low_voltage",
-      "xmp",
-      "expo",
-      "module",
-      "channel",
-      "ecc",
-      "heatspreader",
-      "height",
-      "color",
-      "rgb",
-      "memorytype",
-      "formfactor",
-      "timing",
+      "series",
+      "variant",
+      "capacity_gb",
+      "module_capacity_gb",
       "modules",
-      "xmp3",
-      "heatsink",
-      "ledlight",
-      "ledcolor",
-      "thickness",
-      "ondieecc",
-      "intel_support",
-      "amd_support",
+      "speed_mhz",
+      "cas_latency",
+      "timings",
+      "voltage",
+      "ram_type",
+      "form_factor",
+      "heat_spreader",
+      "rgb",
+      "registered",
+      "ecc",
+      "color",
+      "part_numbers",
     ],
-    ssd: [
-      "manufacturer",
-      "product_category",
+
+    gpu: [
+      "series",
+      "variant",
+      "architecture",
+      "chipset_manufacturer",
+      "chipset",
+      "core_count",
+      "base_clock_mhz",
+      "boost_clock_mhz",
+      "effective_memory_clock_mhz",
+      "memory_gb",
+      "memory_bus_bit",
+      "memory_type",
+      "interface",
+      "tdp_w",
+      "slot_width",
+      "length_mm",
+      "color",
+      "video_outputs_hdmi_2_1",
+      "video_outputs_displayport_2_1_b",
+      "frame_sync",
+    ],
+
+    storage: [
+      "series",
+      "variant",
+      "type",
+      "capacity_gb",
       "form_factor",
       "interface",
-      "protocol",
-      "capacity",
-      "memory_type",
-      "nand_structure",
-      "ram_included",
-      "ram_type",
-      "controller",
-      "sequential_read",
-      "sequential_write",
-      "read_iops",
-      "write_iops",
-      "tbw",
-      "mtbf",
-      "nvme_heatsink",
+      "nvme",
+      "nand_type",
+      "read_speed",
+      "write_speed",
     ],
-    hdd: [
-      "manufacturer",
-      "producttype",
-      "disksize",
-      "capacity",
-      "interface",
-      "rpm",
-      "buffersize",
-      "transferspeed",
-      "recordingmethod",
-      "diskcount",
-      "thickness",
-      "heliumfilled",
-      "workload",
-      "warrantyusage",
-      "noiselevel",
-      "regdate",
-    ],
+
     power: [
-      "manufacturer",
-      "kind",
-      "ratedpower",
-      "cert80plus",
+      "series",
+      "variant",
+      "color",
+      "wattage_w",
+      "efficiency_rating",
+      "form_factor",
       "modular",
-      "fansize",
-      "fancount",
-      "bearing",
-      "depth",
-      "warranty",
-      "railtype",
-      "pfc",
-      "mainconnector",
-      "pcie8pin",
-      "sata",
-      "ide4pin",
+      "fanless",
+      "length_mm",
+      "connectors_sata",
+      "connectors_eps_8_pin",
+      "connectors_atx_24_pin",
+      "connectors_molex_4_pin",
+      "connectors_floppy_4_pin",
+      "connectors_pcie_12vhpwr",
+      "connectors_pcie_6_plus_2_pin",
     ],
+
     cooler: [
-      "manufacturer",
-      "kind",
-      "cooling_method",
-      "air_type",
-      "tdp",
-      "intel_socket",
-      "amd_socket",
-      "width",
-      "depth",
-      "height",
-      "weight",
-      "connector",
-      "bearing_type",
-      "max_airflow",
-      "static_pressure",
-      "pwm",
-      "led",
+      "series",
+      "variant",
+      "color",
+      "cpu_sockets",
+      "fan_bearing_type",
+      "fan_size_mm",
+      "heat_pipes",
+      "height_mm",
+      "max_fan_rpm",
+      "min_fan_rpm",
+      "max_noise_level",
+      "min_noise_level",
+      "max_tdp_w",
+      "radiator_size",
+      "water_cooled",
+      "weight_g",
+      "part_numbers",
     ],
+
     case: [
-      "manufacturer",
-      "case_type",
-      "case_size",
-      "supported_power",
-      "power_included",
-      "max_vga_length",
-      "max_cpu_cooler_height",
-      "power_length",
-      "front_panel_type",
-      "side_panel_type",
-      "side_opening",
-      "dust_filter",
-      "total_fans",
-      "led_fans",
-      "radiator_top",
-      "radiator_rear",
+      "series",
+      "variant",
+      "color",
+      "form_factor",
+      "dimensions_text",
+      "expansion_slots",
+      "front_usb_ports",
+      "internal_2_5_bays",
+      "internal_3_5_bays",
+      "max_gpu_length_mm",
+      "max_cpu_cooler_height_mm",
+      "has_transparent_side_panel",
+      "side_panel",
+      "power_supply",
+      "supported_psu_form_factors",
+      "weight_kg",
+      "volume_liters",
+    ],
+
+    mainboard: [
+      "series",
+      "variant",
+      "socket",
+      "chipset",
+      "form_factor",
+      "ram_type",
+      "ram_slots",
+      "max_memory_gb",
+      "storage_devices_sata_6_gb_s",
+      "fan_headers_pump",
+      "fan_headers_cpu_fan",
+      "fan_headers_cpu_opt",
+      "fan_headers_case_fan",
+      "usb_headers_usb_2_0",
+      "usb_headers_usb_3_2_gen_1",
+      "usb_headers_usb_3_2_gen_2x2",
+      "audio_chipset",
+      "raid_support",
+      "bios_features_flashback",
+      "rgb_headers_argb_5v",
+      "rgb_headers_rgb_12v",
+      "color",
     ],
   };
 
-  const formatPrice = (price) =>
-    !price ? null : Number(String(price).replace(/,/g, "")).toLocaleString();
-  const formatValue = (value) =>
-    value === true || value === "true"
+  // ------------------------------------------------------------
+  // FORMATTER
+  // ------------------------------------------------------------
+  const formatValue = (v) =>
+    v === true
       ? "O"
-      : value === false || value === "false"
+      : v === false
         ? "X"
-        : value;
+        : Array.isArray(v)
+          ? v.join(", ")
+          : typeof v === "object"
+            ? JSON.stringify(v)
+            : v;
 
+  // ------------------------------------------------------------
+  // FETCH PRODUCT
+  // ------------------------------------------------------------
   useEffect(() => {
-    const fetchProduct = async () => {
+    const load = async () => {
       try {
         const res = await api.get(`/product/${id}`);
         setProduct(res.data);
       } catch (err) {
-        console.error("상품 불러오기 실패:", err.response || err);
+        console.error("상품 불러오기 실패:", err);
       }
     };
-    fetchProduct();
+    load();
   }, [id]);
-
-  // ✅ 수정된 보관하기
-  const handleSaveToEstimate = async () => {
-    if (!product) {
-      setToastMessage("상품 정보를 불러오는 중입니다.");
-      setToastType("error");
-      setShowToast(true);
-      return;
-    }
-    setShowModal(true);
-  };
 
   if (!product) return <p>상품 불러오는 중...</p>;
 
+  // ------------------------------------------------------------
+  // NORMALIZE DETAIL (핵심)
+  // ------------------------------------------------------------
   const optionsNormalized = {};
-  Object.entries(product.options || {}).forEach(([key, value]) => {
-    const mappedKey = key.trim().toLowerCase().replace(/\s+/g, "_");
-    optionsNormalized[mappedKey] = value;
+
+  Object.entries(product.detail || {}).forEach(([key, value]) => {
+    // CASE dimensions_mm
+    if (key === "dimensions_mm" && typeof value === "object") {
+      const { depth, width, height } = value;
+      if (depth && width && height)
+        optionsNormalized.dimensions_text = `${depth} x ${width} x ${height} mm`;
+      return;
+    }
+
+    // GPU — video_outputs
+    if (key === "video_outputs" && typeof value === "object") {
+      Object.entries(value).forEach(([subKey, subVal]) => {
+        optionsNormalized[`video_outputs_${subKey}`] = subVal;
+      });
+      return;
+    }
+
+    // POWER — connectors
+    if (key === "connectors" && typeof value === "object") {
+      Object.entries(value).forEach(([subKey, subVal]) => {
+        optionsNormalized[`connectors_${subKey}`] = subVal;
+      });
+      return;
+    }
+
+    // MAINBOARD — audio
+    if (key === "audio" && typeof value === "object") {
+      if (value.chipset) optionsNormalized.audio_chipset = value.chipset;
+      return;
+    }
+
+    // MAINBOARD — bios_features
+    if (key === "bios_features" && typeof value === "object") {
+      if (value.flashback !== undefined)
+        optionsNormalized.bios_features_flashback = value.flashback;
+      return;
+    }
+
+    // MAINBOARD — fan_headers
+    if (key === "fan_headers" && typeof value === "object") {
+      Object.entries(value).forEach(([subKey, subVal]) => {
+        optionsNormalized[`fan_headers_${subKey}`] = subVal;
+      });
+      return;
+    }
+
+    // MAINBOARD — rgb_headers
+    if (key === "rgb_headers" && typeof value === "object") {
+      Object.entries(value).forEach(([subKey, subVal]) => {
+        optionsNormalized[`rgb_headers_${subKey}`] = subVal;
+      });
+      return;
+    }
+
+    // MAINBOARD — storage_devices
+    if (key === "storage_devices" && typeof value === "object") {
+      Object.entries(value).forEach(([subKey, subVal]) => {
+        optionsNormalized[`storage_devices_${subKey}`] = subVal;
+      });
+      return;
+    }
+
+    // MAINBOARD — usb_headers
+    if (key === "usb_headers" && typeof value === "object") {
+      Object.entries(value).forEach(([subKey, subVal]) => {
+        optionsNormalized[`usb_headers_${subKey}`] = subVal;
+      });
+      return;
+    }
+
+    // MAINBOARD — pcie_slots 배열 유지
+    if (key === "pcie_slots") {
+      optionsNormalized.pcie_slots = value;
+      return;
+    }
+
+    // MAINBOARD — m2_slots 배열 유지
+    if (key === "m2_slots") {
+      optionsNormalized.m2_slots = value;
+      return;
+    }
+
+    optionsNormalized[key] = value;
   });
 
-  const typeKey = product.type?.toLowerCase();
+  // ------------------------------------------------------------
+  // TYPEKEY / LABEL
+  // ------------------------------------------------------------
+  const rawType = product.category?.toLowerCase();
+  const typeKey = categoryMap[rawType] || rawType;
+
   const typeLabelMap = {
     cpu: "프로세서",
     gpu: "그래픽카드",
-    ssd: "SSD",
-    hdd: "하드디스크",
+    storage: "스토리지",
     ram: "메모리",
     mainboard: "메인보드",
     power: "파워서플라이",
     cooler: "쿨러",
     case: "케이스",
   };
-  const typeLabel = typeLabelMap[typeKey] || product.type;
+  const typeLabel = typeLabelMap[typeKey] || product.category;
 
+  // ------------------------------------------------------------
+  // ENTRIES
+  // ------------------------------------------------------------
   const entries = (specKeys[typeKey] || [])
-    .map((key) => [
-      key,
-      key === "manufacturer"
-        ? product.manufacturer
-        : optionsNormalized[key] || product.options?.[key],
-    ])
-    .filter(([, v]) => v !== undefined && v !== null)
-    .slice(0, 16);
+    .map((key) => [key, optionsNormalized[key]])
+    .filter(([, v]) => v !== undefined && v !== null);
+
   const gridPairs = [];
   for (let i = 0; i < entries.length; i += 2)
     gridPairs.push([entries[i], entries[i + 1]]);
 
+  // ------------------------------------------------------------
+  // RENDER
+  // ------------------------------------------------------------
   return (
     <div className="product-detail-view">
       <div className="product-content">
         <div className="breadcrumb">
           <Link to="/info" className="breadcrumb-link">
             PC 부품 정보
-          </Link>{" "}
-          &gt;{" "}
+          </Link>
+          {" > "}
           <Link
-            to={`/product/${encodeURIComponent(product.type)}`}
+            to={`/product/${encodeURIComponent(typeKey)}`}
             className="breadcrumb-link"
           >
             {typeLabel}
-          </Link>{" "}
-          &gt; <span>{product.name}</span>
+          </Link>
+          {" > "}
+          <span>{product.name}</span>
         </div>
 
         <h2 className="product-title">{product.name}</h2>
+
         <div className="tags">
           <span>#{product.manufacturer}</span>
           <span>#{typeLabel}</span>
-          <span>등록일: {product.regDate || product.reg_date}</span>
         </div>
 
         <div className="product-box">
           <div className="box-flex">
             <div className="box-image">
               <img
-                src={product.image || "/no-image.svg"}
+                src={product.image}
                 alt={product.name}
                 className="product-detail-image"
               />
             </div>
+
             <div className="box-spec">
-              <div className="spec-mapping-area">
-                <div className="spec-mapping-grid">
-                  {gridPairs.map((pair, idx) => (
-                    <React.Fragment key={idx}>
-                      {pair[0] && (
-                        <div className="spec-set">
-                          <span className="spec-label">
-                            {optionLabels[pair[0][0]] || pair[0][0]}
-                          </span>
-                          <span className="spec-value">
-                            {Array.isArray(pair[0][1])
-                              ? pair[0][1].map(formatValue).join(", ")
-                              : formatValue(String(pair[0][1]))}
-                          </span>
-                        </div>
-                      )}
-                      {pair[1] && (
-                        <div className="spec-set">
-                          <span className="spec-label">
-                            {optionLabels[pair[1][0]] || pair[1][0]}
-                          </span>
-                          <span className="spec-value">
-                            {Array.isArray(pair[1][1])
-                              ? pair[1][1].map(formatValue).join(", ")
-                              : formatValue(String(pair[1][1]))}
-                          </span>
-                        </div>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </div>
+              <div className="spec-mapping-grid">
+                {entries.length === 0 && (
+                  <p style={{ padding: "10px" }}>
+                    출력할 스펙 정보가 없습니다.
+                  </p>
+                )}
+
+                {/* ========= MAINBOARD PCIE SLOTS & M2 SLOTS 특수 처리 ========= */}
+                {typeKey === "mainboard" &&
+                  optionsNormalized.pcie_slots &&
+                  optionsNormalized.pcie_slots.length > 0 && (
+                    <div className="spec-set">
+                      <span className="spec-label">PCIe 슬롯</span>
+                      <span className="spec-value">
+                        {optionsNormalized.pcie_slots
+                          .map(
+                            (s) =>
+                              `Gen ${s.gen}, Lanes ${s.lanes}, ${s.quantity}개`,
+                          )
+                          .join(" / ")}
+                      </span>
+                    </div>
+                  )}
+
+                {typeKey === "mainboard" &&
+                  optionsNormalized.m2_slots &&
+                  optionsNormalized.m2_slots.length > 0 && (
+                    <div className="spec-set">
+                      <span className="spec-label">M.2 슬롯</span>
+                      <span className="spec-value">
+                        {(() => {
+                          const m = optionsNormalized.m2_slots[0]; // 첫 하나만 사용
+                          return `${m.interface.trim()} (${m.key} Key) - ${m.size}`;
+                        })()}
+                      </span>
+                    </div>
+                  )}
+
+                {/* ========= 일반 스펙 출력 ========= */}
+                {gridPairs.map((pair, idx) => (
+                  <React.Fragment key={idx}>
+                    {pair[0] && (
+                      <div className="spec-set">
+                        <span className="spec-label">
+                          {optionLabels[pair[0][0]] || pair[0][0]}
+                        </span>
+                        <span className="spec-value">
+                          {formatValue(pair[0][1])}
+                        </span>
+                      </div>
+                    )}
+
+                    {pair[1] && (
+                      <div className="spec-set">
+                        <span className="spec-label">
+                          {optionLabels[pair[1][0]] || pair[1][0]}
+                        </span>
+                        <span className="spec-value">
+                          {formatValue(pair[1][1])}
+                        </span>
+                      </div>
+                    )}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
           </div>
@@ -480,30 +585,13 @@ export default function ProductDetailView() {
           <div className="price-box">
             <span className="price-label">최저가</span>
             <strong className="price-value">
-              {product.lowestPrice?.price ? (
-                <>
-                  <span className="price-number">
-                    {formatPrice(product.lowestPrice.price)}
-                  </span>
-                  <span className="price-unit"> 원</span>
-                </>
-              ) : (
-                "정보 없음"
-              )}
+              {product.priceKrw
+                ? Number(product.priceKrw).toLocaleString() + " 원"
+                : "정보 없음"}
             </strong>
 
             <div className="price-actions">
-              {product.lowestPrice?.link && (
-                <a
-                  href={product.lowestPrice.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="buy-btn"
-                >
-                  <span className="btn-icon" />
-                </a>
-              )}
-              <button className="cart-btn" onClick={handleSaveToEstimate}>
+              <button className="cart-btn" onClick={() => setShowModal(true)}>
                 <span className="btn-icon">
                   <img src="/cart.svg" alt="장바구니" />
                 </span>
@@ -517,7 +605,6 @@ export default function ProductDetailView() {
         </div>
       </div>
 
-      {/* ✅ 모달 추가 */}
       {showModal && (
         <EstimateSelectModal
           product={product}

@@ -178,6 +178,7 @@
 .product-item img {
   flex: 0 0 150px;
   height: 150px;
+    width: 150px;
   object-fit: contain;
   border: 1px solid #ddd;
   border-radius: 10px;

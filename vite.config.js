@@ -6,8 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target:
-          "http://specmate-backend-alb-736149231.ap-northeast-2.elb.amazonaws.com",
+        target: "http://localhost:8080",
         changeOrigin: true,
         secure: false,
       },

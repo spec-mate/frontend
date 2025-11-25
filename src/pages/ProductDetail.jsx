@@ -25,8 +25,7 @@ export default function DetailPage() {
     cpu: "CPU",
     gpu: "그래픽카드(VGA)",
     ram: "메모리(RAM)",
-    ssd: "SSD",
-    hdd: "HDD",
+    storage: "storage",
     cooler: "쿨러",
     power: "파워",
     case: "케이스",
@@ -36,13 +35,13 @@ export default function DetailPage() {
   const apiTypeMap = {
     mainboard: "mainboard",
     cpu: "cpu",
-    gpu: "vga",
+    gpu: "gpu",
     ram: "ram",
-    ssd: "ssd",
-    hdd: "hdd",
-    cooler: "cooler",
+    storage: "storage",
+    cpucooler: "cpucooler",
     power: "power",
     case: "case",
+    casefan: "casefan",
   };
   const apiType = apiTypeMap[productName] || productName;
 
@@ -56,7 +55,7 @@ export default function DetailPage() {
   useEffect(() => {
     const fetchManufacturers = async () => {
       try {
-        const res = await api.get(`/product/type/${apiType}`, {
+        const res = await api.get(`/product/category/${apiType}`, {
           params: { page: 0, size: 1000 },
         });
         const items = res.data.content || [];
@@ -77,13 +76,15 @@ export default function DetailPage() {
       setProgress(30);
 
       try {
-        const res = await api.get(`/product/type/${apiType}`, {
+        const res = await api.get(`/product/category/${apiType}`, {
           params: {
             page,
             size: 10,
             manufacturer: selectedManufacturer || null,
           },
         });
+
+        console.log(res.data);
 
         const getNumericPrice = (product) => {
           const priceStr = product.lowestPrice?.price || "0";
@@ -305,21 +306,25 @@ export default function DetailPage() {
                       className="product-item"
                       key={p.id}
                     >
-                      <img src={p.image || "/no-image.svg"} alt={p.name} />
+                      <img
+                        src={
+                          p.image
+                            ? p.image
+                            : p.transparentImage || "/no-image.svg"
+                        }
+                        alt={p.name}
+                      />
                       <div className="info">
                         <h4 className="product-title">{p.name}</h4>
                         {renderSpecs(productName, p.options)}
                       </div>
                       <div className="price">
                         <span>최저가</span>
-                        {p.lowestPrice?.price ? (
+                        {p.priceKrw ? (
                           <div>
                             <strong className="price-number">
                               {parseInt(
-                                String(p.lowestPrice.price).replace(
-                                  /[^0-9]/g,
-                                  "",
-                                ),
+                                String(p.priceKrw),
                                 10,
                               ).toLocaleString()}
                             </strong>

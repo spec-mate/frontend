@@ -1,0 +1,109 @@
+.preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2100;
+}
+
+.preview-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 900px;
+    padding: 24px 30px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+    position: relative;
+    max-height: 85vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+.preview-close-btn {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+}
+
+.preview-modal h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.preview-desc {
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+/* ✅ 5열 썸네일 */
+.preview-product-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.preview-item {
+    text-align: center;
+    width: calc(20% - 12px); /* 한 줄에 5개 */
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.preview-item:hover {
+    transform: scale(1.05);
+}
+
+.preview-item-img {
+    width: 100%;
+    height: 100px;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.preview-item-name {
+    font-size: 0.8rem;
+    color: #333;
+    margin-top: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ✅ 상세 페이지 영역 */
+.preview-detail-wrapper {
+    width: 100%;
+    height: auto;
+    overflow-y: auto;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.empty-text {
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    margin-top: 20px;
+}

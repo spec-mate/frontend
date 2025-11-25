@@ -52,18 +52,13 @@ export default function ProductInfo() {
           "컴퓨터가 작업할 때 필요한 내용을 잠시 저장해 두는 빠른 임시 저장공간",
       },
       {
-        title: "SSD",
+        title: "STORAGE",
         img: "/ssd.svg",
-        path: "/product/ssd",
+        path: "/product/storage",
         description:
           "프로그램과 파일을 저장하고 빠르게 불러올 수 있게 해주는 저장장치",
       },
-      {
-        title: "HDD",
-        img: "/hdd.svg",
-        path: "/product/hdd",
-        description: "자석이 달린 원판에 데이터를 기록해두는 전통적인 기록장치",
-      },
+
       {
         title: "쿨러",
         img: "/cooler.svg",
