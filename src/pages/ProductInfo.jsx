@@ -40,7 +40,7 @@ export default function ProductInfo() {
       {
         title: "그래픽카드 VGA",
         img: "/gpu.svg",
-        path: "/product/vga",
+        path: "/product/gpu",
         description:
           "컴퓨터가 화면에 그림, 영상, 게임 그래픽 등을 빠르고 선명하게 보여주도록 도와주는 부품",
       },
@@ -78,10 +78,15 @@ export default function ProductInfo() {
         path: "/product/case",
         description: "모든 부품을 담고 보호하는 컴퓨터의 뼈대",
       },
+      {
+        title: "케이스 팬",
+        img: "/case.svg",
+        path: "/product/casefan",
+        description: "모든 부품을 담고 보호하는 컴퓨터의 뼈대",
+      },
     ],
     [],
   );
-
   return (
     <div className="product-page">
       <header className="product-header">

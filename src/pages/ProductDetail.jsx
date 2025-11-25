@@ -91,7 +91,7 @@ export default function DetailPage() {
             manufacturer: selectedManufacturer || null,
           },
         });
-
+        console.log("📦 API 응답 데이터:", res.data);
         let items = res.data.content || [];
 
         // 검색
