@@ -1,11 +1,13 @@
+// src/pages/Mypage.jsx
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import "./styles/Mypage.css";
 import api from "../api";
 import EstimateDetail from "./EstimateDetail";
 import Header from "../components/Header";
 import { useHeaderStore } from "../store/headerStore";
+import UserEstimateDetail from "./UserEstimateDetail";
 
-// ✅ LazyImage (React.memo + lazy loading)
+// LazyImage (React.memo + lazy loading)
 const LazyImage = React.memo(({ src, alt }) => (
   <img
     src={src}
@@ -31,25 +33,23 @@ export default function MyPage() {
   const [selectedEstimate, setSelectedEstimate] = useState(null);
   const setHeaderVersion = useHeaderStore((state) => state.setHeaderVersion);
 
-  // ✅ 헤더 색상 설정
+  // 헤더 색상 설정
   useEffect(() => {
     useHeaderStore.getState().setHeaderVersion("black");
   }, []);
 
-  // ✅ 견적 데이터 로드 (사용자 + AI 견적 병렬 호출)
+  // 견적 데이터 로드
   useEffect(() => {
     const fetchAllEstimates = async () => {
       try {
         const token = localStorage.getItem("accessToken");
         if (!token) {
-          console.warn("⚠️ accessToken 없음 — 로그인 필요");
           window.location.href = "/login";
           return;
         }
 
         const headers = { Authorization: `Bearer ${token}` };
 
-        // ✅ 두 API 병렬 호출
         const [userRes, aiRes] = await Promise.all([
           api.get("/estimate/me", { headers }),
           api.get("/aiestimates/me", { headers }),
@@ -71,14 +71,7 @@ export default function MyPage() {
         setAiEstimates(aiData);
 
         console.log("📦 사용자 견적 개수:", userData.length);
-        userData.forEach((e, i) =>
-          console.log(`  👤 [${i + 1}] ${e.id} ${e.title || e.build_name}`),
-        );
-
         console.log("🧠 AI 견적 개수:", aiData.length);
-        aiData.forEach((e, i) =>
-          console.log(`  🤖 [${i + 1}] ${e.id} ${e.title || e.build_name}`),
-        );
       } catch (err) {
         console.error("❌ 견적 불러오기 실패:", err);
         if (err.response?.status === 403) {
@@ -94,21 +87,34 @@ export default function MyPage() {
     fetchAllEstimates();
   }, []);
 
-  // ✅ 상세 보기 열기 / 닫기
+  // 선택한 견적 상세 열기
   const handleOpenEstimate = useCallback((estimate) => {
-    console.log(
-      "🔍 선택된 견적:",
-      estimate.id,
-      estimate.title || estimate.build_name,
-    );
-    setSelectedEstimate(estimate);
+    console.log("🔍 선택된 estimate:", estimate);
+
+    const realId =
+      estimate.id ??
+      estimate.estimateId ??
+      estimate.estimate_id ??
+      estimate.estimateID ??
+      estimate.estimate_id;
+
+    if (!realId) {
+      console.error("🚨 견적 ID 추출 실패:", estimate);
+      return;
+    }
+
+    setSelectedEstimate({
+      ...estimate,
+      id: realId,
+      isAi: estimate.isAi === true,
+    });
   }, []);
 
   const handleCloseDetail = useCallback(() => {
     setSelectedEstimate(null);
   }, []);
 
-  // ✅ 견적 삭제 (AI / 사용자 구분 + 강제 삭제 추가)
+  // 견적 삭제
   const handleDelete = useCallback(async (estimateId, e, isAi = false) => {
     e.stopPropagation();
 
@@ -120,59 +126,41 @@ export default function MyPage() {
         ? `/aiestimates/${estimateId}`
         : `/estimate/${estimateId}`;
 
-      console.log(`🗑️ DELETE 요청 → ${endpoint}`);
       await api.delete(endpoint, { headers });
 
-      // ✅ 프론트엔드 상태 갱신
       if (isAi) {
         setAiEstimates((prev) => prev.filter((item) => item.id !== estimateId));
       } else {
         setUserEstimates((prev) =>
-          prev.filter((item) => item.id !== estimateId),
+          prev.filter((item) => item.id !== estimateId)
         );
       }
-
-      console.log(
-        `✅ ${isAi ? "AI 견적" : "사용자 견적"} 삭제 완료: ${estimateId}`,
-      );
     } catch (err) {
       console.error("❌ 견적 삭제 실패:", err);
 
-      // ✅ 강제 삭제 확인창
       const confirmForceDelete = window.confirm(
-        "서버에서 견적 삭제에 실패했습니다.\n목록에서 강제로 제거하시겠습니까?",
+        "삭제 실패했습니다. 목록에서 강제로 제거하시겠습니까?"
       );
 
       if (confirmForceDelete) {
         if (isAi) {
           setAiEstimates((prev) =>
-            prev.filter((item) => item.id !== estimateId),
+            prev.filter((item) => item.id !== estimateId)
           );
         } else {
           setUserEstimates((prev) =>
-            prev.filter((item) => item.id !== estimateId),
+            prev.filter((item) => item.id !== estimateId)
           );
         }
-
-        console.log(
-          `⚠️ 서버 삭제 실패 → ${isAi ? "AI" : "사용자"} 견적을 프론트에서 강제 제거함.`,
-        );
-      }
-
-      if (err.response?.status === 403) {
-        alert("삭제 권한이 없습니다. 다시 로그인 해주세요.");
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login";
       }
     }
   }, []);
 
   const nickname = useMemo(
     () => localStorage.getItem("nickname") || "유저",
-    [],
+    []
   );
 
-  // ✅ 렌더링
   return (
     <div className="mypage">
       <Header />
@@ -260,8 +248,13 @@ export default function MyPage() {
             </div>
           </section>
         </>
-      ) : (
+      ) : selectedEstimate.isAi ? (
         <EstimateDetail
+          estimate={selectedEstimate}
+          onClose={handleCloseDetail}
+        />
+      ) : (
+        <UserEstimateDetail
           estimate={selectedEstimate}
           onClose={handleCloseDetail}
         />

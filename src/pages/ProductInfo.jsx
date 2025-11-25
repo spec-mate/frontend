@@ -80,12 +80,12 @@ export default function ProductInfo() {
       },
       {
         title: "케이스 팬",
-        img: "/case.svg",
+        img: "/casefan.svg",
         path: "/product/casefan",
-        description: "모든 부품을 담고 보호하는 컴퓨터의 뼈대",
+        description: "내부 온도를 낮추는 역할을 하는 시스템 쿨러",
       },
     ],
-    [],
+    []
   );
   return (
     <div className="product-page">

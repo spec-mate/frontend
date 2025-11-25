@@ -15,6 +15,7 @@ import UserGuide from "./pages/UserGuide";
 import UserGuideDetail from "./pages/UserGuideDetail.jsx";
 import FindPassword from "./pages/FindPassword.jsx";
 import PasswordReset from "./pages/PasswordReset.jsx";
+import UserEstimateDetail from "./pages/UserEstimateDetail.jsx";
 function App() {
   const location = useLocation();
   const hideHeaderRoutes = ["/login", "/register", "/usage"];
@@ -35,6 +36,15 @@ function App() {
         <Route path="/product/:productName" element={<ProductDetail />} />
         <Route path="/estimate/:id" element={<EstimateDetail />} />
         <Route path="/findpassword" element={<FindPassword />} />
+        <Route
+          path="/estimate/user/:estimateId"
+          element={<UserEstimateDetail />}
+        />
+        <Route
+          path="/estimate/user/:estimateId"
+          element={<UserEstimateDetail />}
+        />
+
         <Route path="/reset-password" element={<PasswordReset />} />
 
         <Route

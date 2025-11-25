@@ -54,10 +54,9 @@ export default function Usage() {
       // ✅ 채팅방 없으면 생성 (JWT 포함)
       if (!currentRoomId) {
         setInChat(true); // ✅ 먼저 ChatPage 진입 (UX 개선)
-        const roomRes = await api.post(
-          "/chat/room",
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
+        const roomRes = await api.post("/chat/room", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         currentRoomId = roomRes.data.id;
         setRoomId(currentRoomId);
       }
@@ -66,7 +65,7 @@ export default function Usage() {
       const msgRes = await api.post(
         `/chat/room/${currentRoomId}/message`,
         { content: question },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log("msgRes:", msgRes);
@@ -122,7 +121,7 @@ export default function Usage() {
       (key) => {
         localStorage.removeItem(key);
         sessionStorage.removeItem(key);
-      },
+      }
     );
 
     console.log("✅ 모든 채팅 로그 및 대화내용 초기화 완료");
@@ -219,6 +218,7 @@ export default function Usage() {
             handleSend={handleSend}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
+            roomId={roomId}
           />
         )}
       </main>
