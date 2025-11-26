@@ -9,15 +9,16 @@ const formatPrice = (price) => {
 };
 
 const productTypeMap = {
+  mainboard: "메인보드",
   cpu: "CPU",
   vga: "그래픽카드",
-  RAM: "메모리",
+  ram: "메모리",
+  cpucooler: "CPU 쿨러",
   ssd: "SSD",
-  power: "파워서플라이",
-  mainboard: "메인보드",
-  cooler: "CPU 쿨러",
-  case: "케이스",
   hdd: "HDD",
+  power: "파워서플라이",
+  case: "케이스",
+  casecooler: "케이스 쿨러",
 };
 
 export default function EstimateTable({ estimate }) {

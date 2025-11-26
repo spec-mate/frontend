@@ -1,7 +1,7 @@
 /* --- 기본 레이아웃 --- */
 .detail-page {
   display: grid;
-  grid-template-columns: 1fr minmax(auto, 1200px) 1fr;
+  grid-template-columns: 1fr minmax(auto, 1000px) 1fr;
   gap: 20px;
   padding: 160px 40px 40px;
   box-sizing: border-box;
@@ -22,7 +22,7 @@
   padding: 0;
   position: fixed;
   top: 180px;
-  right: calc(50% + 640px);
+  right: calc(45% + 640px);
   background: #fff;
   z-index: 10;
   transition: right 0.3s ease;
@@ -178,7 +178,7 @@
 .product-item img {
   flex: 0 0 150px;
   height: 150px;
-    width: 150px;
+  width: 150px;
   object-fit: contain;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -637,12 +637,12 @@
   z-index: 50;
 }
 .product-item img {
-    will-change: transform, opacity;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    transition: opacity 0.3s ease-out;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: opacity 0.3s ease-out;
 }
 
 .product-item img[data-loaded="true"] {
-    opacity: 1;
+  opacity: 1;
 }

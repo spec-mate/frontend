@@ -95,12 +95,19 @@ export default function ChatPage({
   };
 
   const convertMainToComponents = (mainObj = {}) => {
-    return Object.values(mainObj).map((item) => ({
-      type: item.category,
-      name: item.name,
-      description: item.description,
-      detail: { price: String(item.price || "0"), image: item.image || "" },
-    }));
+    if (!mainObj || typeof mainObj !== "object") return [];
+
+    return Object.values(mainObj)
+      .filter((item) => item && typeof item === "object") // null 제거
+      .map((item) => ({
+        type: item.category || "",
+        name: item.name || "",
+        description: item.description || "",
+        detail: {
+          price: String(item.price || "0"),
+          image: item.image || "/no-image.svg",
+        },
+      }));
   };
 
   return (

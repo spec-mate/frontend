@@ -45,7 +45,7 @@ export default function EstimateDetail({ estimate, onClose }) {
     []
   );
 
-  /** 가격 변환 */
+  /** Price parsing */
   const parsePrice = (v) => {
     if (!v) return 0;
     if (typeof v === "number") return v;
@@ -53,28 +53,32 @@ export default function EstimateDetail({ estimate, onClose }) {
   };
 
   /** -----------------------------------------------------------
-   * 🟦 AI 견적 상세 조회 — image 필드 그대로 사용
+   * 🟦 AI 견적 상세 조회 — 두 API 호출 후 merge
    * ---------------------------------------------------------- */
   const fetchAiEstimateDetail = async () => {
     try {
       const token = localStorage.getItem("accessToken");
 
-      const res = await api.get(`/aiestimates/${estimate.id}`, {
+      // 1) 기본 상세 정보
+      const detailRes = await api.get(`/aiestimates/${estimate.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const data = res.data;
+      // 2) 제품 리스트(이미지 포함)
+      const productsRes = await api.get(
+        `/aiestimates/${estimate.id}/products`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      // product.image 그대로 사용
-      const mappedProducts = (data.products || []).map((p) => ({
-        ...p,
-        // 여기에 matchedImage 대신 product.image 직접 사용
-        matchedImage: p.image || "/no-image.svg",
-      }));
+      const detailData = detailRes.data;
+      const productsData = productsRes.data;
 
+      // 🔥 /products API 데이터에는 image가 정확히 들어있음
       setDetail({
-        ...data,
-        products: mappedProducts,
+        ...detailData,
+        products: productsData,
       });
     } catch (err) {
       console.error("❌ AI 견적 상세 조회 실패:", err);
@@ -84,14 +88,15 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   };
 
-  /** 사용자 견적은 기존 방식 유지 */
+  /** -----------------------------------------------------------
+   * 사용자 견적
+   * ---------------------------------------------------------- */
   const fetchUserEstimate = async () => {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await api.get(`/estimate/${estimate.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setDetail(res.data);
     } catch (err) {
       console.error("❌ 사용자 견적 상세 조회 실패:", err);
@@ -113,10 +118,7 @@ export default function EstimateDetail({ estimate, onClose }) {
     }
   }, [estimate]);
 
-  /** 로딩 중 */
   if (loading || !detail) return <div className="loading">불러오는 중...</div>;
-
-  console.log("📌 EstimateDetail 전체 데이터:", { estimate, detail });
 
   return (
     <div className="estimate-detail-page">
@@ -141,15 +143,10 @@ export default function EstimateDetail({ estimate, onClose }) {
             </div>
 
             <div className="product-container">
-              {/* AI든 일반 견적이든 p.image 그대로 사용 */}
-              <LazyImage
-                src={p.image || p.matchedImage || "/no-image.svg"}
-                alt={p.name}
-              />
+              <LazyImage src={p.image || "/no-image.svg"} alt={p.name} />
 
               <div className="product-details">
                 <p className="meta-product-name">{p.name}</p>
-
                 <p className="product-price">
                   {parsePrice(p.price).toLocaleString()} 원
                 </p>
