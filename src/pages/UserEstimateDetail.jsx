@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import api from "../api";
 import "./styles/EstimateDetail.css";
-import html2pdf from "html2pdf.js";
 
 export default function UserEstimateDetail({ estimate, onClose }) {
   const [products, setProducts] = useState([]);
@@ -38,38 +37,8 @@ export default function UserEstimateDetail({ estimate, onClose }) {
   if (!estimateId) return <div>견적 정보를 불러오는 중...</div>;
   if (loading) return <div>불러오는 중...</div>;
 
-  /** ---------------------------------------------------------
-   * 🟦 PDF 저장 (html2pdf.js)
-   * --------------------------------------------------------*/
-  const downloadPDF = () => {
-    const element = pdfRef.current;
-
-    const opt = {
-      margin: 10,
-      filename: `${estimate.title || "estimate"}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        scrollX: 0,
-        scrollY: 0,
-      },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-      },
-    };
-
-    html2pdf().set(opt).from(element).save();
-  };
-
   return (
     <div className="estimate-detail-page">
-      <button className="pdf-btn" onClick={downloadPDF}>
-        PDF로 저장하기
-      </button>
-
       <div ref={pdfRef} className="estimate-detail-wrapper">
         <div className="estimate-header">
           <div className="header-left">
@@ -94,14 +63,7 @@ export default function UserEstimateDetail({ estimate, onClose }) {
                   <img
                     src={p.image}
                     alt={p.productName}
-                    style={{
-                      width: "140px",
-                      height: "140px",
-                      objectFit: "contain",
-                      borderRadius: "6px",
-                      background: "#fafafa",
-                      border: "1px solid #eee",
-                    }}
+                    className="estimate-img"
                     onError={(e) => (e.target.src = "/no-image.svg")}
                   />
 
@@ -117,8 +79,15 @@ export default function UserEstimateDetail({ estimate, onClose }) {
           )}
         </div>
 
-        <div className="total-price">
-          총합 {(estimate.totalPrice || 0).toLocaleString()} 원
+        {/* 🔥 total-price 바로 왼쪽에 PDF 버튼 배치 */}
+        <div className="footer-section">
+          <button className="pdf-btn-inline" onClick={() => window.print()}>
+            PDF로 저장하기
+          </button>
+
+          <div className="total-price">
+            총합 {(estimate.totalPrice || 0).toLocaleString()} 원
+          </div>
         </div>
       </div>
     </div>

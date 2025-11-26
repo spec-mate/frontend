@@ -51,18 +51,25 @@ export default function ProductInfo() {
         description:
           "컴퓨터가 작업할 때 필요한 내용을 잠시 저장해 두는 빠른 임시 저장공간",
       },
+
       {
-        title: "STORAGE",
+        title: "SSD",
         img: "/ssd.svg",
-        path: "/product/storage",
+        path: "/product/ssd",
         description:
           "프로그램과 파일을 저장하고 빠르게 불러올 수 있게 해주는 저장장치",
       },
-
       {
-        title: "쿨러",
+        title: "HDD",
+        img: "/hdd.svg",
+        path: "/product/hdd",
+        description:
+          "프로그램과 파일을 저장하고 빠르게 불러올 수 있게 해주는 저장장치",
+      },
+      {
+        title: "CPU쿨러",
         img: "/cooler.svg",
-        path: "/product/cooler",
+        path: "/product/cpucooler",
         description:
           "CPU나 그래픽카드처럼 뜨거워지는 부품의 열을 식혀주는 장치",
       },
@@ -79,9 +86,9 @@ export default function ProductInfo() {
         description: "모든 부품을 담고 보호하는 컴퓨터의 뼈대",
       },
       {
-        title: "케이스 팬",
+        title: "케이스 쿨러",
         img: "/casefan.svg",
-        path: "/product/casefan",
+        path: "/product/casecooler",
         description: "내부 온도를 낮추는 역할을 하는 시스템 쿨러",
       },
     ],

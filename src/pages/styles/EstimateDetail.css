@@ -3,11 +3,9 @@
   margin: 0 auto;
   font-family: Pretendard, sans-serif;
 }
-
 .estimate-date {
   font-size: 35px;
 }
-
 .estimate-header {
   display: flex;
   justify-content: space-between;
@@ -16,13 +14,11 @@
   border-bottom: 0.5px solid #404040;
   padding-bottom: 10px;
 }
-
 .header-actions {
   display: flex;
   align-items: center;
   gap: 30px;
 }
-
 .trash-btn,
 .back-btn {
   background: none;
@@ -30,19 +26,16 @@
   padding: 0;
   cursor: pointer;
 }
-
 .trash-btn .icon,
 .back-btn .icon {
   width: 50px;
   height: 50px;
 }
-
 .estimate-table {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
-
 .estimate-cell {
   border-radius: 8px;
   padding: 16px;
@@ -52,13 +45,11 @@
   width: 100%;
   box-sizing: border-box;
 }
-
 .estimate-category {
   font-size: 30px;
   font-weight: 500;
   color: #333;
 }
-
 .product-container {
   display: flex;
   align-items: flex-start;
@@ -66,7 +57,6 @@
   width: 100%;
   box-sizing: border-box;
 }
-
 .estimate-product-image img {
   width: 150px;
   height: 150px;
@@ -76,17 +66,14 @@
   background: #fafafa;
   box-sizing: border-box;
 }
-
 .product-details {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: clamp(130px, 20vw, 150px);
   width: 100%;
-  box-sizing: border-box;
-  /* 데스크톱 뷰에서도 gap이 필요하다면 여기에 추가하세요. 예: gap: 4px; */
+  box-sizing: border-box; /* 데스크톱 뷰에서도 gap이 필요하다면 여기에 추가하세요. 예: gap: 4px; */
 }
-
 .product-top {
   position: relative; /* 리스트 absolute 기준 */
   display: flex;
@@ -102,13 +89,11 @@
 .spacer {
   flex-grow: 1;
 }
-
 .product-bottom-section {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .name-label {
   font-size: 20px;
   font-weight: 500;
@@ -116,7 +101,6 @@
   margin: 0 0 4px 0;
   text-align: left;
 }
-
 .product-name {
   font-size: 18px;
   font-weight: 500;
@@ -125,7 +109,6 @@
   width: 100%;
   word-break: break-word;
 }
-
 .price-title {
   font-weight: 500;
   font-size: 20px;
@@ -133,43 +116,36 @@
   text-align: left;
   margin: 0;
 }
-
 .product-price {
   font-size: 35px;
   font-weight: 500;
   color: #1e5cde;
   margin: 0;
 }
-
 .currency-unit {
   font-size: 20px;
   color: #000;
   font-weight: normal;
 }
-
 .product-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .product-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
 .delete-icon {
   width: 20px;
   height: 20px;
   cursor: pointer;
   transition: opacity 0.2s ease;
 }
-
 .delete-icon:hover {
   opacity: 0.7;
 }
-
 .detail-btn {
   background: none;
   font-weight: 400;
@@ -178,35 +154,28 @@
   color: #000;
   cursor: pointer;
 }
-
 .detail-btn:hover {
   text-decoration: underline;
 }
-
 .total-price {
   text-align: right;
   font-size: 22px;
   font-weight: bold;
   color: red;
-  margin-top: 20px;
+  margin: 0;
 }
-
 .header-left {
   display: flex;
   flex-direction: column;
 }
-
 .header-left h2 {
   margin: 0;
 }
-
 .estimate-subtitle {
   font-size: 18px;
   font-weight: 400;
   margin: 0;
-}
-
-/* 교체 모달 */
+} /* 교체 모달 */
 .replace-modal {
   position: fixed;
   top: 0;
@@ -218,7 +187,6 @@
   align-items: center;
   justify-content: center;
 }
-
 .replace-content {
   background: #fff;
   border-radius: 8px;
@@ -227,13 +195,11 @@
   max-height: 80vh;
   overflow-y: auto;
 }
-
 .candidate-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
 .candidate-list li {
   display: flex;
   align-items: center;
@@ -242,11 +208,9 @@
   border-bottom: 1px solid #eee;
   cursor: pointer;
 }
-
 .candidate-list li:hover {
   background: #f9f9f9;
 }
-
 .close-modal-btn {
   margin-top: 20px;
   padding: 8px 16px;
@@ -256,7 +220,6 @@
   border-radius: 4px;
   cursor: pointer;
 }
-
 .product-name-dropdown {
   font-size: 15px;
   font-weight: 500;
@@ -269,7 +232,6 @@
   background-color: #fff;
   cursor: pointer;
 }
-
 .related-product-list {
   position: absolute;
   top: 100%; /* 버튼 바로 아래 */
@@ -286,31 +248,23 @@
   z-index: 1000;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
 .related-product-list li {
   padding: 6px 10px;
   font-size: 15px;
   cursor: pointer;
 }
-
 .related-product-list li:hover {
   background: #f0f0f0;
-}
-
-/* =======================================================================
-   📱 모바일 반응형 레이아웃 (768px 이하)
-   ======================================================================= */
+} /* ======================================================================= 📱 모바일 반응형 레이아웃 (768px 이하) ======================================================================= */
 @media (max-width: 768px) {
   .estimate-detail-page {
     padding: 20px 12px 60px;
   }
-
   .estimate-table {
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
-
   .estimate-cell {
     width: 100%;
     padding: 14px 12px;
@@ -318,21 +272,18 @@
     background: #fff;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   }
-
   .estimate-category {
     font-size: 18px;
     font-weight: 600;
     color: #1e5cde;
     margin-bottom: 8px;
   }
-
   .product-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-
   .estimate-product-image img {
     width: 100%;
     max-width: 280px;
@@ -340,7 +291,6 @@
     margin: 0 auto;
     display: block;
   }
-
   .product-details {
     width: 100%;
     height: auto;
@@ -348,36 +298,29 @@
     flex-direction: column;
     gap: 0px; /* ✅ 수정됨: 6px -> 0px */
   }
-
   .product-meta {
     margin-bottom: 4px;
   }
-
   .meta-product-name {
     font-size: 16px;
     font-weight: 600;
-    color: #222;
-    /* margin: 0; 은 이미 데스크톱 .meta-product-name 에 적용되어 있습니다 */
+    color: #222; /* margin: 0; 은 이미 데스크톱 .meta-product-name 에 적용되어 있습니다 */
   }
-
   .meta-short {
     font-size: 13px;
     color: #666;
     line-height: 1.4;
   }
-
   .product-price {
     font-size: 22px;
     font-weight: 600;
     color: #1e5cde;
   }
-
   .product-desc {
     font-size: 13px;
     color: #555;
     margin: 0; /* ✅ 수정됨: margin:0 추가 */
   }
-
   .total-price {
     font-size: 18px;
     color: #c90000;
@@ -385,57 +328,43 @@
     text-align: right;
     margin-top: 16px;
   }
-
   .back-btn .icon {
     width: 36px;
     height: 36px;
   }
-}
-
-/* =======================================================================
-   📱 작은 모바일 (480px 이하)
-   ======================================================================= */
+} /* ======================================================================= 📱 작은 모바일 (480px 이하) ======================================================================= */
 @media (max-width: 480px) {
   .estimate-detail-page {
     padding: 16px 10px 40px;
   }
-
   .estimate-cell {
     padding: 12px 10px;
     border-radius: 8px;
   }
-
   .estimate-category {
     font-size: 16px;
   }
-
   .meta-product-name {
     font-size: 15px;
   }
-
   .meta-short {
     font-size: 12px;
   }
-
   .product-price {
     font-size: 20px;
   }
-
   .product-desc {
     font-size: 12px;
     margin: 0; /* ✅ 수정됨: margin:0 추가 */
   }
-
   .estimate-product-image img {
     max-width: 240px;
     border-radius: 4px;
   }
-
   .total-price {
     font-size: 16px;
   }
 }
-
 .estimate-product-image img {
   will-change: transform, opacity;
   backface-visibility: hidden;
@@ -449,7 +378,6 @@
 .product-container.clickable:hover {
   background: #f9f9f9;
 }
-
 .dropdown-list {
   margin-top: 10px;
   border: 1px solid #ddd;
@@ -460,7 +388,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.2s ease-in;
 }
-
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -472,14 +399,12 @@
 .dropdown-item:hover {
   background: #f1f5ff;
 }
-
 .dropdown-thumb {
   width: 40px;
   height: 40px;
   object-fit: contain;
   border-radius: 4px;
 }
-
 .dropdown-text {
   display: flex;
   flex-direction: column;
@@ -492,28 +417,23 @@
   font-size: 0.8rem;
   color: #666;
 }
-
 .dropdown-empty {
   padding: 10px;
   text-align: center;
   color: #888;
   font-size: 0.9rem;
-}
-
-/* ✅ 추가됨: 데스크톱 .product-desc 기본 스타일 */
+} /* ✅ 추가됨: 데스크톱 .product-desc 기본 스타일 */
 .product-desc {
   font-size: 15px; /* 768px 뷰와 동일하게 설정 */
   color: #555;
   margin: 0;
-}
-/* ✅ 추가됨: 데스크톱 .product-desc 기본 스타일 */
+} /* ✅ 추가됨: 데스크톱 .product-desc 기본 스타일 */
 .product-dec {
   font-size: 18px; /* 768px 뷰와 동일하게 설정 */
   color: #555;
   font-weight: 600;
   margin-top: 10px;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -529,7 +449,6 @@
   color: #555;
   font-size: 14px;
 }
-
 .total-line {
   font-size: 14px;
   font-weight: 500;
@@ -547,12 +466,128 @@
   font-size: 14px;
   font-weight: 600;
 }
-
 .pdf-btn:hover {
   background: #3a66d4;
 }
-
 .estimate-detail-wrapper {
   background: white;
   padding: 10px;
+} /* =============== PDF 출력 버튼 =============== */
+.pdf-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #1e5cde;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 9999;
+}
+.pdf-btn:hover {
+  background: #144bb0;
+} /* 이미지 */
+.estimate-img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: #fafafa;
+}
+/* ===================== PDF 출력용 고정 레이아웃 ===================== */
+/* ===================== PDF 출력용 고정 레이아웃 ===================== */
+@media print {
+  /* 전체 레이아웃 고정 */
+  body,
+  html {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    zoom: 100% !important;
+  }
+
+  /* 그리드가 1열로 무너지는 문제 방지 */
+  .estimate-table {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  /* 반응형 비활성화 — 모바일 스타일 절대 적용되지 않게 */
+  .estimate-detail-page,
+  .estimate-detail-wrapper,
+  .estimate-cell,
+  .product-container,
+  .product-details {
+    width: 100% !important;
+    max-width: none !important;
+    display: block !important;
+  }
+
+  /* flex 정렬 고정 */
+  .product-container {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+  }
+
+  /* 이미지 크기 고정 */
+  .estimate-img {
+    width: 140px !important;
+    height: 140px !important;
+    object-fit: contain !important;
+  }
+
+  /* 글자 크기 고정 */
+  .meta-product-name {
+    font-size: 18px !important;
+  }
+  .product-price {
+    font-size: 35px !important;
+  }
+
+  /* 헤더/버튼 숨김 */
+  .pdf-btn-inline,
+  .back-btn {
+    display: none !important;
+  }
+
+  /* 페이지 나눔 방지 */
+  .estimate-cell {
+    page-break-inside: avoid !important;
+  }
+
+  /* 반응형 무효화 */
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+}
+/* ⬅️ PDF 버튼 + 총합 오른쪽 정렬 & 버튼이 총합 왼쪽에 밀착되게 */
+.footer-section {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px; /* 버튼 ↔ 총합 간격 최소화 */
+}
+/* =================== PDF 저장 버튼 색상 강제 적용 =================== */
+.pdf-btn-inline {
+  background: #1e5cde !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 8px 14px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+}
+
+.pdf-btn-inline:hover {
+  background: #144bb0 !important;
 }
