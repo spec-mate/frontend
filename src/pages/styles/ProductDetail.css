@@ -165,7 +165,7 @@
   width: 100%;
   max-width: 1200px;
   height: 170px;
-  color: #000;
+  color: #404040;
   text-decoration: none;
   background: #fff;
   border-radius: 10px;
@@ -190,7 +190,7 @@
 
 .product-item h4 {
   font-size: 16px;
-  margin: 0 0 4px;
+  margin: 0 0 15px;
 }
 
 .product-item p {
