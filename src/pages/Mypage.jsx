@@ -67,8 +67,30 @@ export default function MyPage() {
             ? aiRes.data.data
             : [];
 
+        // 채팅방별 최신 견적만 필터링
+        const latestAiEstimatesMap = new Map();
+        aiData.forEach((est) => {
+          const roomId = est.chatRoomId || est.chat_room_id;
+          // roomId가 없으면 필터링하지 않고 그대로 둠 (unique key 사용)
+          const key = roomId ? `room_${roomId}` : `id_${est.id}`;
+
+          if (!latestAiEstimatesMap.has(key)) {
+            latestAiEstimatesMap.set(key, est);
+          } else {
+            const existing = latestAiEstimatesMap.get(key);
+            // ID가 더 큰 것이 최신이라고 가정
+            if (est.id > existing.id) {
+              latestAiEstimatesMap.set(key, est);
+            }
+          }
+        });
+
+        const filteredAiData = Array.from(latestAiEstimatesMap.values()).sort(
+          (a, b) => b.id - a.id
+        );
+
         setUserEstimates(userData);
-        setAiEstimates(aiData);
+        setAiEstimates(filteredAiData);
 
         console.log("📦 사용자 견적 개수:", userData.length);
         console.log("🧠 AI 견적 개수:", aiData.length);

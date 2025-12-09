@@ -1,126 +1,287 @@
+:root {
+  --mypage-primary: #1e5cde;
+  --mypage-primary-light: #4a7ff7;
+  --mypage-success: #00a442;
+  --mypage-danger: #ff4d4d;
+  --mypage-bg: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+  --mypage-card-bg: rgba(255, 255, 255, 0.9);
+  --mypage-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --mypage-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --mypage-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
 .mypage {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 192px 20px 40px; /* 하단 여백 추가 */
-  font-family: Pretendard, sans-serif;
+  padding: 192px 20px 40px;
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
   box-sizing: border-box;
+  background: var(--mypage-bg);
+  min-height: 100vh;
 }
 
 /* 헤더 */
 .mypage-header {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  padding: 24px 28px;
+  background: var(--mypage-card-bg);
+  border-radius: 20px;
+  box-shadow: var(--mypage-shadow-sm);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.mypage-header:hover {
+  box-shadow: var(--mypage-shadow-md);
+  transform: translateY(-2px);
 }
 
 .mypage-header h2 {
-  margin: 0;
-  font-size: 28px;
+  margin: 0 0 8px 0;
+  font-size: 32px;
   font-weight: 700;
+  background: linear-gradient(135deg, #111 0%, #333 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .user-role {
-  font-size: 14px;
-  color: #1e5cde; /* 기본 파란색 */
+  font-size: 16px;
+  color: var(--mypage-primary);
   margin-left: 4px;
+  font-weight: 500;
 }
 
-/* 회원 글자만 초록색 + 굵게 */
 .user-role .highlight-member {
-  color: #00a442;
-  font-weight: 600;
+  color: var(--mypage-success);
+  font-weight: 700;
+  padding: 2px 8px;
+  background: rgba(0, 164, 66, 0.1);
+  border-radius: 6px;
 }
 
 /* 섹션 */
+.mypage-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .section-title {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 30px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(30, 92, 222, 0.15);
+  background: linear-gradient(135deg, #1e5cde 0%, #4a7ff7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .section-title .arrow-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   vertical-align: middle;
+  transition: transform 0.3s ease;
+}
+
+.section-title:hover .arrow-icon {
+  transform: translateX(5px);
 }
 
 /* 블록 */
 .estimate-block {
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 .block-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  margin: 15px 0;
+  margin: 20px 0 16px 0;
   text-align: left;
+  color: #333;
+  position: relative;
+  padding-left: 12px;
+}
+
+.block-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, var(--mypage-primary) 0%, var(--mypage-primary-light) 100%);
+  border-radius: 2px;
 }
 
 /* 카드 그리드 */
 .estimate-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .estimate-card {
-  background: #fafafa;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 10px;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  background: var(--mypage-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
+  overflow: hidden;
+  box-shadow: var(--mypage-shadow-sm);
+  backdrop-filter: blur(10px);
+}
+
+.estimate-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(30, 92, 222, 0.05) 0%, rgba(74, 127, 247, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+}
+
+.estimate-card:hover::before {
+  opacity: 1;
 }
 
 .estimate-card img {
   width: 100%;
   height: auto;
-  border-radius: 8px;
-  display: block; /* 이미지 하단 여백 제거 */
+  border-radius: 12px;
+  display: block;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.estimate-card:hover img {
+  transform: scale(1.05);
 }
 
 .estimate-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: var(--mypage-shadow-lg);
+  border-color: rgba(30, 92, 222, 0.2);
 }
 
 .estimate-card p {
-  font-size: 14px;
-  font-weight: 500;
-  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 12px;
   text-align: center;
+  color: #333;
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.estimate-card:hover p {
+  color: var(--mypage-primary);
+}
+
+/* AI 카드 특별 스타일 */
+.estimate-card.ai-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 247, 255, 0.9) 100%);
+}
+
+.estimate-card.ai-card::before {
+  background: linear-gradient(135deg, rgba(74, 127, 247, 0.08) 0%, rgba(30, 92, 222, 0.08) 100%);
 }
 
 /* 삭제 버튼 */
 .delete-estimate-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #ff4d4d;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #ff4d4d 0%, #e60000 100%);
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   color: white;
   font-size: 12px;
-  padding: 4px 8px;
+  font-weight: 600;
+  padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.2s ease;
-  opacity: 0; /* 평소에는 숨김 */
-  pointer-events: none; /* 평소에는 클릭 안되게 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(255, 77, 77, 0.3);
+  z-index: 10;
+  transform: scale(0.9);
 }
 
 .estimate-card:hover .delete-estimate-btn {
-  opacity: 1; /* 카드에 호버 시 버튼 표시 */
+  opacity: 1;
   pointer-events: auto;
+  transform: scale(1);
 }
 
 .delete-estimate-btn:hover {
-  background: #e60000;
+  background: linear-gradient(135deg, #e60000 0%, #cc0000 100%);
+  box-shadow: 0 4px 12px rgba(255, 77, 77, 0.5);
+  transform: scale(1.05);
+}
+
+.delete-estimate-btn:active {
+  transform: scale(0.95);
+}
+
+/* 빈 상태 메시지 */
+.empty-text {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 20px;
+  color: #999;
+  font-size: 15px;
+  background: var(--mypage-card-bg);
+  border-radius: 16px;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* 로딩 상태 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 18px;
+  color: #666;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* ============================= */
@@ -130,76 +291,109 @@
 /* --- 태블릿 (max-width: 768px) --- */
 @media (max-width: 768px) {
   .mypage {
-    /* 상단 헤더 높이를 고려하여 패딩 축소 */
     padding: 120px 20px 40px;
   }
 
+  .mypage-header {
+    padding: 20px 24px;
+    margin-bottom: 32px;
+  }
+
   .mypage-header h2 {
-    font-size: 24px; /* 헤더 폰트 크기 조정 */
+    font-size: 26px;
   }
 
   .section-title {
-    font-size: 20px; /* 섹션 제목 폰트 크기 조정 */
-    margin-bottom: 20px;
+    font-size: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+  }
+
+  .block-title {
+    font-size: 18px;
   }
 
   .estimate-grid {
-    /* 카드의 최소 너비를 줄여 태블릿에서 더 많은 카드가 보이도록 함 */
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 15px; /* 카드 사이 간격 축소 */
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 18px;
+  }
+
+  .estimate-card {
+    padding: 14px;
   }
 }
 
 /* --- 모바일 (max-width: 480px) --- */
 @media (max-width: 480px) {
   .mypage {
-    /* 모바일에 맞게 전체적인 패딩 추가 축소 */
-    padding: 100px 15px 30px;
+    padding: 100px 16px 30px;
+  }
+
+  .mypage-header {
+    padding: 18px 20px;
+    margin-bottom: 28px;
+    border-radius: 16px;
   }
 
   .mypage-header h2 {
-    font-size: 22px;
+    font-size: 24px;
+  }
+
+  .user-role {
+    font-size: 14px;
   }
 
   .section-title {
     font-size: 18px;
-    padding-bottom: 8px;
-    margin-bottom: 15px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .block-title {
-    font-size: 16px;
-    margin: 10px 0;
+    font-size: 17px;
+    margin: 16px 0 12px 0;
+    padding-left: 10px;
+  }
+
+  .block-title::before {
+    width: 3px;
+    height: 18px;
   }
 
   .estimate-grid {
-    /* 모바일에서는 2열 그리드로 고정하여 안정적인 레이아웃 제공 */
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 14px;
   }
 
   .estimate-card {
-    padding: 8px; /* 카드 내부 패딩 축소 */
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .estimate-card img {
+    border-radius: 10px;
   }
 
   .estimate-card p {
-    font-size: 13px; /* 카드 텍스트 크기 조정 */
+    font-size: 14px;
+    margin-top: 10px;
   }
 
-  /* 모바일에서는 호버가 없으므로 삭제 버튼을 항상 보이게 처리 */
+  /* 모바일에서는 삭제 버튼 항상 표시 */
   .delete-estimate-btn {
     opacity: 1;
     pointer-events: auto;
-    background: rgba(255, 77, 77, 0.8); /* 배경을 살짝 투명하게 */
-    top: 6px;
-    right: 6px;
+    background: linear-gradient(135deg, rgba(255, 77, 77, 0.9) 0%, rgba(230, 0, 0, 0.9) 100%);
+    top: 10px;
+    right: 10px;
     font-size: 11px;
-    padding: 3px 6px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transform: scale(1);
   }
-}
-.estimate-card img {
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    transform: translateZ(0);
-    transition: opacity 0.3s ease-out;
+
+  .empty-text {
+    padding: 36px 16px;
+    font-size: 14px;
+  }
 }

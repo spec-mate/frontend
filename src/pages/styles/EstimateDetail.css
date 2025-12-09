@@ -37,18 +37,26 @@
   gap: 20px;
 }
 .estimate-cell {
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 20px;
   background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+.estimate-cell:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 .estimate-category {
-  font-size: 30px;
-  font-weight: 500;
-  color: #333;
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 12px;
 }
 .product-container {
   display: flex;
@@ -80,11 +88,11 @@
   flex-direction: column;
 }
 .meta-product-name {
-  /* 여기에 원하는 스타일을 적용하세요 */
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
-  color: #222;
-  margin: 0;
+  color: #111;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
 }
 .spacer {
   flex-grow: 1;
@@ -117,9 +125,9 @@
   margin: 0;
 }
 .product-price {
-  font-size: 35px;
-  font-weight: 500;
-  color: #1e5cde;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
   margin: 0;
 }
 .currency-unit {
@@ -159,10 +167,14 @@
 }
 .total-price {
   text-align: right;
-  font-size: 22px;
-  font-weight: bold;
-  color: red;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
   margin: 0;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 .header-left {
   display: flex;
@@ -273,10 +285,10 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   }
   .estimate-category {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1e5cde;
-    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 10px;
   }
   .product-container {
     display: flex;
@@ -302,9 +314,9 @@
     margin-bottom: 4px;
   }
   .meta-product-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    color: #222; /* margin: 0; 은 이미 데스크톱 .meta-product-name 에 적용되어 있습니다 */
+    color: #111;
   }
   .meta-short {
     font-size: 13px;
@@ -312,9 +324,9 @@
     line-height: 1.4;
   }
   .product-price {
-    font-size: 22px;
-    font-weight: 600;
-    color: #1e5cde;
+    font-size: 17px;
+    font-weight: 700;
+    color: #111;
   }
   .product-desc {
     font-size: 13px;
@@ -323,7 +335,7 @@
   }
   .total-price {
     font-size: 18px;
-    color: #c90000;
+    color: #111;
     font-weight: 700;
     text-align: right;
     margin-top: 16px;
@@ -342,16 +354,18 @@
     border-radius: 8px;
   }
   .estimate-category {
-    font-size: 16px;
+    font-size: 15px;
   }
   .meta-product-name {
-    font-size: 15px;
+    font-size: 14px;
   }
   .meta-short {
     font-size: 12px;
   }
   .product-price {
-    font-size: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
   }
   .product-desc {
     font-size: 12px;
@@ -363,6 +377,7 @@
   }
   .total-price {
     font-size: 16px;
+    color: #111;
   }
 }
 .estimate-product-image img {
@@ -507,14 +522,14 @@
     padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    zoom: 100% !important;
+    zoom: 90% !important; /* 한 장에 담기도록 살짝 축소 */
   }
 
   /* 그리드가 1열로 무너지는 문제 방지 */
   .estimate-table {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important;
+    gap: 12px !important;
   }
 
   /* 반응형 비활성화 — 모바일 스타일 절대 적용되지 않게 */
@@ -526,6 +541,8 @@
     width: 100% !important;
     max-width: none !important;
     display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   /* flex 정렬 고정 */
@@ -533,21 +550,32 @@
     display: flex !important;
     flex-direction: row !important;
     align-items: flex-start !important;
+    gap: 8px !important;
   }
 
   /* 이미지 크기 고정 */
   .estimate-img {
-    width: 140px !important;
-    height: 140px !important;
+    width: 100px !important;
+    height: 100px !important;
     object-fit: contain !important;
   }
 
   /* 글자 크기 고정 */
   .meta-product-name {
-    font-size: 18px !important;
+    font-size: 14px !important;
   }
   .product-price {
-    font-size: 35px !important;
+    font-size: 20px !important;
+  }
+
+  .estimate-header h2 {
+    font-size: 18px !important;
+    margin: 0 0 4px 0 !important;
+  }
+
+  .estimate-header .estimate-subtitle {
+    font-size: 13px !important;
+    margin: 0 0 8px 0 !important;
   }
 
   /* 헤더/버튼 숨김 */
@@ -559,21 +587,25 @@
   /* 페이지 나눔 방지 */
   .estimate-cell {
     page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    padding: 6px !important;
+    border: 1px solid #e6e6e6 !important;
+    border-radius: 6px !important;
   }
 
   /* 반응형 무효화 */
   @page {
     size: A4 portrait;
-    margin: 12mm;
+    margin: 10mm;
   }
 }
 /* ⬅️ PDF 버튼 + 총합 오른쪽 정렬 & 버튼이 총합 왼쪽에 밀착되게 */
 .footer-section {
-  margin-top: 25px;
+  margin-top: 30px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 10px; /* 버튼 ↔ 총합 간격 최소화 */
+  gap: 12px;
 }
 /* =================== PDF 저장 버튼 색상 강제 적용 =================== */
 .pdf-btn-inline {

@@ -1,5 +1,14 @@
 :root {
     --header-height: 126px;
+    --primary-blue: #1e5cde;
+    --primary-blue-dark: #153e9f;
+    --ai-gradient-start: #f0f7ff;
+    --ai-gradient-end: #e3f2fd;
+    --user-gradient-start: #1e5cde;
+    --user-gradient-end: #4a7ff7;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 /* --- 전체 페이지 레이아웃 --- */
@@ -9,10 +18,10 @@
     align-items: center;
     width: 100%;
     min-height: 100vh;
-    background: #fff;
+    background: #ffffff;
     box-sizing: border-box;
     padding-top: var(--header-height);
-    padding-bottom: 80px; /* 하단 입력창의 높이 고려 */
+    padding-bottom: 80px;
 }
 
 /* --- 상단 고정 헤더 --- */
@@ -29,9 +38,12 @@
     max-width: 900px;
     margin: 0 auto;
     padding: 16px 20px;
-    border-bottom: 1px solid #eaeaea;
-    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-sm);
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 .cp-question-title {
@@ -46,6 +58,12 @@
 .cp-back-btn {
     color: #333 !important;
     flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.cp-back-btn:hover {
+    transform: translateX(-3px);
+    color: var(--primary-blue) !important;
 }
 
 /* --- 채팅 메시지 영역 --- */
@@ -56,9 +74,29 @@
     max-width: 900px;
     flex-grow: 1;
     padding: 20px;
-    gap: 20px;
+    gap: 24px;
     box-sizing: border-box;
     overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* 커스텀 스크롤바 */
+.cp-chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cp-chat-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cp-chat-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.cp-chat-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
 }
 
 /* AI 메시지 (좌측) */
@@ -66,7 +104,28 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2px; /* 말풍선 간격 줄임 */
+    gap: 6px;
+    animation: slideInLeft 0.4s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* AI 메시지 헤더 (프로필 + 시간) */
+.cp-ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 8px;
 }
 
 .cp-ai-profile {
@@ -81,45 +140,537 @@
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease;
+}
+
+.cp-ai-avatar:hover {
+    transform: scale(1.1);
 }
 
 .cp-ai-name {
     font-weight: 600;
     font-size: 15px;
-    color: #1e5cde;
+    background: linear-gradient(135deg, #1e5cde, #4a7ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-/* ✅ AI 답변: 일반 텍스트 스타일 */
+/* AI 콘텐츠 영역 (말풍선 래퍼 + 시간) */
+.cp-ai-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    max-width: 85%;
+}
+
+/* AI 답변 래퍼 (말풍선 + 복사 버튼) */
+.cp-ai-bubble-wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+}
+
+/* AI 답변: 일반 텍스트 스타일 */
 .cp-ai-bubble {
-    background: none;
+    background: #ffffff;
     border: none;
-    padding: 0;
+    border-radius: 18px;
+    padding: 16px 20px;
     margin: 4px 0;
     font-size: 15px;
     line-height: 1.7;
     color: #111;
     white-space: pre-wrap;
     word-wrap: break-word;
-    max-width: 100%;
+    flex: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.cp-ai-bubble:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* 복사 버튼 */
+.cp-copy-btn {
+    background: #ffffff;
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    color: #555;
+    flex-shrink: 0;
+    margin-top: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.cp-ai-bubble-wrapper:hover .cp-copy-btn {
+    opacity: 1;
+}
+
+.cp-copy-btn:hover {
+    background: #f5f5f5;
+    color: #111;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cp-copy-btn:active {
+    transform: scale(0.95);
+}
+
+.cp-ai-text {
+    margin: 0 0 6px 0;
+    padding: 0;
+    text-align: left;
+    line-height: 1.5;
+}
+
+.cp-ai-text:last-child {
+    margin-bottom: 0;
+}
+
+/* 마크다운 스타일 */
+.cp-ai-text > * {
+    margin: 0 0 4px 0;
+}
+
+.cp-ai-text > *:last-child {
+    margin-bottom: 0;
+}
+
+.cp-ai-text p,
+.cp-ai-intro p,
+.cp-ai-note p {
+    margin: 0;
+}
+
+.cp-ai-text p:last-child,
+.cp-ai-intro p:last-child,
+.cp-ai-note p:last-child {
+    margin-bottom: 0;
+}
+
+.cp-ai-text p:first-child,
+.cp-ai-intro p:first-child,
+.cp-ai-note p:first-child {
+    margin-top: 0;
+}
+
+.cp-ai-text ul,
+.cp-ai-text ol,
+.cp-ai-intro ul,
+.cp-ai-intro ol,
+.cp-ai-note ul,
+.cp-ai-note ol {
+    margin: 0;
+    padding-left: 16px;
+}
+
+.cp-ai-text li,
+.cp-ai-intro li,
+.cp-ai-note li {
+    margin: 0;
+    padding: 0 0 2px 0;
+}
+
+/* 리스트 내부 문단 간격 제거 (강제 적용) */
+.cp-ai-text li p,
+.cp-ai-intro li p,
+.cp-ai-note li p {
+    margin: 0 !important;
+}
+
+/* 중첩 리스트 간격 조정 */
+.cp-ai-text li ul,
+.cp-ai-text li ol,
+.cp-ai-intro li ul,
+.cp-ai-intro li ol {
+    margin: 0;
+}
+
+/* 빈 문단 숨김 */
+.cp-ai-text p:empty,
+.cp-ai-intro p:empty,
+.cp-ai-note p:empty {
+    display: none;
+}
+
+.cp-ai-text code,
+.cp-ai-intro code,
+.cp-ai-note code {
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    color: #d63384;
+}
+
+.cp-ai-text pre,
+.cp-ai-intro pre,
+.cp-ai-note pre {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+.cp-ai-text pre code,
+.cp-ai-intro pre code,
+.cp-ai-note pre code {
+    background: none;
+    padding: 0;
+    color: #111;
+    font-size: 13px;
+}
+
+.cp-ai-text a,
+.cp-ai-intro a,
+.cp-ai-note a {
+    color: #1e5cde;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cp-ai-text a:hover,
+.cp-ai-intro a:hover,
+.cp-ai-note a:hover {
+    text-decoration: underline;
+}
+
+.cp-ai-text strong,
+.cp-ai-intro strong,
+.cp-ai-note strong {
+    font-weight: 700;
+    color: #111;
+}
+
+.cp-ai-text em,
+.cp-ai-intro em,
+.cp-ai-note em {
+    font-style: italic;
+}
+
+.cp-ai-text blockquote,
+.cp-ai-intro blockquote,
+.cp-ai-note blockquote {
+    border-left: 3px solid #1e5cde;
+    padding-left: 12px;
+    margin: 12px 0;
+    color: #555;
+}
+
+.cp-ai-text h1,
+.cp-ai-text h2,
+.cp-ai-text h3,
+.cp-ai-text h4,
+.cp-ai-intro h1,
+.cp-ai-intro h2,
+.cp-ai-intro h3,
+.cp-ai-intro h4 {
+    margin: 8px 0 4px 0;
+    font-weight: 700;
+    color: #111;
+}
+
+.cp-ai-text h1,
+.cp-ai-intro h1 {
+    font-size: 20px;
+}
+
+/* 리스트 내부 헤더 간격 조정 */
+.cp-ai-text li h1,
+.cp-ai-text li h2,
+.cp-ai-text li h3,
+.cp-ai-text li h4,
+.cp-ai-intro li h1,
+.cp-ai-intro li h2,
+.cp-ai-intro li h3,
+.cp-ai-intro li h4 {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.cp-ai-text h2,
+.cp-ai-intro h2 {
+    font-size: 18px;
+}
+
+.cp-ai-text h3,
+.cp-ai-intro h3 {
+    font-size: 16px;
+}
+
+.cp-ai-text h4,
+.cp-ai-intro h4 {
+    font-size: 15px;
+}
+
+.cp-ai-text table,
+.cp-ai-intro table,
+.cp-ai-note table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+}
+
+.cp-ai-text th,
+.cp-ai-text td,
+.cp-ai-intro th,
+.cp-ai-intro td,
+.cp-ai-note th,
+.cp-ai-note td {
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.cp-ai-text th,
+.cp-ai-intro th,
+.cp-ai-note th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+/* intro 텍스트 스타일 */
+.cp-ai-intro {
+    margin: 0 0 20px 0;
+    padding: 14px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #1e5cde;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #111;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* another_input_text (추가 안내) 스타일 */
+.cp-ai-note {
+    margin: 20px 0 0 0;
+    padding: 14px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #1e5cde;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #555;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* 부품 섹션 스타일 */
+.cp-component-section {
+    margin: 20px 0;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-blue);
+    transition: all 0.3s ease;
+}
+
+.cp-component-section:hover {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateX(4px);
+}
+
+.cp-component-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cp-component-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+}
+
+.cp-component-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+    margin: 0 0 10px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.cp-component-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #00a442;
+    margin: 8px 0 0 0;
+}
+
+/* 총 가격 */
+.cp-total-price {
+    margin-top: 24px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(0, 164, 66, 0.1) 0%, rgba(0, 200, 83, 0.1) 100%);
+    border-radius: 12px;
+    border: 2px solid rgba(0, 164, 66, 0.3);
+    text-align: center;
+}
+
+.cp-total-price strong {
+    font-size: 18px;
+    color: #00a442;
+    font-weight: 700;
+}
+
+/* 견적 콘텐츠 스타일 */
+.cp-estimate-content {
+    width: 100%;
+    text-align: left;
+}
+
+.cp-estimate-item {
+    margin: 20px 0;
+    padding: 0;
+    text-align: left;
+}
+
+.cp-estimate-item:first-child {
+    margin-top: 8px;
+}
+
+.cp-estimate-category {
+    font-size: 17px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.3px;
+    text-align: left;
+}
+
+.cp-estimate-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+    text-align: left;
+    padding-left: 12px;
+}
+
+.cp-estimate-description {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.8;
+    margin: 0 0 12px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align: left;
+    padding-left: 12px;
+}
+
+.cp-estimate-price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+    text-align: left;
+    padding-left: 12px;
+}
+
+.cp-estimate-total {
+    margin-top: 24px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    color: #111;
+    font-weight: 600;
+    text-align: left;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cp-estimate-total strong {
+    font-size: 16px;
+    color: #111;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+/* 시간 표시 (말풍선 아래) */
+.cp-message-time {
+    font-size: 12px;
+    color: #999;
+    margin-left: 8px;
+    margin-top: 2px;
 }
 
 /* 사용자 메시지 (우측) */
 .cp-message-user {
     display: flex;
+    flex-direction: column;
+    align-items: flex-end;
     justify-content: flex-end;
     margin-left: auto;
     width: 100%;
+    gap: 6px;
+    animation: slideInRight 0.4s ease-out;
+}
+
+.cp-user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .cp-user-bubble {
-    background: #e8f0ff;
-    color: #111;
-    border-radius: 10px;
-    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--user-gradient-start) 0%, var(--user-gradient-end) 100%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 14px 20px;
     font-size: 15px;
     max-width: 80%;
     white-space: pre-wrap;
     word-wrap: break-word;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    margin-bottom: 2px;
+}
+
+.cp-user-bubble:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
 }
 
 /* 말풍선 내 버튼 (예: 견적 저장) */
@@ -131,18 +682,22 @@
 
 .cp-save-estimate-btn {
     padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: 1px solid rgba(30, 92, 222, 0.3);
+    border-radius: 12px;
     background-color: #fff;
-    color: #333;
+    color: var(--primary-blue);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
 }
 
 .cp-save-estimate-btn:hover {
-    background-color: #f0f0f0;
+    background-color: var(--primary-blue);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 /* --- 하단 입력창 --- */
@@ -154,25 +709,34 @@
     z-index: 10;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     max-width: 900px;
     margin: 0 auto;
-    padding: 12px 20px;
-    border-top: 1px solid #eee;
-    background: #fff;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
 }
 
 .cp-chat-input {
     flex: 1;
-    border: 1px solid #c6cbd5;
-    border-radius: 30px;
-    padding: 14px 18px;
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 24px;
+    padding: 14px 20px;
     font-size: 15px;
     outline: none;
     background: #fff;
     resize: none;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.cp-chat-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(30, 92, 222, 0.1);
 }
 
 .cp-chat-input::placeholder {
@@ -180,7 +744,7 @@
 }
 
 .cp-send-btn {
-    background-color: #1e5cde !important;
+    background: linear-gradient(135deg, var(--user-gradient-start) 0%, var(--user-gradient-end) 100%) !important;
     color: #fff !important;
     width: 46px !important;
     height: 46px !important;
@@ -190,6 +754,8 @@
     justify-content: center;
     flex-shrink: 0;
     line-height: 0 !important;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
 }
 
 .cp-send-btn svg {
@@ -199,7 +765,13 @@
 }
 
 .cp-send-btn:hover {
-    background-color: #153e9f !important;
+    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%) !important;
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.cp-send-btn:active {
+    transform: scale(0.95);
 }
 
 /* --- 로딩 인디케이터 --- */
@@ -207,20 +779,25 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #333;
-    font-size: 1rem;
-    padding: 10px;
+    color: #555;
+    font-size: 15px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
+    border-radius: 18px;
+    border: 1px solid rgba(30, 92, 222, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .svg-spinner svg {
-    width: 2em;
+    width: 28px;
+    height: 28px;
     transform-origin: center;
     animation: rotate4 2s linear infinite;
 }
 
 .svg-spinner circle {
     fill: none;
-    stroke: hsl(214, 97%, 59%);
+    stroke: var(--primary-blue);
     stroke-width: 3;
     stroke-dasharray: 1, 200;
     stroke-dashoffset: 0;
@@ -248,6 +825,13 @@
     }
 }
 
+/* 타이핑 애니메이션 효과 */
+@keyframes typing-dots {
+    0%, 20% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
 /* 📱 모바일 전용 */
 @media (max-width: 768px) {
     .cp-question-header {
@@ -265,6 +849,98 @@
         padding-top: 10px;
         margin-top: 10px;
     }
+
+    .cp-ai-content {
+        max-width: 95%;
+    }
+
+    .cp-ai-bubble-wrapper {
+        max-width: 100%;
+    }
+
+    .cp-ai-bubble {
+        max-width: 100%;
+    }
+
+    /* 모바일에서는 항상 복사 버튼 보이기 */
+    .cp-copy-btn {
+        opacity: 1;
+    }
+
+    .cp-message-time {
+        font-size: 11px;
+    }
+
+    .cp-user-name {
+        font-size: 13px;
+    }
+
+    .cp-component-section {
+        margin: 16px 0;
+        padding: 14px;
+    }
+
+    .cp-component-title {
+        font-size: 16px;
+    }
+
+    .cp-component-name {
+        font-size: 14px;
+    }
+
+    .cp-component-description {
+        font-size: 13px;
+    }
+
+    .cp-component-price {
+        font-size: 15px;
+    }
+
+    .cp-total-price {
+        padding: 14px;
+        margin-top: 20px;
+    }
+
+    .cp-total-price strong {
+        font-size: 17px;
+    }
+
+    .cp-estimate-category {
+        font-size: 17px;
+    }
+
+    .cp-estimate-name {
+        font-size: 15px;
+    }
+
+    .cp-estimate-description {
+        font-size: 13.5px;
+    }
+
+    .cp-estimate-price {
+        font-size: 15px;
+    }
+
+    .cp-estimate-total {
+        font-size: 16px;
+        padding: 14px 16px;
+    }
+
+    .cp-estimate-total strong {
+        font-size: 18px;
+    }
+
+    .cp-ai-intro {
+        font-size: 14px;
+        padding: 12px 14px;
+        margin-bottom: 18px;
+    }
+
+    .cp-ai-note {
+        font-size: 13px;
+        padding: 12px 14px;
+        margin-top: 18px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -279,5 +955,77 @@
     .cp-chat-container {
         padding-top: 18px;
         margin-top: 20px;
+        gap: 20px;
+    }
+
+    .cp-component-section {
+        margin: 14px 0;
+        padding: 12px;
+        border-left-width: 3px;
+    }
+
+    .cp-component-title {
+        font-size: 15px;
+    }
+
+    .cp-component-name {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .cp-component-description {
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .cp-component-price {
+        font-size: 14px;
+    }
+
+    .cp-total-price {
+        padding: 12px;
+        margin-top: 18px;
+    }
+
+    .cp-total-price strong {
+        font-size: 16px;
+    }
+
+    .cp-estimate-category {
+        font-size: 16px;
+    }
+
+    .cp-estimate-name {
+        font-size: 14px;
+    }
+
+    .cp-estimate-description {
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .cp-estimate-price {
+        font-size: 14px;
+    }
+
+    .cp-estimate-total {
+        font-size: 15px;
+        padding: 12px 14px;
+    }
+
+    .cp-estimate-total strong {
+        font-size: 17px;
+    }
+
+    .cp-ai-intro {
+        font-size: 13px;
+        padding: 10px 12px;
+        margin-bottom: 16px;
+    }
+
+    .cp-ai-note {
+        font-size: 12px;
+        padding: 10px 12px;
+        margin-top: 16px;
     }
 }
